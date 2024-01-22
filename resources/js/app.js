@@ -1,11 +1,7 @@
 import './bootstrap';
-import { createApp } from 'vue';
 
-const app = createApp({})
+import Alpine from 'alpinejs';
 
-import Votacion from './vuepublic/votacion.vue';
-app.component('votacion-vue', Votacion)
+window.Alpine = Alpine;
 
-
-
-app.mount('#app')
+Alpine.start();
