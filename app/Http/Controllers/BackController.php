@@ -2,20 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Empleados;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class BackController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function Votacion()
-    {
-        return view('votacion.votacion');
-    }
-
-
     /**
      * Display a listing of the resource.
      */

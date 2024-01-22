@@ -7,7 +7,7 @@
                     {{ __("Eliminar todos los datos, Subir datos de tipo excel") }} <br>
                     {{ __("Se podrá ingresar/editar fechas de concursos") }} <br>
                     {{ __("Subir datos de tipo excel") }} <br>
-
+                    
                 </div>
             </div>
         </div>

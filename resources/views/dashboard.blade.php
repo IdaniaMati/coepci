@@ -5,6 +5,7 @@
                 <div class="p-6 text-gray-900">
                     {{ __("Se ingresará tabla con los datos de los registros") }} <br>
                     {{ __("Historial de ganadores") }}
+
                 </div>
             </div>
         </div>

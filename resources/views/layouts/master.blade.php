@@ -63,7 +63,7 @@
         <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
         <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
         <script src="../assets/js/config.js"></script>
-        @vite('resources/js/app.js')
+        @vite('resources/js/app.js', 'resources/css/css.js')
     </head>
 
     <body>
@@ -193,9 +193,6 @@
                                         </div>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <x-app-layout>
-
-                                        </x-app-layout>
                                     </ul>
                                 </li>
                             <!--/ User -->

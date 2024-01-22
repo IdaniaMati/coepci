@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Routing\Route as RoutingRoute;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,10 +20,27 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/votacion', function(){
-    return view('votacion.votacion');
-})->name('votacion');
+/*-----------------------
+* login de votante
+*/
 
+/*
+* login de votante
+------------------------*/
+
+
+/*------------------------
+* Formulario de votación
+*/
+
+/*
+* Formulario de votación
+------------------------*/
+
+
+/*-----------------------
+* Dashboard
+*/
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -33,11 +52,21 @@ Route::get('/datos', function () {
 Route::get('/documentacion', function () {
     return view('documentacion');
 })->middleware(['auth', 'verified'])->name('documentacion');
+/*
+* Dashboard
+-----------------------*/
 
+
+/*----------------------
+* Login administrador
+*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+/*
+* Login administrador
+----------------------*/
 
 require __DIR__.'/auth.php';
