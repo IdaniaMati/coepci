@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Grupo;
+use App\Models\Concurso;
+use App\Models\Empleado;
+use App\Models\Nominados;
+use App\Models\Registros;
+
 
 class BackController extends Controller
 {
@@ -13,6 +19,12 @@ class BackController extends Controller
     {
         //
     }
+
+    public function Registros()
+    {
+        return view('dashboard');
+    }
+
 
     /**
      * Show the form for creating a new resource.

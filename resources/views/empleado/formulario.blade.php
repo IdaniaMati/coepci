@@ -1,4 +1,4 @@
-@extends('layouts.mastervotacion')
+@extends('layouts.masterv')
 @section('content')
 <div class="layout-container">
     <div id="app">

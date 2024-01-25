@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Routing\Route as RoutingRoute;
+use App\Http\Controllers\Auth\EmpleadoLoginController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,20 +20,25 @@ Route::get('/', function () {
 });
 
 /*-----------------------
-* login de votante
+* login de empleado
 */
-
+Route::get('/empleado/login', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
+Route::post('/empleado/login', [EmpleadoLoginController::class, 'login'])->name('empleado.login.submit');
 /*
-* login de votante
+* login de empleado
 ------------------------*/
 
 
 /*------------------------
-* Formulario de votación
+* Formulario de empleado
 */
+//Route::get('/empleado/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
 
+Route::prefix(['auth:empleado'])->group(function () {
+    Route::get('/empleado/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
+});
 /*
-* Formulario de votación
+* Formulario de empleado
 ------------------------*/
 
 
@@ -49,9 +53,9 @@ Route::get('/datos', function () {
     return view('datos');
 })->middleware(['auth', 'verified'])->name('datos');
 
-Route::get('/documentacion', function () {
-    return view('documentacion');
-})->middleware(['auth', 'verified'])->name('documentacion');
+Route::get('/historial', function () {
+    return view('historial');
+})->middleware(['auth', 'verified'])->name('historial');
 /*
 * Dashboard
 -----------------------*/
