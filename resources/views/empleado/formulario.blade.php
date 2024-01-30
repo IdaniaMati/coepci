@@ -1,8 +1,8 @@
 @extends('layouts.masterv')
 @section('content')
-<div class="layout-container">
+<div class="content-wrapper">
     <div id="app">
-        <votacion-vue></votacion-vue>
+        <formulario-vue></formulario-vue>
     </div>
 </div>
 @endsection

@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('registros', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_vot')->constrained('empleados');
-            $table->foreignId('id_nom')->constrained('empleados');
-            $table->foreignId('id_grup')->constrained('grupos');
+            $table->foreignId('id_vot')->constrained('empleados')->index('registros_id_vot_foreign'); 
+            $table->foreignId('id_nom')->constrained('empleados')->index('registros_id_nom_foreign'); 
+            $table->foreignId('id_grup')->constrained('grupos')->index('registros_id_grup_foreign'); 
+            $table->foreignId('id_conc')->constrained('concursos')->index('registros_id_conc_foreign'); 
             $table->date('fecha')->nullable();
             $table->timestamps();
         });

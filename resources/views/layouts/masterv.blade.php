@@ -27,12 +27,11 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Without menu - Layouts | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+    <title>COEPCI</title>
 
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -75,37 +74,32 @@
 
           <!-- Content wrapper -->
           <div class="content-wrapper">
-            <!-- Content -->
 
             <div class="container-xxl flex-grow-1 container-p-y">
-              <!-- Layout Demo -->
-              <div class="layout-demo-wrapper">
-                <div class="layout-demo-placeholder">
-                    @yield('content')
+              <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="card-body">
+                  @yield('content')
                 </div>
               </div>
-              <!--/ Layout Demo -->
+              
             </div>
+            <!-- Content -->
+            
             <!-- / Content -->
 
             <!-- Footer -->
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">
-                  ©
                   <script>
                     document.write(new Date().getFullYear());
                   </script>
-                  , made with ❤️ by SECOES
-                </div>
-                <div>
-            
+                  , hecho con ❤️ por la SECOES
                 </div>
               </div>
             </footer>
             <!-- / Footer -->
 
-            <div class="content-backdrop fade"></div>
           </div>
           <!-- Content wrapper -->
         </div>

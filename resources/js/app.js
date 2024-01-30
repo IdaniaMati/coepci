@@ -10,7 +10,7 @@ Alpine.start();
 const app = createApp({});
 
 import Formulario from './vuepublic/Votacion.vue';
-app.component('votacion-vue', Formulario);
+app.component('formulario-vue', Formulario);
 
 import Dashboard from './vueadmin/Dashboard.vue';
 app.component('dashboard-vue', Dashboard);
@@ -20,6 +20,5 @@ app.component('datos-vue', Datos);
 
 import Historial from './vueadmin/Historial.vue';
 app.component('historial-vue', Historial);
-
 
 app.mount('#app');

@@ -1,7 +1,28 @@
 <template>
     <div>
-        <h2>tabla de registros <br>
-        se podrá realizar un fitrado</h2>
+        <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Curp</th>
+                <th>Cargo</th>
+                <th>Grupo/Categoría</th>
+                <th>Concurso</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
     </div>
 </template>
 <script>

@@ -15,16 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('welcome');
-});
+});*/
 
 /*-----------------------
 * login de empleado
 */
 Route::get('/empleado/login', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
-Route::post('/empleado/login', [EmpleadoLoginController::class, 'login'])->name('empleado.login.submit');
-/*
+Route::post('/empleado/login', [EmpleadoLoginController::class, 'login'])->name('empleado.login.submit');/*
+
 * login de empleado
 ------------------------*/
 
@@ -32,9 +32,9 @@ Route::post('/empleado/login', [EmpleadoLoginController::class, 'login'])->name(
 /*------------------------
 * Formulario de empleado
 */
-//Route::get('/empleado/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
+//Route::get('/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
 
-Route::prefix(['auth:empleado'])->group(function () {
+Route::middleware(['auth:empleado'])->group(function () {
     Route::get('/empleado/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
 });
 /*
