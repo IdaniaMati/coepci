@@ -7,9 +7,45 @@ use App\Http\Controllers\Controller;
 use Validator;
 use Illuminate\Http\Request;
 
+
 class EmpleadoLoginController extends Controller
-{    
-    // Agrega un método para obtener la lista de empleados por grupo
+{
+
+    //login de usuario
+    public function showLoginForm()
+    {
+        return view('auth.empleado-login');
+    }
+
+
+
+    public function login(Request $request)
+    {
+        $curp = $request->input('curp');
+
+        $user = Empleado::where('curp', $curp)->first();
+
+        if ($user) {
+            Auth::guard('empleado')->login($user);
+
+            return response()->json(['success' => true, 'redirect' => route('VotacionEmpleado')]);
+        } else {
+            return response()->json(['success' => false]);
+        }
+    }
+
+    public function VotacionEmpleado()
+    {
+        return view('auth.votacion');
+    }
+
+    public function logout()
+    {
+        Auth::guard('empleado')->logout();
+        return redirect()->route('empleado.login');
+    }
+
+    /* // Agrega un método para obtener la lista de empleados por grupo
     public function mostrarFormulario()
     {
         // Fetch the groups and employees data here
@@ -18,40 +54,19 @@ class EmpleadoLoginController extends Controller
         //dd($empleados);
 
         return view('empleado.formulario', compact('empleados'));
-    }
-    
-    //login de usuario
-    public function showLoginForm()
-    {
-        return view('auth.empleado-login');
-    }
+    } */
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'curp' => 'required|string|max:18',
-        ]);
-    
-        $credentials = [
-            'curp' => $request->curp,
-        ];
-    
-        $user = \App\Models\Empleado::where('curp', $request->curp)->first();
-    
-        // Check if user exists and manually log in
-        if ($user) {
-            Auth::guard('empleado')->login($user);
-            return redirect('/empleado/formulario'); // Cambia la ruta según tus necesidades
-        }
-    
-        return redirect()->back()->withErrors(['curp' => 'Credencial no válida']);
-    }
+
+
+
+
 
     public function loginForm() {
         return view( 'auth.login' );
     }
 
-    public function loginPost( Request $request ) {
+    /* public function loginPost( Request $request )
+    {
 
         $validator = Validator::make( $request->all(), [
             'no_id' => 'required|min:3',
@@ -70,24 +85,24 @@ class EmpleadoLoginController extends Controller
         } else {
             return response()->json( [ 'success' => false, 'message' => 'Usuario o contraseña incorrecta' ] );
         }
-    }
+    } */
 
-    //Cerrar session
-    public function logoutGet() {
 
-        Auth::logout();
+    /* public function destroy()
+    {
+        Auth::guard('empleado')->logout();
 
-        return redirect( '/' );
-    }
+        return redirect('/')->with('status', 'Sesión cerrada correctamente');
+    } */
 
-    //Cerrar session
-    public function logoutPost() {
+    /* public function logout(Request $request)
+    {
+        Auth::guard('empleado')->logout();
 
-        Auth::logout();
+        $request->session()->invalidate();
 
-        return redirect( '/' );
-    }
-
+        return redirect('/');
+    } */
 
 
 }

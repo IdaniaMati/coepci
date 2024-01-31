@@ -9,8 +9,8 @@ Alpine.start();
 
 const app = createApp({});
 
-import Formulario from './vuepublic/Votacion.vue';
-app.component('formulario-vue', Formulario);
+import Votacion from './vuepublic/Votacion.vue';
+app.component('votacion-vue', Votacion);
 
 import Dashboard from './vueadmin/Dashboard.vue';
 app.component('dashboard-vue', Dashboard);
@@ -20,5 +20,8 @@ app.component('datos-vue', Datos);
 
 import Historial from './vueadmin/Historial.vue';
 app.component('historial-vue', Historial);
+
+import Empleado from './vueadmin/Empleado.vue';
+app.component('empleado-vue', Empleado);
 
 app.mount('#app');

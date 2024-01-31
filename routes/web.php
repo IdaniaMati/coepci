@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmpleadoLoginController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,27 +20,27 @@ use Illuminate\Support\Facades\Route;
     return view('welcome');
 });*/
 
-/*-----------------------
-* login de empleado
-*/
-Route::get('/empleado/login', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
-Route::post('/empleado/login', [EmpleadoLoginController::class, 'login'])->name('empleado.login.submit');/*
 
-* login de empleado
+/* Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado')->middleware('auth'); */
+
+/* login de empleado
 ------------------------*/
+Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
+Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 
 
 /*------------------------
 * Formulario de empleado
 */
-//Route::get('/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
+
+
 
 Route::middleware(['auth:empleado'])->group(function () {
-    Route::get('/empleado/formulario', [EmpleadoLoginController::class, 'mostrarFormulario'])->name('empleado.formulario');
+    Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado');
+    Route::post('/CerrarSesion', [EmpleadoLoginController::class, 'logout'])->name('empleado.logout');
 });
-/*
-* Formulario de empleado
-------------------------*/
+
+
 
 
 /*-----------------------
@@ -56,9 +57,6 @@ Route::get('/datos', function () {
 Route::get('/historial', function () {
     return view('historial');
 })->middleware(['auth', 'verified'])->name('historial');
-/*
-* Dashboard
------------------------*/
 
 
 /*----------------------
@@ -69,8 +67,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-/*
-* Login administrador
-----------------------*/
 
 require __DIR__.'/auth.php';

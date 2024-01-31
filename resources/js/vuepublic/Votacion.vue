@@ -5,6 +5,12 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="mb-0">Formulario de votación</h5>
                 </div>
+
+                <div>
+
+                    <button @click="cerrarSesion" class="btn btn-secondary">Cerrar Sesión</button>
+                </div>
+
                 <div class="card-body">
                     <form >
                         <div class="col-xxl" >
@@ -17,12 +23,11 @@
                                         <div class="row mb-3">
                                             <label class="col-sm-2 col-form-label" for="basic-default-name">Candidato 1</label>
                                             <div class="col-sm-10">
-                                                <select class="form-select" aria-label="Default select example" >
-                                                    <option value=""></option>
-                                                    <option >
-                                                        
-                                                    </option>
+                                                <select v-model="nombre" class="form-select" aria-label="Default select example" >
+                                                    <option disabled selected>Seleccionar</option>
+                                                    <option v-for="opcion in nombre" :value="opcion.id">{{ opcion.nombre }}</option>
                                                 </select>
+                                                <div v-if="!nombre" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class= "row mb-3">
@@ -62,31 +67,32 @@
         </div>
     </div>
 </template>
-    
+
 <script>
+
+import axios from "axios";
+  import Swal from 'sweetalert2'
+  import 'sweetalert2/dist/sweetalert2.min.css'
+
 export default {
     data() {
         return {
-            empleados: [],
+
         };
     },
     created() {
-        this.obtenerEmpleados();
+        /* this.obtenerEmpleados(); */
     },
     methods: {
-        obtenerEmpleados() {
-            axios.get('/empleados')
-                .then(response => {
-                    this.empleados = response.data.empleados;
-                })
-                .catch(error => {
-                    console.error('Error al obtener la lista de empleados', error);
-                });
-        },
-        EnviarVoto() {
-            // Tu lógica para enviar el voto
+
+        cerrarSesion() {
+            axios.post("/CerrarSesion").then(() => {
+                window.location.href = '/';
+            }).catch((error) => {
+                console.error(error);
+            });
         },
     },
 };
-    
+
 </script>

@@ -21,6 +21,8 @@
   data-template="vertical-menu-template-free"
 >
   <head>
+    {{-- <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
+
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -81,10 +83,10 @@
                   @yield('content')
                 </div>
               </div>
-              
+
             </div>
             <!-- Content -->
-            
+
             <!-- / Content -->
 
             <!-- Footer -->
