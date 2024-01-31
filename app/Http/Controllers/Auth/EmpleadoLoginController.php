@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
+use App\Models\Concurso;
 use App\Http\Controllers\Controller;
 use Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 
 class EmpleadoLoginController extends Controller
@@ -16,7 +18,6 @@ class EmpleadoLoginController extends Controller
     {
         return view('auth.empleado-login');
     }
-
 
 
     public function login(Request $request)
@@ -34,11 +35,31 @@ class EmpleadoLoginController extends Controller
         }
     }
 
+
+    public function obtenerFechaInicioConcurso()
+    {
+        try {
+            $concurso = Concurso::first();
+
+            if ($concurso) {
+                $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
+
+                return response()->json(['fechaInicio' => $fechaInicio]);
+            } else {
+                return response()->json(['error' => 'No se encontró información del concurso'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
     public function VotacionEmpleado()
     {
         return view('auth.votacion');
     }
 
+    
     public function logout()
     {
         Auth::guard('empleado')->logout();
@@ -55,10 +76,6 @@ class EmpleadoLoginController extends Controller
 
         return view('empleado.formulario', compact('empleados'));
     } */
-
-
-
-
 
 
     public function loginForm() {
@@ -85,23 +102,6 @@ class EmpleadoLoginController extends Controller
         } else {
             return response()->json( [ 'success' => false, 'message' => 'Usuario o contraseña incorrecta' ] );
         }
-    } */
-
-
-    /* public function destroy()
-    {
-        Auth::guard('empleado')->logout();
-
-        return redirect('/')->with('status', 'Sesión cerrada correctamente');
-    } */
-
-    /* public function logout(Request $request)
-    {
-        Auth::guard('empleado')->logout();
-
-        $request->session()->invalidate();
-
-        return redirect('/');
     } */
 
 

@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 ------------------------*/
 Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
-
+Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
 
 /*------------------------
 * Formulario de empleado
