@@ -16,8 +16,9 @@
         <form>
             <div class="mb-3">
                 <label class="note-text">CURP</label>
-                <input v-model="curp" type="text" class="form-control" :disabled="isVotacionDesactivada" required />
+                <input v-model="curp" type="text" class="form-control" :disabled="isVotacionDesactivada" maxlength="18" required />
                 <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
+                <div v-if="curp && curp.length < 18" class="text-danger">La CURP debe contener 18 caracteres.</div>
             </div>
 
             <button type="button" class="btn btn-inline btn-primary" @click="ingresar" :disabled="isVotacionDesactivada">Login</button>
@@ -110,7 +111,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Por favor, completa todos los campos obligatorios.',
+                    text: 'Por favor, ingresa una CURP para continuar.',
                 });
             return;
             }

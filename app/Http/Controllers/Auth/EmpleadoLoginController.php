@@ -59,11 +59,23 @@ class EmpleadoLoginController extends Controller
         return view('auth.votacion');
     }
 
-    
+
     public function logout()
     {
         Auth::guard('empleado')->logout();
         return redirect()->route('empleado.login');
+    }
+
+
+    public function obtenerOpcionesVotacion()
+    {
+        try {
+            $opciones = Empleado::all();
+
+            return response()->json($opciones);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener las opciones de votación']);
+        }
     }
 
     /* // Agrega un método para obtener la lista de empleados por grupo

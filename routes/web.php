@@ -38,6 +38,7 @@ Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obte
 Route::middleware(['auth:empleado'])->group(function () {
     Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado');
     Route::post('/CerrarSesion', [EmpleadoLoginController::class, 'logout'])->name('empleado.logout');
+    Route::get('/obtenerOpcionesVotacion', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
 });
 
 
