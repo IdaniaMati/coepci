@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
 use App\Models\Concurso;
+use App\Models\Registro;
 use App\Http\Controllers\Controller;
 use Validator;
 use Illuminate\Http\Request;
@@ -29,12 +30,28 @@ class EmpleadoLoginController extends Controller
         if ($user) {
             Auth::guard('empleado')->login($user);
 
-            return response()->json(['success' => true, 'redirect' => route('VotacionEmpleado')]);
+            return response()->json(['success' => true, 'redirect' => route('Principal')]); /* VotacionEmpleado */
         } else {
             return response()->json(['success' => false]);
         }
     }
 
+    public function Principal()
+    {
+        return view('auth.principal');
+    }
+
+
+    public function obtenerIdUsuarioAutenticado(Request $request)
+    {
+        try {
+            $idUsuario = Auth::id();
+
+            return response()->json(['id' => $idUsuario]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function obtenerFechaInicioConcurso()
     {
@@ -53,10 +70,70 @@ class EmpleadoLoginController extends Controller
         }
     }
 
+    public function obtenerSegundaFechaConcurso()
+    {
+        try {
+            $concurso = Concurso::first();
+
+            if ($concurso) {
+                $fechaSegunda = Carbon::parse($concurso->fechaIni2ronda);
+
+                return response()->json(['fechaSegundo' => $fechaSegunda]);
+            } else {
+                return response()->json(['error' => 'No se encontró información del concurso'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 
     public function VotacionEmpleado()
     {
         return view('auth.votacion');
+    }
+
+    public function FinVotacion()
+    {
+        Auth::guard('empleado')->logout();
+        return view('auth.votacionfin');
+        
+    }
+
+    public function verificarVotoUsuarioActual($ronda)
+    {
+        $votanteId = Auth::id();
+        $yaVoto = Registro::where('id_vot', $votanteId)
+            ->where('ronda', $ronda)
+            ->exists();
+
+        return response()->json(['yaVoto' => $yaVoto]);
+    }
+
+
+    public function enviarVotacion(Request $request)
+    {
+        try {
+            $request->validate([
+                'votante_id' => 'required',
+                'candidato_id' => 'required',
+                'grupo_id' => 'required',
+                'concurso_id' => 'required',
+                'ronda' => 'required',
+            ]);
+
+            Registro::create([
+                'id_vot' => $request->input('votante_id'),
+                'id_nom' => $request->input('candidato_id'),
+                'id_grup' => $request->input('grupo_id'),
+                'id_conc' => $request->input('concurso_id'),
+                'ronda' => $request->input('ronda'),
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Voto registrado con éxito']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al registrar el voto', 'error' => $e->getMessage()]);
+        }
     }
 
 
@@ -65,7 +142,6 @@ class EmpleadoLoginController extends Controller
         Auth::guard('empleado')->logout();
         return redirect()->route('empleado.login');
     }
-
 
     public function obtenerOpcionesVotacion()
     {
@@ -78,43 +154,10 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-    /* // Agrega un método para obtener la lista de empleados por grupo
-    public function mostrarFormulario()
+    public function loginForm()
     {
-        // Fetch the groups and employees data here
-        $empleados = Empleado::get(); // Fetch all employees
-
-        //dd($empleados);
-
-        return view('empleado.formulario', compact('empleados'));
-    } */
-
-
-    public function loginForm() {
         return view( 'auth.login' );
     }
-
-    /* public function loginPost( Request $request )
-    {
-
-        $validator = Validator::make( $request->all(), [
-            'no_id' => 'required|min:3',
-            'contrasena' => 'required|min:3',
-        ] );
-
-        if ( $validator->fails() ) {
-            return response()->json( [ 'success' => false, 'errors' => $validator->errors() ] );
-        }
-
-
-        if ( Auth::attempt( [ 'no_id' => $request->no_id, 'contrasena' => $request->contrasena ]) ) {
-
-                return response()->json( [ 'success' => true, 'message' => 'Acceso satisfactorio' ] );
-
-        } else {
-            return response()->json( [ 'success' => false, 'message' => 'Usuario o contraseña incorrecta' ] );
-        }
-    } */
 
 
 }

@@ -29,6 +29,9 @@ Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('emplea
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
 
+Route::get('/FinVotacion', [EmpleadoLoginController::class, 'FinVotacion'])->name('empleado.FinVotacion');
+
+
 /*------------------------
 * Formulario de empleado
 */
@@ -36,9 +39,18 @@ Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obte
 
 
 Route::middleware(['auth:empleado'])->group(function () {
+    Route::get('/Principal', [EmpleadoLoginController::class, 'Principal'])->name('Principal');
+    Route::get('/verificarVotoUsuarioActual/{ronda}', [EmpleadoLoginController::class, 'verificarVotoUsuarioActual'])->name('verificarVotoUsuarioActual');
     Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado');
-    Route::post('/CerrarSesion', [EmpleadoLoginController::class, 'logout'])->name('empleado.logout');
     Route::get('/obtenerOpcionesVotacion', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
+    Route::get('/obtenerIdUsuarioAutenticado', [EmpleadoLoginController::class, 'obtenerIdUsuarioAutenticado'])->name('obtenerIdUsuarioAutenticado');
+
+    Route::post('/enviarVotacion', [EmpleadoLoginController::class, 'enviarVotacion'])->name('enviarVotacion');
+
+    Route::get('/obtenerSegundaFechaConcurso', [EmpleadoLoginController::class, 'obtenerSegundaFechaConcurso'])->name('obtenerSegundaFechaConcurso');
+
+    Route::post('/CerrarSesion', [EmpleadoLoginController::class, 'logout'])->name('empleado.logout');
+
 });
 
 

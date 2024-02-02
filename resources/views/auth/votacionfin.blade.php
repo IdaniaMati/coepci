@@ -5,6 +5,6 @@
 
 @section('content')
     <div id="app">
-        <votacion-vue></votacion-vue>
+        <finvotacion-vue></finvotacion-vue>
       </div>
 @endsection

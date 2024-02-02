@@ -3,10 +3,9 @@
       <div class="col-xxl">
         <div class="card mb-4">
 
-          <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="mb-0">Formulario de votación</h5>
-            <button @click="cerrarSesion" class="btn btn-secondary">Cerrar Sesión</button>
-          </div>
+            <div class="card-header d-flex justify-content-center align-items-center">
+                <h3 class="mb-0 text-center fs-4">Formulario de votación</h3>
+            </div>
 
           <div class="card-body">
             <form>
@@ -41,7 +40,10 @@
                 <label class="col-sm-2 col-form-label"></label>
                 <div class="col-sm-10">
                   <button type="button" class="btn btn-primary" @click="enviarVotacion">Enviar votación</button> &nbsp;&nbsp;&nbsp;&nbsp;
-                  <button type="button" class="btn btn-primary" @click="limpiarvariables">Limpiar campos</button>
+                  <button type="button" class="btn btn-primary" @click="limpiarCampos">Limpiar campos</button>
+                </div>
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <button type="button" class="btn btn-secondary ms-auto" @click="regresar" >Regresar</button>
                 </div>
               </div>
             </form>
@@ -62,26 +64,35 @@
         return {
             grupos: [],
             votos: [],
+            idUsuarioAutenticado: null,
         };
     },
 
     created() {
-      this.obtenerOpcionesVotacion();
+        this.obtenerOpcionesVotacion();
+        this.obtenerIdUsuarioAutenticado();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const ronda = urlParams.get('ronda');
+
+        if (ronda === null || ronda === undefined) {
+            window.location.href = '/Principal';
+    } else {
+        console.log('Valor de la ronda:', ronda);
+    }
     },
 
     methods: {
 
-      cerrarSesion() {
-        axios.post("/CerrarSesion").then(() => {
+        regresar() {
+            window.location.href = '/Principal';
+        },
 
-          window.location.href = '/';
+        limpiarCampos() {
+        this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
+        },
 
-            }).catch((error) => {
-                console.error(error);
-            });
-      },
-
-      obtenerOpcionesVotacion() {
+        obtenerOpcionesVotacion() {
         axios.get("/obtenerOpcionesVotacion")
             .then((response) => {
                 this.grupos = response.data.reduce((accumulator, opcion) => {
@@ -111,10 +122,93 @@
             });
         },
 
-      enviarVotacion() {
-        console.log("Votos:", this.votos);
-      },
+        obtenerIdUsuarioAutenticado() {
+        axios.get("/obtenerIdUsuarioAutenticado")
+            .then((response) => {
+            this.idUsuarioAutenticado = response.data.id;
+            })
+            .catch((error) => {
+            console.error('Error al obtener el ID del usuario autenticado', error);
+            });
+        },
 
+        enviarVotacion() {
+            this.obtenerIdUsuarioAutenticado();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const ronda = urlParams.get('ronda');
+
+            const candidatosPorGrupo = new Set();
+
+            for (let i = 0; i < this.grupos.length; i++) {
+                for (let j = 0; j < this.votos[i].length; j++) {
+                const candidatoId = this.votos[i][j];
+
+                if (candidatoId === null) {
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Debes seleccionar un candidato en cada grupo.',
+                    });
+                    return;
+                }
+
+                if (candidatosPorGrupo.has(candidatoId)) {
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No puedes seleccionar al mismo candidato en un grupo.',
+                    });
+                    return;
+                }
+                    candidatosPorGrupo.add(candidatoId);
+                }
+            }
+
+
+            const promises = [];
+
+            for (let i = 0; i < this.grupos.length; i++) {
+                for (let j = 0; j < this.votos[i].length; j++) {
+                const votanteId = this.idUsuarioAutenticado;
+                const candidatoId = this.votos[i][j];
+                const grupoId = 1;
+                const concursoId = 4;
+
+
+                promises.push(
+                    axios.post('/enviarVotacion', {
+                    votante_id: votanteId,
+                    candidato_id: candidatoId,
+                    grupo_id: grupoId,
+                    concurso_id: concursoId,
+                    ronda: ronda,
+                    })
+                );
+                }
+            }
+
+            Promise.all(promises)
+            .then(responses => {
+                console.log('Votos enviados con éxito', responses);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Voto registrado',
+                    text: 'Se han registrado su voto exitosamente',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => {
+                    this.limpiarCampos();
+                    window.location.href = '/FinVotacion';
+                }, 2000); 
+            })
+            .catch(error => {
+                console.error('Error al enviar los votos', error);
+            });
+        },
     },
   };
 

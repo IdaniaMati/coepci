@@ -9,4 +9,11 @@ class Registro extends Model
 {
     use HasFactory;
     protected $table = 'registros';
+    protected $fillable = [
+        'id_vot',
+        'id_nom',
+        'id_grup',
+        'id_conc',
+        'ronda',
+    ];
 }

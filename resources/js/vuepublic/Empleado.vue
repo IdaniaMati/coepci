@@ -116,6 +116,15 @@
             return;
             }
 
+            if (this.curp.length !== 18) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La CURP debe contener 18 caracteres.',
+                });
+                return;
+            }
+
             let dataarray = {
                 curp: this.curp,
             };
