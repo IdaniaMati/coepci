@@ -6,9 +6,9 @@
             </div>
             <br>
             <div class="sign-title">
-                <h1 class="title-text">Gracias</h1>
+                <h1 class="title-text">Gracias Por Votar Prra</h1>
                 <div class="sign-note">
-                    <p class="note-text">holi</p>
+                    <p class="note-text">Besito en el sin esquinas</p>
                 </div>
             </div>
         </div>

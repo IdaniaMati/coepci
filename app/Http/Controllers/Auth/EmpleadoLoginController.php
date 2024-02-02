@@ -97,7 +97,7 @@ class EmpleadoLoginController extends Controller
     {
         Auth::guard('empleado')->logout();
         return view('auth.votacionfin');
-        
+
     }
 
     public function verificarVotoUsuarioActual($ronda)

@@ -69,18 +69,36 @@
     },
 
     created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ronda = urlParams.get('ronda');
+
+    if (ronda === '2') {
+        axios.get('/obtenerSegundaFechaConcurso')
+            .then((response) => {
+                const fechaSegunda = response.data.fechaSegundo;
+
+                const fechaActual = new Date();
+                if (new Date(fechaSegunda) <= fechaActual) {
+                    this.obtenerOpcionesVotacion();
+                    this.obtenerIdUsuarioAutenticado();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Fecha aún no habilitada',
+                        text: 'La votación de la segunda ronda aún no está habilitada.',
+                    }).then(() => {
+                        window.location.href = '/Principal';
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    } else {
         this.obtenerOpcionesVotacion();
         this.obtenerIdUsuarioAutenticado();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const ronda = urlParams.get('ronda');
-
-        if (ronda === null || ronda === undefined) {
-            window.location.href = '/Principal';
-    } else {
-        console.log('Valor de la ronda:', ronda);
     }
-    },
+},
 
     methods: {
 
@@ -203,7 +221,7 @@
                 setTimeout(() => {
                     this.limpiarCampos();
                     window.location.href = '/FinVotacion';
-                }, 2000); 
+                }, 2000);
             })
             .catch(error => {
                 console.error('Error al enviar los votos', error);
