@@ -1,65 +1,65 @@
 <template>
     <div>
-      <div class="col-xxl">
-        <div class="card mb-4">
+        <div class="col-xxl">
+            <div class="card mb-4">
 
-            <div class="card-header d-flex justify-content-center align-items-center">
-                <h3 class="mb-0 text-center fs-4">Formulario de votación</h3>
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h3 class="mb-0 text-center fs-4">Formulario de votación</h3>
+                </div>
+
+            <div class="card-body">
+                <form>
+                <div class="col-xxl">
+
+                    <div class="card mb-4" v-for="(grupo, index) in grupos" :key="index">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">Grupo {{ grupo.numero }}</h5>
+                    </div>
+                    <div class="card-body col-xxl">
+                        <div class="col-sm-10" v-for="i in grupo.numCandidatos">
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
+
+                            <div class="col-sm-10">
+                            <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
+                                <option disabled selected>Seleccionar</option>
+                                <option v-for="opcion in grupo.opciones" :value="opcion.id">
+                                    {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
+                                </option>
+                            </select>
+                            <div v-if="!votos[grupo.numero - 1][i - 1]" class="text-danger">Este campo es obligatorio.</div>
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label"></label>
+                    <div class="col-sm-10">
+                    <button type="button" class="btn btn-primary" @click="enviarVotacion">Enviar votación</button> &nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn btn-primary" @click="limpiarCampos">Limpiar campos</button>
+                    </div>
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <button type="button" class="btn btn-secondary ms-auto" @click="regresar" >Regresar</button>
+                    </div>
+                </div>
+                </form>
             </div>
 
-          <div class="card-body">
-            <form>
-              <div class="col-xxl">
-
-                <div class="card mb-4" v-for="(grupo, index) in grupos" :key="index">
-                  <div class="card-header d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0">Grupo {{ grupo.numero }}</h5>
-                  </div>
-                  <div class="card-body col-xxl">
-                    <div class="col-sm-10" v-for="i in grupo.numCandidatos">
-                      <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
-
-                        <div class="col-sm-10">
-                          <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
-                            <option disabled selected>Seleccionar</option>
-                            <option v-for="opcion in grupo.opciones" :value="opcion.id">
-                                {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
-                            </option>
-                          </select>
-                          <div v-if="!votos[grupo.numero - 1][i - 1]" class="text-danger">Este campo es obligatorio.</div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              <div class="row mb-3">
-                <label class="col-sm-2 col-form-label"></label>
-                <div class="col-sm-10">
-                  <button type="button" class="btn btn-primary" @click="enviarVotacion">Enviar votación</button> &nbsp;&nbsp;&nbsp;&nbsp;
-                  <button type="button" class="btn btn-primary" @click="limpiarCampos">Limpiar campos</button>
-                </div>
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <button type="button" class="btn btn-secondary ms-auto" @click="regresar" >Regresar</button>
-                </div>
-              </div>
-            </form>
-          </div>
-
+            </div>
         </div>
-      </div>
     </div>
-  </template>
+</template>
 
-  <script>
-  import axios from "axios";
-  import Swal from 'sweetalert2'
-  import 'sweetalert2/dist/sweetalert2.min.css'
+<script>
+import axios from "axios";
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
-  export default {
+export default {
     data() {
         return {
             grupos: [],
@@ -106,15 +106,37 @@
             window.location.href = '/Principal';
         },
 
+        ordenarOpcionesAlfabeticamente() {
+            this.grupos.forEach((grupo) => {
+                grupo.opciones.sort((a, b) => {
+                    const nombreA = `${a.nombre} ${a.apellido_paterno} ${a.apellido_materno}`.toLowerCase();
+                    const nombreB = `${b.nombre} ${b.apellido_paterno} ${b.apellido_materno}`.toLowerCase();
+                    return nombreA.localeCompare(nombreB);
+                });
+            });
+        },
+
         limpiarCampos() {
-        this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
-        },
+        this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null)); 
+        },
 
         obtenerOpcionesVotacion() {
         axios.get("/obtenerOpcionesVotacion")
             .then((response) => {
                 this.grupos = response.data.reduce((accumulator, opcion) => {
                     const existingGroup = accumulator.find((group) => group.numero === opcion.id_grup);
+                    //nuevo
+                    const opcionesRonda1 = response.data.filter(opcion => opcion.ronda === 1);
+                    const opcionesPorGrupo = opcionesRonda1.reduce((accumulator, opcion) => {
+                const grupoId = opcion.id_grup;
+                if (!accumulator[grupoId]) {
+                    accumulator[grupoId] = [];
+                }
+                accumulator[grupoId].push(opcion);
+                return accumulator;
+            }, {});
+
+                    //fin de nuevo
 
                     if (existingGroup) {
                     existingGroup.opciones.push(opcion);
@@ -131,8 +153,9 @@
                     return accumulator;
                 },
                     []);
-
-                this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
+                    this.ordenarOpcionesAlfabeticamente(); // Llama al método de ordenación aquí
+                    this.grupos.sort((a, b) => a.numero - b.numero );
+                    this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
             })
 
             .catch((error) => {
@@ -220,7 +243,7 @@
 
                 setTimeout(() => {
                     this.limpiarCampos();
-                    window.location.href = '/FinVotacion';
+                    window.location.href = '/nominaciones';
                 }, 2000);
             })
             .catch(error => {
@@ -228,11 +251,11 @@
             });
         },
     },
-  };
+};
 
 
-  </script>
+</script>
 
-  <style scoped>
+<style scoped>
 
-  </style>
+</style>

@@ -30,4 +30,13 @@ app.component('historial-vue', Historial);
 import Empleado from './vuepublic/Empleado.vue';
 app.component('empleado-vue', Empleado);
 
+import nominacion from './vuepublic/Nominacion.vue';
+app.component('nominacion-vue', nominacion);
+
+import ronda from './vuepublic/Ronda.vue';
+app.component('ronda-vue', ronda);
+
+import historico from './vuepublic/Historico.vue';
+app.component('historico-vue', historico);
+
 app.mount('#app');
