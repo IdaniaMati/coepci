@@ -39,11 +39,11 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label"></label>
                         <div class="col-sm-10">
-                        <button type="button" class="btn btn-primary" @click="enviarVotacion">Enviar votación</button> &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" class="btn btn-primary" @click="limpiarCampos">Limpiar campos</button>
+                        <button type="button" class="btn btn-primary" @click="enviarVotacion" :disabled="yaVoto || !idUsuarioAutenticado">Enviar votación</button> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn btn-primary" @click="limpiarCampos" :disabled="yaVoto || !idUsuarioAutenticado">Limpiar campos</button>
                         </div>
                         <div class="card-header d-flex align-items-center justify-content-between">
-                            <button type="button" class="btn btn-secondary ms-auto" @click="regresar" >Regresar</button>
+                            <button type="button" class="btn btn-secondary ms-auto" @click="regresar">Regresar</button>
                         </div>
                     </div>
                     </form>
@@ -65,6 +65,7 @@
                 grupos: [],
                 votos: [],
                 idUsuarioAutenticado: null,
+                yaVoto: false,
             };
         },
 
@@ -106,6 +107,7 @@
             verificarVotoUsuarioEnRonda(ronda) {
                 axios.get(`/verificarVotoUsuarioActual/${ronda}`)
                     .then((response) => {
+                        this.yaVoto = response.data.yaVoto;
                         if (response.data.yaVoto) {
                             Swal.fire({
                                 icon: 'info',

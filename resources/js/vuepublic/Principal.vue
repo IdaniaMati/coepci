@@ -84,7 +84,7 @@
             this.verificarVotoUsuario('2');
         },
 
-        verificarVotoUsuario(ronda) {
+      verificarVotoUsuario(ronda) {
         axios.get(`/verificarVotoUsuarioActual/${ronda}`)
             .then((response) => {
                 if (response.data.yaVoto) {
@@ -100,7 +100,7 @@
             .catch((error) => {
                 console.error(error);
             });
-    },
+      },
 
 
       verificarFechaVotacion() {

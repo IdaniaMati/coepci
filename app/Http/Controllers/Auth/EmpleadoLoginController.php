@@ -237,6 +237,7 @@ class EmpleadoLoginController extends Controller
 
     public function nominaciones()
     {
+        Auth::guard('empleado')->logout();
         return view('public.nominacion');
     }
 
