@@ -3,14 +3,14 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmpleadoLoginController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 
 
 /*------------------------* Vista pública ------------------------*/
-Route::get('/nominaciones',[PublicController::class, 'nominaciones'])->name('nominaciones');
-Route::get('/resultado',[PublicController::class, 'resultado'])->name('resultado');
-Route::get('/historico',[PublicController::class, 'historico'])->name('historico');
+Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
+Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
+Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
+Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 
 
 /*------------------------* login de empleado ------------------------*/
@@ -29,9 +29,11 @@ Route::middleware(['auth:empleado'])->group(function () {
     
     Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado');
     
-    Route::get('/obtenerOpcionesVotacion', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
-    
+    Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
+
     Route::get('/obtenerIdUsuarioAutenticado', [EmpleadoLoginController::class, 'obtenerIdUsuarioAutenticado'])->name('obtenerIdUsuarioAutenticado');
+
+    Route::get('/obtenerConcursoId', [EmpleadoLoginController::class, 'obtenerConcursoId'])->name('obtenerConcursoId');
     
     Route::post('/enviarVotacion', [EmpleadoLoginController::class, 'enviarVotacion'])->name('enviarVotacion');
     

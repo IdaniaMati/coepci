@@ -18,6 +18,7 @@ app.component('finvotacion-vue', Fin);
 import Votacion from './vuepublic/Votacion.vue';
 app.component('votacion-vue', Votacion);
 
+
 import Dashboard from './vueadmin/Dashboard.vue';
 app.component('dashboard-vue', Dashboard);
 
