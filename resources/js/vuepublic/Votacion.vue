@@ -146,12 +146,25 @@
                 const ronda = urlParams.get('ronda');
 
                 axios.get(`/obtenerOpcionesVotacion/${ronda}`)
-                    .then((response) => {
-                        this.grupos = response.data.reduce((accumulator, opcion) => {
+                .then((response) => {
+                    console.log('Datos recibidos:', response.data);
+
+                    try {
+                        let dataArray;
+
+                        if (Array.isArray(response.data)) {
+                            dataArray = response.data;
+                        } else if (typeof response.data === 'object') {
+                            dataArray = Object.values(response.data);
+                        } else {
+                            console.error('La respuesta no es un array ni un objeto.');
+                            return;
+                        }
+
+                        this.grupos = dataArray.reduce((accumulator, opcion) => {
                             const existingGroup = accumulator.find((group) => group.numero === opcion.id_grup);
 
                             if (existingGroup) {
-
                                 existingGroup.opciones.push(opcion);
 
                                 existingGroup.opciones.sort((a, b) => {
@@ -159,6 +172,7 @@
                                     const bFullName = (b.nombre || '') + (b.apellido_paterno || '') + (b.apellido_materno || '');
                                     return aFullName.localeCompare(bFullName);
                                 });
+
                                 existingGroup.numCandidatos = Math.max(existingGroup.numCandidatos, 2);
                             } else {
                                 accumulator.push({
@@ -172,12 +186,15 @@
                         }, []);
 
                         this.ordenarOpcionesAlfabeticamente();
-                        this.grupos.sort((a, b) => a.numero - b.numero );
+                        this.grupos.sort((a, b) => a.numero - b.numero);
                         this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
-                    })
-                    .catch((error) => {
-                        console.error('Error al obtener opciones de votación', error);
-                    });
+                    } catch (error) {
+                        console.error('Error al procesar los datos.', error);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error al obtener opciones de votación', error);
+                });
             },
 
             obtenerIdUsuarioAutenticado() {

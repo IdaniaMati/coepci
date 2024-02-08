@@ -11,6 +11,7 @@ Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->na
 Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
+Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
 
 
 /*------------------------* login de empleado ------------------------*/

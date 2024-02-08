@@ -98,18 +98,13 @@
   text-align: center;
 }
 
-.title-text {
-  font-size: 24px;
-  color: #440412;
-  font-weight: bold;
-}
 
 .round-container {
   margin-bottom: 10px;
 }
 
 .announcement-box {
-  background-color: #ffffff;
+  background-color: #050505;
   padding: 20px;
   border-radius: 10px;
 }
@@ -118,12 +113,8 @@
   background-color: #ab0a3d;
 }
 
-.bg-segundos {
-  background-color: #440412;
+.bg-segundos{
+  background-color: #9c9312;
 }
 
-.mb-4 {
-  color: #b68400;
-  font-weight: bold;
-}
 </style>

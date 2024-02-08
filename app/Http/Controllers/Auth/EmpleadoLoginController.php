@@ -102,20 +102,16 @@ class EmpleadoLoginController extends Controller
     {
         try {
             if ($ronda == 1) {
-                // Lógica para la primera ronda (sin cambios)
                 $opciones = Empleado::all();
-            } else {
-                // Lógica para la segunda ronda
+            } elseif ($ronda == 2) {
                 $opciones = DB::table('empleados')
                     ->join('registros', 'empleados.id', '=', 'registros.id_nom')
-                    ->select('empleados.id', 'empleados.nombre', 'registros.id_grup', DB::raw('COUNT(registros.id_nom) AS votos'))
-                    ->where('registros.ronda', 2)
-                    ->groupBy('empleados.id', 'empleados.nombre', 'registros.id_grup')
+                    ->select('empleados.id', 'empleados.nombre', 'empleados.apellido_paterno','empleados.apellido_materno', 'registros.id_grup', DB::raw('COUNT(registros.id_nom) AS votos'))
+                    ->where('registros.ronda', 1)
+                    ->groupBy('empleados.id', 'registros.id_grup')
                     ->orderBy('registros.id_grup')
                     ->orderByDesc('votos')
                     ->get();
-    
-                // Filtrar solo los primeros 5 de cada grupo
                 $resultadosLimitados = collect();
     
                 $opciones->each(function ($opcion) use (&$resultadosLimitados) {
@@ -134,7 +130,7 @@ class EmpleadoLoginController extends Controller
                     return $grupo->all();
                 });
             }
-    
+            //dd($opciones->toSql());
             return response()->json($opciones);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al obtener las opciones de votación']);
