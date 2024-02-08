@@ -138,7 +138,7 @@
             },
 
             limpiarCampos() {
-                this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null)); 
+                this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
             },
 
             obtenerOpcionesVotacion() {
@@ -147,7 +147,7 @@
 
                 axios.get(`/obtenerOpcionesVotacion/${ronda}`)
                 .then((response) => {
-                    console.log('Datos recibidos:', response.data);
+                    //console.log('Datos recibidos:', response.data);
 
                     try {
                         let dataArray;
@@ -157,7 +157,7 @@
                         } else if (typeof response.data === 'object') {
                             dataArray = Object.values(response.data);
                         } else {
-                            console.error('La respuesta no es un array ni un objeto.');
+                            //console.error('La respuesta no es un array ni un objeto.');
                             return;
                         }
 

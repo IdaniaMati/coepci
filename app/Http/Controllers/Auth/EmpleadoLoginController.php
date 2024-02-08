@@ -113,19 +113,19 @@ class EmpleadoLoginController extends Controller
                     ->orderByDesc('votos')
                     ->get();
                 $resultadosLimitados = collect();
-    
+
                 $opciones->each(function ($opcion) use (&$resultadosLimitados) {
                     $grupo = $opcion->id_grup;
-    
+
                     if (!$resultadosLimitados->has($grupo)) {
                         $resultadosLimitados->put($grupo, collect());
                     }
-    
+
                     if ($resultadosLimitados[$grupo]->count() < 5) {
                         $resultadosLimitados[$grupo]->push($opcion);
                     }
                 });
-    
+
                 $opciones = $resultadosLimitados->flatMap(function ($grupo) {
                     return $grupo->all();
                 });
@@ -136,7 +136,6 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => 'Error al obtener las opciones de votación']);
         }
     }
-
 
     public function obtenerConcursoId()
     {
