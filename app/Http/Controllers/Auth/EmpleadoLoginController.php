@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
 use App\Models\Concurso;
+use App\Models\Ganadores;
 use App\Models\Registro;
 use App\Http\Controllers\Controller;
 use Validator;
@@ -67,7 +68,25 @@ class EmpleadoLoginController extends Controller
     public function obtenerFechaInicioConcurso()
     {
         try {
-            $concurso = Concurso::first();
+            $concurso = Concurso::orderBy('fechaIni1ronda', 'desc')->first();
+
+            if ($concurso) {
+                $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
+                $fechaFin = Carbon::parse($concurso->fechaFin); // Agregado
+
+                return response()->json(['fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]); // Modificado
+            } else {
+                return response()->json(['error' => 'No se encontró información del concurso'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerFechaFinConcurso()
+    {
+        try {
+            $concurso = Concurso::orderBy('fechaFin', 'desc')->first();
 
             if ($concurso) {
                 $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
@@ -139,7 +158,8 @@ class EmpleadoLoginController extends Controller
 
     public function obtenerConcursoId()
     {
-        $ultimoConcurso = Concurso::latest()->first();
+        //$ultimoConcurso = Concurso::latest()->first();
+        $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
 
         return response()->json(['ultimoConcursoId' => $ultimoConcurso->id]);
     }
@@ -179,7 +199,6 @@ class EmpleadoLoginController extends Controller
         Auth::guard('empleado')->logout();
         return redirect()->route('empleado.login');
     }
-
 
     /* ============Vistas Públicas============ */
     public function obtenerResultados(Request $request)
@@ -223,6 +242,102 @@ class EmpleadoLoginController extends Controller
 
         return response()->json($resultados);
     }
+
+    public function calcularYGuardarGanadores()
+    {
+        $fechaFinConcurso = Concurso::value('fechaFin');
+
+        if (now() > $fechaFinConcurso) {
+            $ultimoConcurso = Concurso::latest('id')->first();
+            $idUltimoConcurso = $ultimoConcurso->id;
+
+            $this->calcularYGuardarGanadoresPorGrupo($idUltimoConcurso, 1, 2);
+            $this->calcularYGuardarGanadoresPorGrupo($idUltimoConcurso, 2, 2);
+            $this->calcularYGuardarGanadoresPorGrupo($idUltimoConcurso, 3, 3);
+
+            return response()->json(['message' => 'Ganadores calculados y guardados correctamente.']);
+        } else {
+            return response()->json(['message' => 'La fecha de finalización del concurso aún no ha pasado.']);
+        }
+    }
+
+    public function calcularYGuardarGanadoresPorGrupo($idConcurso, $idGrupo, $numGanadores)
+    {
+        $resultadosGrupo = DB::table('registros')
+            ->select('id_nom', DB::raw('COUNT(id_nom) as votos'))
+            ->where('ronda', 2)
+            ->where('id_grup', $idGrupo)
+            ->groupBy('id_nom')
+            ->orderByDesc(DB::raw('COUNT(id_nom)'))
+            ->take($numGanadores)
+            ->get();
+
+        foreach ($resultadosGrupo as $resultado) {
+            $idNom = $resultado->id_nom;
+            $votos = $resultado->votos;
+
+            $empleado = Empleado::find($idNom);
+
+            if ($empleado) {
+                $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
+
+                $existente = Ganadores::where('id_conc', $idConcurso)
+                    ->where('id_grup', $idGrupo)
+                    ->where('id_emp', $nombreCompleto)
+                    ->exists();
+
+                if (!$existente) {
+                    Ganadores::create([
+                        'id_conc' => $idConcurso,
+                        'id_grup' => $idGrupo,
+                        'id_emp' => $nombreCompleto,
+                        'votos' => $votos,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public function obtenerGanadores()
+    {
+        try {
+            $ultimoConcurso = Concurso::latest()->first();
+
+            if (!$ultimoConcurso) {
+                return response()->json(['ganadores' => []]);
+            }
+
+            $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
+                ->select('ganadores.id_emp', 'ganadores.id_grup')
+                ->get();
+
+            $ganadoresAgrupados = $ganadores->groupBy('id_grup');
+
+            return response()->json(['ganadores' => $ganadoresAgrupados]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerHistorico()
+    {
+        try {
+            $historico = Ganadores::select('concursos.descripcion as concurso', 'ganadores.id_grup', 'ganadores.id_emp')
+                ->join('concursos', 'ganadores.id_conc', '=', 'concursos.id')
+                ->get();
+
+            $historicoAgrupado = $historico->groupBy('concurso')->map(function ($concurso) {
+                return $concurso->groupBy('id_grup')->map(function ($grupo) {
+                    return $grupo->pluck('id_emp');
+                });
+            });
+
+            return response()->json(['historico' => $historicoAgrupado]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 
     /* ============login de usuario============ */
     public function loginForm()

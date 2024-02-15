@@ -12,51 +12,37 @@ Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('re
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
+Route::get('/obtenerHistorico', [EmpleadoLoginController::class, 'obtenerHistorico'])->name('obtenerHistorico');
+
 
 
 /*------------------------* login de empleado ------------------------*/
 Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
-
-Route::get('/FinVotacion', [EmpleadoLoginController::class, 'FinVotacion'])->name('empleado.FinVotacion');
+Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
+Route::get('/obtenerGanadores', [EmpleadoLoginController::class, 'obtenerGanadores'])->name('obtenerGanadores');
 
 
 /*------------------------* Formulario de empleado */
 Route::middleware(['auth:empleado'])->group(function () {
     Route::get('/Principal', [EmpleadoLoginController::class, 'Principal'])->name('Principal');
-    
     Route::get('/verificarVotoUsuarioActual/{ronda}', [EmpleadoLoginController::class, 'verificarVotoUsuarioActual'])->name('verificarVotoUsuarioActual');
-    
     Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado');
-    
     Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
-
     Route::get('/obtenerIdUsuarioAutenticado', [EmpleadoLoginController::class, 'obtenerIdUsuarioAutenticado'])->name('obtenerIdUsuarioAutenticado');
-
     Route::get('/obtenerConcursoId', [EmpleadoLoginController::class, 'obtenerConcursoId'])->name('obtenerConcursoId');
-    
     Route::post('/enviarVotacion', [EmpleadoLoginController::class, 'enviarVotacion'])->name('enviarVotacion');
-    
     Route::get('/obtenerSegundaFechaConcurso', [EmpleadoLoginController::class, 'obtenerSegundaFechaConcurso'])->name('obtenerSegundaFechaConcurso');
-    
     Route::post('/CerrarSesion', [EmpleadoLoginController::class, 'logout'])->name('empleado.logout');
 
 });
 
 
 /*-----------------------* Dashboard*/
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/datos', function () {
-    return view('datos');
-})->middleware(['auth', 'verified'])->name('datos');
-
-Route::get('/historial', function () {
-    return view('historial');
-})->middleware(['auth', 'verified'])->name('historial');
+Route::get('/dashboard', function () {return view('admin.dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/datos', function () { return view('admin.datos');})->middleware(['auth', 'verified'])->name('datos');
+Route::get('/historial', function () { return view('admin.historial');})->middleware(['auth', 'verified'])->name('historial');
 
 
 /*---------------------- * Login administrador */

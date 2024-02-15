@@ -16,17 +16,23 @@
         <form>
             <div class="mb-3">
                 <label class="note-text">CURP</label>
-                <input v-model="curp" type="text" class="form-control" :disabled="isVotacionDesactivada" maxlength="18" required />
+                <input v-model="curp" type="text" class="form-control" :disabled="isVotacionDesactivada || isVotacionFin" maxlength="18" required />
                 <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
                 <div v-if="curp && curp.length < 18" class="text-danger">La CURP debe contener 18 caracteres.</div>
             </div>
 
-            <button type="button" class="btn btn-inline btn-primary" @click="ingresar" :disabled="isVotacionDesactivada">Login</button>
+            <button type="button" class="btn btn-inline btn-primary" @click="ingresar" :disabled="isVotacionDesactivada || isVotacionFin">Login</button>
         </form>
 
         <div v-if="isVotacionDesactivada" class="announcement-box">
             <p class="announcement-text">El sistema de votación se encuentra desactivado. <br>Favor de verificar la fecha en la
                 cual el concurso inicie. Si ya se encuentra activa la convocatoria, favor de recargar la página.
+            </p>
+        </div>
+
+        <div v-if="isVotacionFin" class="announcement-box">
+            <p class="announcement-text">Las votaciones han finalizado. Gracias por Participar <br>Favor de consultar las
+                fechas de la convocatoria. Si ya se encuentra activa la convocatoria, favor de recargar la página.
             </p>
         </div>
 
@@ -93,6 +99,7 @@
       return {
         curp: "",
         isVotacionDesactivada: false,
+        isVotacionFin: false,
       };
     },
 
@@ -151,18 +158,21 @@
         },
 
         verificarFechaVotacion() {
-            axios.get("/obtenerFechaInicioConcurso")
-                .then((response) => {
-                    if (response.data.fechaInicio) {
-                        const fechaInicioConcurso = new Date(response.data.fechaInicio);
-                        this.isVotacionDesactivada = new Date() < fechaInicioConcurso;
-                    } else {
-                        console.error('No se pudo obtener la fecha de inicio del concurso.');
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        axios.get("/obtenerFechaInicioConcurso")
+            .then((response) => {
+            if (response.data.fechaInicio && response.data.fechaFin) {
+                const fechaInicioConcurso = new Date(response.data.fechaInicio);
+                const fechaFinConcurso = new Date(response.data.fechaFin);
+
+                this.isVotacionDesactivada = new Date() < fechaInicioConcurso;
+                this.isVotacionFin = new Date() > fechaFinConcurso;
+            } else {
+                console.error('No se pudo obtener la fecha de inicio o fin del concurso.');
+            }
+            })
+            .catch((error) => {
+            console.error(error);
+            });
         },
     },
 
