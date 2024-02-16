@@ -7,6 +7,12 @@
 
         <!-- Email Address -->
         <div>
+            <img src="assets/img/logo-2.png" alt="" height="250px" width="450px">
+            <br>
+        </div>
+
+        <!-- Email Address -->
+        <div>
             <x-input-label for="email" :value="__('Correo Electrónico')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />

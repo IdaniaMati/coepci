@@ -5,5 +5,7 @@
                 <dashboard-vue></dashboard-vue>
             </div>
         </div>
+
+        @section('titulo', 'Home :: Sistema de Votación COEPCI')
     </x-slot>
 </x-app-layout>

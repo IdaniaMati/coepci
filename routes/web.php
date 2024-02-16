@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmpleadoLoginController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -41,8 +42,18 @@ Route::middleware(['auth:empleado'])->group(function () {
 
 /*-----------------------* Dashboard*/
 Route::get('/dashboard', function () {return view('admin.dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/obtenerEmpleados', [AdminController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
+Route::get('/obtenerRegistrosVotos', [AdminController::class, 'obtenerRegistrosVotos']);
+
+
+
+
 Route::get('/datos', function () { return view('admin.datos');})->middleware(['auth', 'verified'])->name('datos');
 Route::get('/historial', function () { return view('admin.historial');})->middleware(['auth', 'verified'])->name('historial');
+
+
+
 
 
 /*---------------------- * Login administrador */
