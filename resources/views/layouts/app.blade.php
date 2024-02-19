@@ -3,6 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {{-- <meta name="viewport" content="width=device-width, initial-scale=0, shrink-to-fit=no"> --}}
+
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@yield('titulo')</title>
@@ -25,6 +27,9 @@
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+        {{-- Desbloquear para usar boostrap --}}
+    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> --}}
+
 
 
         <!-- Scripts -->
@@ -55,7 +60,13 @@
     <script src="../assets/vendor/js/bootstrap.js"></script>
     <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <script src="../assets/vendor/js/menu.js"></script>
+
+    <!-- Page JS -->
+    <script src="../assets/js/ui-modals.js"></script>
+
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -67,5 +78,6 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
     </body>
 </html>

@@ -45,11 +45,20 @@ Route::get('/dashboard', function () {return view('admin.dashboard');})->middlew
 
 Route::get('/obtenerEmpleados', [AdminController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
 Route::get('/obtenerRegistrosVotos', [AdminController::class, 'obtenerRegistrosVotos']);
+Route::get('/obtenerVotosRondas', [AdminController::class, 'obtenerVotosRondas']);
 
-
-
-
+/*-----------------------* Ajustes*/
 Route::get('/datos', function () { return view('admin.datos');})->middleware(['auth', 'verified'])->name('datos');
+
+Route::post('/importar-empleados', [AdminController::class, 'importarEmpleados']);
+Route::post('/vaciarBaseDatos', [AdminController::class, 'vaciarBaseDatos']);
+
+Route::get('/obtenerEvento', [AdminController::class, 'obtenerEvento']);
+Route::post('/agregarEvento', [AdminController::class, 'agregarEvento']);
+Route::put('/editarEvento/{id}', [AdminController::class, 'editarEvento']);
+Route::delete('/eliminarEvento/{id}', [AdminController::class, 'eliminarEvento']);
+
+
 Route::get('/historial', function () { return view('admin.historial');})->middleware(['auth', 'verified'])->name('historial');
 
 

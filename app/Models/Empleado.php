@@ -11,6 +11,14 @@ class Empleado extends Authenticatable
     use HasFactory;
     protected $guard = 'empleado';
     protected $table = 'empleados';
+    protected $fillable = [
+        'nombre',
+        'apellido_paterno',
+        'apellido_materno',
+        'curp',
+        'cargo',
+        'id_grup',
+    ];
 
     public function empleados()
 {
