@@ -18,9 +18,9 @@
                     <x-nav-link :href="route('datos')" :active="request()->routeIs('datos')">
                         {{ __('Ajustes') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('historial')" :active="request()->routeIs('historial')">
+                    {{-- <x-nav-link :href="route('historial')" :active="request()->routeIs('historial')">
                         {{ __('Historial') }}
-                    </x-nav-link>
+                    </x-nav-link> --}}
                 </div>
             </div>
 

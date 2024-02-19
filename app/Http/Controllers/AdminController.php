@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Imports\EmpleadosImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Validator;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -132,6 +133,73 @@ class AdminController extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function agregarEvento(Request $request)
+    {
+        try {
+            $request->validate([
+                'descripcion' => 'required',
+                'fechaIni1ronda' => 'required|date',
+                'fechaIni2ronda' => 'required|date',
+                'fechaFin' => 'required|date',
+            ]);
+
+            $nuevoEvento = new Concurso;
+            $nuevoEvento->descripcion = $request->descripcion;
+            $nuevoEvento->fechaIni1ronda = $request->fechaIni1ronda;
+            $nuevoEvento->fechaIni2ronda = $request->fechaIni2ronda;
+            $nuevoEvento->fechaFin = $request->fechaFin;
+            $nuevoEvento->save();
+
+            return response()->json(['success' => true, 'message' => 'Evento guardado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function detalleEvento($id)
+    {
+
+        $evento = Concurso::where('id',$id)->get();
+        return response()->json($evento);
+
+    }
+
+    public function editarEvento(Request $request)
+    {
+        $validaciones = $request->validate([
+            'id' => 'required|integer',  // Asegúrate de validar el ID correctamente
+            'descripcion' => 'required',
+            'fechaIni1ronda' => 'required',
+            'fechaIni2ronda' => 'required',
+            'fechaFin' => 'required'
+        ]);
+    
+        try {
+            DB::beginTransaction();
+    
+            $data = [
+                'descripcion' => $validaciones['descripcion'],
+                'fechaIni1ronda' => $validaciones['fechaIni1ronda'],
+                'fechaIni2ronda' => $validaciones['fechaIni2ronda'],
+                'fechaFin' => $validaciones['fechaFin'],
+            ];
+    
+            $EditaEvento = DB::table("concursos")->where("id", $validaciones['id'])->update($data);
+    
+            DB::commit();
+    
+            return response()->json(['success' => true, 'message' => 'Evento Editado Exitosamente']);
+        } catch (Exception $e) {
+            $errors = $e->getMessage();
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $errors]);
+        }
+    }
+    
+
+
+
 
     public function eliminarEvento($idEvento)
     {

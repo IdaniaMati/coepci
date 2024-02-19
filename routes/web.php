@@ -55,7 +55,8 @@ Route::post('/vaciarBaseDatos', [AdminController::class, 'vaciarBaseDatos']);
 
 Route::get('/obtenerEvento', [AdminController::class, 'obtenerEvento']);
 Route::post('/agregarEvento', [AdminController::class, 'agregarEvento']);
-Route::put('/editarEvento/{id}', [AdminController::class, 'editarEvento']);
+Route::get('/detalleEvento/{id}', [AdminController::class, 'detalleEvento']);
+Route::post('/editarEvento', [AdminController::class, 'editarEvento']);
 Route::delete('/eliminarEvento/{id}', [AdminController::class, 'eliminarEvento']);
 
 
