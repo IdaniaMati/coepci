@@ -1,5 +1,5 @@
 
-@extends('layouts.masterv')
+@extends('layouts.masterl')
 @section('titulo' , 'Sistema de Votación COEPCI')
 
 @section('content')
