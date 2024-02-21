@@ -39,8 +39,9 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label"></label>
                         <div class="col-sm-10">
-                        <button type="button" class="btn btn-primary" @click="enviarVotacion" :disabled="yaVoto || !idUsuarioAutenticado">Enviar votación</button> &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" class="btn btn-primary" @click="limpiarCampos" :disabled="yaVoto || !idUsuarioAutenticado">Limpiar campos</button>
+                            <button type="button" class="btn btn-primary" @click="enviarVotacion" :disabled="yaVoto || !idUsuarioAutenticado">Enviar votación</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-primary" @click="limpiarCampos" :disabled="yaVoto || !idUsuarioAutenticado">Limpiar campos</button>
                         </div>
                         <div class="card-header d-flex align-items-center justify-content-between">
                             <button type="button" class="btn btn-secondary ms-auto" @click="regresar">Regresar</button>
@@ -208,81 +209,91 @@
             },
 
             enviarVotacion() {
-            this.obtenerIdUsuarioAutenticado();
+                this.obtenerIdUsuarioAutenticado();
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const ronda = urlParams.get('ronda');
+                const urlParams = new URLSearchParams(window.location.search);
+                const ronda = urlParams.get('ronda');
 
-            axios.get('/obtenerConcursoId')
-                .then(response => {
-                    const ultimoConcursoId = response.data.ultimoConcursoId;
+                axios.get('/obtenerConcursoId')
+                    .then(response => {
+                        const ultimoConcursoId = response.data.ultimoConcursoId;
 
-                    const candidatosPorGrupo = new Set();
-                    const promises = [];
+                        const candidatosPorGrupo = new Set();
+                        const errores = [];
 
-                    for (let i = 0; i < this.grupos.length; i++) {
-                        for (let j = 0; j < this.votos[i].length; j++) {
-                            const candidatoId = this.votos[i][j];
+                        for (let i = 0; i < this.grupos.length; i++) {
+                            for (let j = 0; j < this.votos[i].length; j++) {
+                                const candidatoId = this.votos[i][j];
 
-                            if (candidatoId === null) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'Debes seleccionar un candidato en cada grupo.',
-                                });
-                                return;
+                                if (candidatoId === null) {
+                                    errores.push('Debes seleccionar un candidato en cada grupo.');
+                                }
+
+                                if (candidatosPorGrupo.has(candidatoId)) {
+                                    errores.push('No puedes seleccionar al mismo candidato en un grupo.');
+                                }
+                                candidatosPorGrupo.add(candidatoId);
                             }
-
-                            if (candidatosPorGrupo.has(candidatoId)) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'No puedes seleccionar al mismo candidato en un grupo.',
-                                });
-                                return;
-                            }
-                            candidatosPorGrupo.add(candidatoId);
-
-                            const votanteId = this.idUsuarioAutenticado;
-                            const grupoId = this.grupos[i].numero;
-
-                            promises.push(
-                                axios.post('/enviarVotacion', {
-                                    votante_id: votanteId,
-                                    candidato_id: candidatoId,
-                                    grupo_id: grupoId,
-                                    concurso_id: ultimoConcursoId,
-                                    ronda: ronda,
-                                })
-                            );
                         }
-                    }
 
-                    Promise.all(promises)
-                        .then(responses => {
-                            console.log('Votos enviados con éxito', responses);
-
+                        if (errores.length > 0) {
+                            // Mostrar mensajes de error al usuario
                             Swal.fire({
-                                icon: 'success',
-                                title: 'Voto registrado',
-                                text: 'Se han registrado su voto exitosamente',
-                                timer: 2000,
-                                showConfirmButton: false
+                                icon: 'error',
+                                title: 'Errores',
+                                html: errores.join('<br>'),
                             });
+                            return;
+                        }
 
-                            setTimeout(() => {
-                                this.limpiarCampos();
-                                window.location.href = '/nominaciones';
-                            }, 2000);
-                        })
-                        .catch(error => {
-                            console.error('Error al enviar los votos', error);
-                        });
-                })
-                .catch(error => {
-                    console.error('Error al obtener el último concursoId', error);
-                });
-        },
+                        // Continuar con el envío de votos si no hay errores
+
+                        const promises = [];
+
+                        for (let i = 0; i < this.grupos.length; i++) {
+                            for (let j = 0; j < this.votos[i].length; j++) {
+                                const candidatoId = this.votos[i][j];
+                                const votanteId = this.idUsuarioAutenticado;
+                                const grupoId = this.grupos[i].numero;
+
+                                promises.push(
+                                    axios.post('/enviarVotacion', {
+                                        votante_id: votanteId,
+                                        candidato_id: candidatoId,
+                                        grupo_id: grupoId,
+                                        concurso_id: ultimoConcursoId,
+                                        ronda: ronda,
+                                    })
+                                );
+                            }
+                        }
+
+                        Promise.all(promises)
+                            .then(responses => {
+                                console.log('Votos enviados con éxito', responses);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Voto registrado',
+                                    text: 'Se han registrado su voto exitosamente',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                setTimeout(() => {
+                                    this.limpiarCampos();
+                                    window.location.href = '/nominaciones';
+                                }, 2000);
+                            })
+                            .catch(error => {
+                                console.error('Error al enviar los votos', error);
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener el último concursoId', error);
+                    });
+            },
+
         },
     };
 
