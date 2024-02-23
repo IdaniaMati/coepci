@@ -29,6 +29,17 @@ class EmpleadoLoginController extends Controller
         $user = Empleado::where('curp', $curp)->first();
 
         if ($user) {
+            // Obtener la fecha de inicio del concurso
+            $fechaInicioConcurso = $this->obtenerFechaInicioConcurso()->original['fechaInicio'];
+
+            // Obtener la fecha actual
+            $fechaActual = Carbon::now();
+
+            // Verificar si aún no ha comenzado el concurso
+            if ($fechaActual < $fechaInicioConcurso) {
+                return response()->json(['success' => false, 'error' => 'El concurso aún no ha comenzado']);
+            }
+
             Auth::guard('empleado')->login($user);
 
             return response()->json(['success' => true, 'redirect' => route('Principal')]); /* VotacionEmpleado */

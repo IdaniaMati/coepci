@@ -47,18 +47,19 @@
                 Ingresar
               </button>
             </div>
+            <div v-if="isVotacionDesactivada || isVotacionFin || errorMensaje" class="announcement-box">
+        <p class="announcement-text">
+          {{ isVotacionDesactivada ? 'El sistema de votación se encuentra desactivado.' : (isVotacionFin ? 'Las votaciones han finalizado. Gracias por Participar' : errorMensaje) }}
+          <br />
+          {{ (!isVotacionDesactivada && !isVotacionFin && errorMensaje) ? 'Favor de verificar la fecha en la cual el concurso inicie. Si ya se encuentra activa la convocatoria, favor de recargar la página.' : '' }}
+        </p>
+      </div>
           </form>
         </div>
       </div>
       <!-- /Register -->
 
-      <div v-if="isVotacionDesactivada || isVotacionFin" class="announcement-box">
-        <p class="announcement-text">
-          {{ isVotacionDesactivada ? 'El sistema de votación se encuentra desactivado.' : 'Las votaciones han finalizado. Gracias por Participar' }}
-          <br />
-          Favor de verificar la fecha en la cual el concurso inicie. Si ya se encuentra activa la convocatoria, favor de recargar la página.
-        </p>
-      </div>
+      
     </div>
   </div>
 </template>
@@ -121,15 +122,20 @@ export default {
 
             this.isVotacionDesactivada = new Date() < fechaInicioConcurso;
             this.isVotacionFin = new Date() > fechaFinConcurso;
+
+            // Restablece el mensaje de error en caso de éxito
+            this.errorMensaje = null;
           } else {
-            console.error("No se pudo obtener la fecha de inicio o fin del concurso.");
+            // Almacena el mensaje de error en una variable
+            this.errorMensaje = "No existe información del concurso";
           }
         })
         .catch((error) => {
+          // Almacena el mensaje de error en una variable
+          this.errorMensaje = "No se encontró información del concurso";
           console.error(error);
         });
     },
-
     showErrorAlert(message) {
       Swal.fire({
         icon: "error",
