@@ -83,23 +83,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-    public function obtenerFechaFinConcurso()
-    {
-        try {
-            $concurso = Concurso::orderBy('fechaFin', 'desc')->first();
-
-            if ($concurso) {
-                $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
-
-                return response()->json(['fechaInicio' => $fechaInicio]);
-            } else {
-                return response()->json(['error' => 'No se encontró información del concurso'], 404);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
     public function obtenerSegundaFechaConcurso()
     {
         try {
@@ -109,6 +92,23 @@ class EmpleadoLoginController extends Controller
                 $fechaSegunda = Carbon::parse($concurso->fechaIni2ronda);
 
                 return response()->json(['fechaSegundo' => $fechaSegunda]);
+            } else {
+                return response()->json(['error' => 'No se encontró información del concurso'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function obtenerFechaFinConcurso()
+    {
+        try {
+            $concurso = Concurso::orderBy('fechaFin', 'desc')->first();
+
+            if ($concurso) {
+                $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
+
+                return response()->json(['fechaInicio' => $fechaInicio]);
             } else {
                 return response()->json(['error' => 'No se encontró información del concurso'], 404);
             }
@@ -272,30 +272,30 @@ class EmpleadoLoginController extends Controller
             ->take($numGanadores)
             ->get();
 
-        foreach ($resultadosGrupo as $resultado) {
-            $idNom = $resultado->id_nom;
-            $votos = $resultado->votos;
-
-            $empleado = Empleado::find($idNom);
-
-            if ($empleado) {
-                $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
-
-                $existente = Ganadores::where('id_conc', $idConcurso)
-                    ->where('id_grup', $idGrupo)
-                    ->where('id_emp', $nombreCompleto)
-                    ->exists();
-
-                if (!$existente) {
-                    Ganadores::create([
-                        'id_conc' => $idConcurso,
-                        'id_grup' => $idGrupo,
-                        'id_emp' => $nombreCompleto,
-                        'votos' => $votos,
-                    ]);
+            foreach ($resultadosGrupo as $resultado) {
+                $idNom = $resultado->id_nom;
+                $votos = $resultado->votos;
+        
+                $empleado = Empleado::find($idNom);
+        
+                if ($empleado) {
+                    $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
+        
+                    $existente = Ganadores::where('id_conc', $idConcurso)
+                        ->where('id_grup', $idGrupo)
+                        ->where('id_emp', $nombreCompleto)
+                        ->exists();
+        
+                    if (!$existente) {
+                        Ganadores::create([
+                            'id_conc' => $idConcurso,
+                            'id_grup' => $idGrupo,
+                            'id_emp' => $nombreCompleto,
+                            'votos' => $votos,
+                        ]);
+                    }
                 }
             }
-        }
     }
 
     public function obtenerGanadores()
