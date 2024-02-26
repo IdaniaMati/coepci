@@ -22,6 +22,7 @@ Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('emplea
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
 Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
+Route::get('/obtenerGanadoresV', [EmpleadoLoginController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
 Route::get('/obtenerGanadores', [EmpleadoLoginController::class, 'obtenerGanadores'])->name('obtenerGanadores');
 
 

@@ -48,7 +48,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-
     /* ============Votación Usuario============ */
     public function Principal()
     {
@@ -167,7 +166,7 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-    public function obtenerConcursoId()
+    public function obtenerConcursoId() 
     {
         //$ultimoConcurso = Concurso::latest()->first();
         $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
@@ -309,7 +308,28 @@ class EmpleadoLoginController extends Controller
             }
     }
 
-    public function obtenerGanadores()
+    public function obtenerGanadoresV()
+    {
+        try {
+            $ultimoConcurso = Concurso::latest()->first();
+
+            if (!$ultimoConcurso) {
+                return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
+            }
+
+            $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
+                ->select('ganadores.id_emp', 'ganadores.id_grup')
+                ->get();
+
+            $ganadoresAgrupados = $ganadores->groupBy('id_grup');
+
+            return response()->json(['ganadores' => $ganadoresAgrupados]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerGanadoresHisto()
     {
         try {
             $ultimoConcurso = Concurso::latest()->first();

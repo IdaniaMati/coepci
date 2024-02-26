@@ -1,13 +1,15 @@
 <template>
   <div class="container">
     <div class="center-container">
-      <br />
+      <br>
       <div class="sign-title">
         <h1 class="title-text">RESULTADOS</h1>
       </div>
     </div>
 
+    <!--Resultado final del concurso-->
     <br>
+    <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
     <div v-if="ganadores.length > 0" class="card">
         <div class="card-body">
             <h4 class="pb-1 mb-4">Ganadores del Concurso</h4>
@@ -24,6 +26,7 @@
         </div>
     </div>
 
+    <!--Resultados de rondas (1 y 2) del concurso-->
     <br>
     <div v-for="(resultadosRonda, ronda) in resultadosPorRonda" :key="ronda" class="card mb-4">
         <div class="card-body">
@@ -53,7 +56,6 @@
         <p v-if="resultadosRonda.length === 0" class="text-center mt-4">{{ `No hay resultados para la Ronda ${ronda}.` }}</p>
     </div>
 
-
   </div>
 </template>
 
@@ -75,7 +77,7 @@
 
     created() {
       this.obtenerResultados();
-      this.obtenerGanadores();
+      this.obtenerGanadoresV();
 
       this.calcularYGuardarGanadores();
     },
@@ -138,10 +140,16 @@
             });
         },
 
-      obtenerGanadores() {
-        axios.get("/obtenerGanadores")
+      obtenerGanadoresV() {
+        axios.get("/obtenerGanadoresV")
             .then(response => {
             this.ganadores = [];
+
+            if (response.data.message) {
+              // Hay un mensaje, mostrarlo y no asignar ganadores
+              this.mensajeNoVotaciones = response.data.message;
+              return;
+            }
 
             for (let grupo in response.data.ganadores) {
                 let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
