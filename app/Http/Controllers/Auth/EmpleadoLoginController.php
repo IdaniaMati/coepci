@@ -155,6 +155,13 @@ class EmpleadoLoginController extends Controller
                     }
                 });
 
+                // Ordenar alfabéticamente las opciones dentro de cada grupo
+            $resultadosLimitados->each(function ($grupo) {
+                $grupo->sortBy(function ($opcion) {
+                    return $opcion->nombre . ' ' . $opcion->apellido_paterno . ' ' . $opcion->apellido_materno;
+                });
+            });
+
                 $opciones = $resultadosLimitados->flatMap(function ($grupo) {
                     return $grupo->all();
                 });
@@ -168,7 +175,6 @@ class EmpleadoLoginController extends Controller
 
     public function obtenerConcursoId() 
     {
-        //$ultimoConcurso = Concurso::latest()->first();
         $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
 
         return response()->json(['ultimoConcursoId' => $ultimoConcurso->id]);

@@ -67,6 +67,7 @@
   export default {
     data() {
       return {
+        mensajeNoVotaciones: "",
         resultadosPorRonda: {
           1: [],
           2: [],
@@ -146,8 +147,7 @@
             this.ganadores = [];
 
             if (response.data.message) {
-              // Hay un mensaje, mostrarlo y no asignar ganadores
-              this.mensajeNoVotaciones = response.data.message;
+              this.mensajeNoVotaciones = "No hay resultados para la Ronda 1.";
               return;
             }
 
@@ -162,6 +162,8 @@
                 ganadores: ganadoresGrupo
                 });
             }
+            
+            this.mensajeNoVotaciones = "";
             })
             .catch(error => {
             console.error('Error al obtener ganadores', error);
@@ -171,7 +173,9 @@
 
     },
   };
+
 </script>
+
 
 <style scoped>
 .container {}

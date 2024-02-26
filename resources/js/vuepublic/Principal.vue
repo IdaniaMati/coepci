@@ -1,7 +1,7 @@
 <template>
     <div>
-      <div class="col-xxl">
-        <div class="card mb-4">
+      <div class="col-xxl adaptive-text">
+        <div class="card mb-4 adaptive-text">
           <div class="card-header d-flex align-items-center justify-content-between">
             <button @click="cerrarSesion" class="btn btn-secondary ms-auto">Cerrar Sesión</button>
           </div> <br>
@@ -36,10 +36,10 @@
             </p>
         </div>
         <div class="row mb-5">
-          <label class="col-sm-1 col-form-label"></label>
-          <div class="col-sm-10 d-flex justify-content-center">
-            <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarprimera">Primera Ronda</button>
-            <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarsegunda" :disabled="isVotacionDesactivada">Segunda Ronda</button>
+          <br>
+          <div class="col-sm-10 d-flex justify-content-center" adaptive-text>
+            <button type="button" class="btn btn-primary mx-auto fs-5 " @click="votarprimera">Primera Ronda</button> 
+            <button type="button" class="btn btn-primary mx-auto fs-5 " @click="votarsegunda" :disabled="isVotacionDesactivada">Segunda Ronda</button>
           </div>
         </div>
       </div>
@@ -126,6 +126,9 @@
 
 <style scoped>
 
+.adaptive-text {
+  font-size: .5rem;}
+
 .fs-4 {
   /* Tamaño de fuente 1.5rem */
   font-size: 1.5rem;
@@ -138,7 +141,7 @@
 
 .fs-6 {
   /* Tamaño de fuente 1rem */
-  font-size: 12px;
+  font-size: 1rem;
   text-align: justify;
 }
 </style>
