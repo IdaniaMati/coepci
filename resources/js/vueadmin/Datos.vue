@@ -39,7 +39,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="evento in eventos" :key="evento.id">
+                            <tr v-for="evento in paginatedEventos" :key="evento.id">
                                 <td>{{ evento.id }}</td>
                                 <td>{{ evento.descripcion }}</td>
                                 <td>{{ evento.fechaIni1ronda }}</td>
@@ -52,23 +52,6 @@
                             </tr>
                         </tbody>
                     </table>
-
-                    <br>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
-                                <a class="page-link" href="#" @click="prevPage">Anterior</a>
-                            </li>
-                            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': currentPage === page }">
-                                <a class="page-link" href="#" @click="gotoPage(page)">{{ page }}</a>
-                            </li>
-                            <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
-                                <a class="page-link" href="#" @click="nextPage">Siguiente</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <br>
-
                 </div>
 
                 <div class="container">
@@ -118,10 +101,36 @@
                     </div>
                 </div>
 
+                <br>
+                <!-- Agregamos el paginador -->
+                <div class="row justify-content-center">
+                    <div class="col-md-auto">
+                        <button @click="paginaAnterior" :disabled="pagina === 1" class="btn btn-primary mr-2">
+                        Anterior
+                        </button>
+                    </div>
+                    <div class="col-md-auto">
+                        <ul class="pagination">
+                        <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
+                            <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
+                        </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-auto">
+                        <button @click="paginaSiguiente" :disabled="pagina === totalPaginas" class="btn btn-primary ml-2">
+                        Siguiente
+                        </button>
+                    </div>
+                </div>
+                <!-- Fin del paginador -->
+                <br>
+
             </div>
         </div>
-    </div>
 
+
+
+    </div>
 
 
 </template>
@@ -140,21 +149,31 @@ export default {
     data() {
         return {
             eventos: [],
-            currentPage: 1,
-            perPage: 10,
             evento: {},
+            pagina: 1,
+            totalPaginas: 0,
+            registrosPorPagina: 7,
             bandera: "",
             ideve: "",
             descripcion: "",
             fechaIni1ronda: "",
             fechaIni2ronda: "",
             fechaFin: "",
-            totalPages: 0,
+
         };
     },
 
     mounted() {
         this.obtenerEvento();
+        this.calcularTotalPaginas();
+    },
+
+    computed: {
+        paginatedEventos() {
+        const startIndex = (this.pagina - 1) * this.registrosPorPagina;
+        const endIndex = startIndex + this.registrosPorPagina;
+        return this.eventos.slice(startIndex, endIndex);
+    },
     },
 
     methods: {
@@ -163,6 +182,19 @@ export default {
         },
 
         async importarEmpleados() {
+
+            if (!this.archivo || this.archivo.length === 0) {
+                Swal.fire('Advertencia', 'Por favor, seleccione un archivo antes de intentar importar.', 'warning');
+                return;
+            }
+
+            const hayRegistros = await this.verificarDatosEnTablas();
+
+            if (hayRegistros) {
+                Swal.fire('Advertencia', 'No puedes importar empleados mientras haya registros en la tabla.', 'warning');
+                return;
+            }
+
             const formData = new FormData();
             formData.append('archivo', this.archivo);
 
@@ -218,6 +250,7 @@ export default {
                 .then((response) => {
                     if (response.data.concurso) {
                         this.eventos = response.data.concurso;
+                        this.calcularTotalPaginas();
                     } else {
                         console.log(response.data.message);
                     }
@@ -271,7 +304,7 @@ export default {
             };
 
             axios
-                .post(`/editarEvento`, data) 
+                .post(`/editarEvento`, data)
                 .then((response) => {
 
                     if (response.data.success) {
@@ -320,7 +353,6 @@ export default {
             });
         },
 
-
         async  eliminarEvento(idEvento) {
             const confirmed = await Swal.fire({
                 title: '¿Estás seguro?',
@@ -350,9 +382,35 @@ export default {
         },
 
         nuevo() {
-            this.limpiarvar();
-            this.bandera = 0;
-            this.abrirModal();
+            this.verificarEvento();
+        },
+
+        verificarEvento() {
+            axios.get('/verificarEventos')
+            .then(response => {
+                if (response.data.hayRegistros) {
+                    Swal.fire('Advertencia', 'No puedes agregar un nuevo evento mientras haya registros en la tabla.', 'warning');
+                } else {
+                    this.limpiarvar();
+                    this.bandera = 0;
+                    this.abrirModal();
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al verificar la existencia de registros.', 'error');
+            });
+        },
+
+        async verificarDatosEnTablas() {
+            try {
+                const response = await axios.get('/verificarDatosEnTablas');
+                return response.data.hayRegistros;
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al verificar la existencia de registros.', 'error');
+                return true;
+            }
         },
 
         abrirModal() {
@@ -371,18 +429,24 @@ export default {
             this.fechaFin = null;
         },
 
-        gotoPage(page) {
-            if (page >= 1 && page <= this.totalPages) {
-                this.currentPage = page;
-            }
+        calcularTotalPaginas() {
+        this.totalPaginas = Math.ceil(this.eventos.length / this.registrosPorPagina);
         },
 
-        prevPage() {
-            this.gotoPage(this.currentPage - 1);
+        paginaAnterior() {
+        if (this.pagina > 1) {
+            this.pagina--;
+        }
         },
 
-        nextPage() {
-            this.gotoPage(this.currentPage + 1);
+        paginaSiguiente() {
+        if (this.pagina < this.totalPaginas) {
+            this.pagina++;
+        }
+        },
+
+        cambiarPagina(numero) {
+        this.pagina = numero;
         },
     }
 };

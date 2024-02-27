@@ -7,6 +7,9 @@
 
         <title>@yield('titulo')</title>
 
+        <!-- Favicon -->
+    <link href="assets/img/favicon.ico" rel="shortcut icon">
+
         <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

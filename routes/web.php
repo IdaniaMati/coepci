@@ -55,6 +55,9 @@ Route::post('/importar-empleados', [AdminController::class, 'importarEmpleados']
 Route::post('/vaciarBaseDatos', [AdminController::class, 'vaciarBaseDatos']);
 
 Route::get('/obtenerEvento', [AdminController::class, 'obtenerEvento']);
+Route::get('/verificarEventos', [AdminController::class, 'verificarEventos']);
+Route::get('/verificarDatosEnTablas', [AdminController::class, 'verificarDatosEnTablas']);
+
 Route::post('/agregarEvento', [AdminController::class, 'agregarEvento']);
 Route::get('/detalleEvento/{id}', [AdminController::class, 'detalleEvento']);
 Route::post('/editarEvento', [AdminController::class, 'editarEvento']);

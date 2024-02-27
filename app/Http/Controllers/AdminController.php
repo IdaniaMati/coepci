@@ -157,6 +157,30 @@ class AdminController extends Controller
         }
     }
 
+    public function verificarEventos()
+    {
+        $hayRegistros = Registro::count() > 0;
+
+        return response()->json(['hayRegistros' => $hayRegistros]);
+    }
+
+    public function verificarDatosEnTablas()
+    {
+        try {
+            $empleadosCount = Empleado::count() > 0;
+            $registrosCount = Registro::count() > 0;
+
+            return response()->json([
+                'hayRegistros' => $empleadosCount > 0 || $registrosCount > 0,
+            ]);
+        } catch (\Exception $e) {
+            
+            return response()->json([
+                'error' => 'Hubo un error al verificar la existencia de registros.',
+            ], 500);
+        }
+    }
+
     public function detalleEvento($id)
     {
 
@@ -174,21 +198,21 @@ class AdminController extends Controller
             'fechaIni2ronda' => 'required',
             'fechaFin' => 'required'
         ]);
-    
+
         try {
             DB::beginTransaction();
-    
+
             $data = [
                 'descripcion' => $validaciones['descripcion'],
                 'fechaIni1ronda' => $validaciones['fechaIni1ronda'],
                 'fechaIni2ronda' => $validaciones['fechaIni2ronda'],
                 'fechaFin' => $validaciones['fechaFin'],
             ];
-    
+
             $EditaEvento = DB::table("concursos")->where("id", $validaciones['id'])->update($data);
-    
+
             DB::commit();
-    
+
             return response()->json(['success' => true, 'message' => 'Evento Editado Exitosamente']);
         } catch (Exception $e) {
             $errors = $e->getMessage();
@@ -196,7 +220,7 @@ class AdminController extends Controller
             return response()->json(['success' => false, 'message' => $errors]);
         }
     }
-    
+
 
 
 
