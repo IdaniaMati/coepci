@@ -108,6 +108,7 @@
 
 <script>
 /* import XLSX from 'xlsx'; */
+import { utils as XLSXUtils, writeFile } from 'xlsx';
 
     export default {
         data() {
@@ -203,31 +204,35 @@
         },
 
         exportarExcel() {
-            const empleadosSinVotar = this.empleadosFiltrados.filter(empleado => !empleado.votoRonda1 && !empleado.votoRonda2);
 
-            if (empleadosSinVotar.length === 0) {
-                Swal.fire('Info', 'No hay empleados que no hayan votado.', 'info');
-                return;
-            }
+            const empleadosParaExportar = this.empleadosFiltrados.map(empleado => {
+                return {
+                    id: empleado.id,
+                    nombre: empleado.nombre + ' ' + empleado.apellido_paterno + ' ' + empleado.apellido_materno,
+                    curp: empleado.curp,
+                    cargo: empleado.cargo,
+                    id_grup: empleado.id_grup,
+                    Ronda1: empleado.votoRonda1 ? 'Sí' : 'No',
+                    Ronda2: empleado.votoRonda2 ? 'Sí' : 'No'
+                };
+            });
 
-            // Crear un objeto que represente el contenido del archivo Excel
-            const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.json_to_sheet(empleadosSinVotar);
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'EmpleadosSinVotar');
+            const workbook = XLSXUtils.book_new();
+            const worksheet = XLSXUtils.json_to_sheet(empleadosParaExportar);
+            XLSXUtils.book_append_sheet(workbook, worksheet, 'Empleados');
 
-            // Crear un blob con el contenido del libro Excel
-            const blob = XLSX.write(workbook, { bookType: 'xlsx', type: 'blob' });
-
-            // Crear un objeto URL para el blob y abrir una ventana de descarga
+            const blob = writeFile(workbook, 'Empleados.xlsx', { bookType: 'xlsx', type: 'blob' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
+            
             a.href = url;
-            a.download = 'EmpleadosSinVotar.xlsx';
+            a.download = 'Empleados.xlsx';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         },
+
 
         gotoPage(page) {
             if (page >= 1 && page <= this.totalPages) {
