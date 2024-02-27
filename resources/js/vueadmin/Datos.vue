@@ -353,19 +353,33 @@ export default {
             });
         },
 
-        async  eliminarEvento(idEvento) {
-            const confirmed = await Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esto eliminará el evento seleccionado.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí'
-            });
+        async eliminarEvento(idEvento) {
+            try {
+                const tieneGanadores = await this.verificarGanadores(idEvento);
 
-            if (confirmed.isConfirmed) {
-                try {
+                if (tieneGanadores) {
+                    Swal.fire('Advertencia', 'No puedes eliminar un evento con ganadores registrados.', 'warning');
+                    return;
+                }
+
+                const fechaFinEvento = this.eventos.find(evento => evento.id === idEvento).fechaFin;
+
+                if (this.fechaActualEsMayor(fechaFinEvento)) {
+                    Swal.fire('Advertencia', 'No puedes eliminar un evento que no ha terminado.', 'warning');
+                    return;
+                }
+
+                const confirmed = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esto eliminará el evento seleccionado.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí'
+                });
+
+                if (confirmed.isConfirmed) {
                     const response = await axios.delete(`/eliminarEvento/${idEvento}`);
 
                     if (response.data.success) {
@@ -374,11 +388,30 @@ export default {
                     } else {
                         Swal.fire('Error', response.data.error, 'error');
                     }
-                } catch (error) {
-                    console.error(error);
-                    Swal.fire('Error', 'Hubo un error al eliminar el evento.', 'error');
                 }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al eliminar el evento.', 'error');
             }
+        },
+
+        async verificarGanadores(idEvento) {
+            console.log(idEvento);
+            try {
+                const response = await axios.get(`/verificarGanadores/${idEvento}`);
+                return response.data.tieneGanadores;
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al verificar la existencia de ganadores.', 'error');
+                return true;
+            }
+        },
+
+        fechaActualEsMayor(fecha) {
+            const fechaFinEvento = new Date(fecha + 'T23:59:59');
+            const fechaActual = new Date();
+
+            return fechaActual < fechaFinEvento;
         },
 
         nuevo() {

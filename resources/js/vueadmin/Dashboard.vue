@@ -22,6 +22,7 @@
                     <h5 class="card-header"><strong>Empleados</strong></h5>
                     <i class="bx bx-search fs-4 lh-0"></i>
                     <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                    <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
                 </div>
 
                 <div class="table-container">
@@ -106,6 +107,7 @@
 </style>
 
 <script>
+/* import XLSX from 'xlsx'; */
 
     export default {
         data() {
@@ -122,13 +124,18 @@
     computed: {
         empleadosFiltrados() {
             const filtroMinusculas = this.filtro.toLowerCase();
-            return this.empleados.filter(
-                (empleado) =>
-                empleado.nombre.toLowerCase().includes(filtroMinusculas) ||
-                empleado.curp.toLowerCase().includes(filtroMinusculas) ||
-                empleado.cargo.toLowerCase().includes(filtroMinusculas) ||
-                empleado.id_grup.toString().includes(filtroMinusculas)
-            );
+            return this.empleados.filter((empleado) => {
+                const nombreCompleto = `${empleado.nombre} ${empleado.apellido_paterno} ${empleado.apellido_materno}`;
+                const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+                return (
+                    nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
+                    nombreSinAcentos.includes(filtroMinusculas) ||
+                    empleado.curp.toLowerCase().includes(filtroMinusculas) ||
+                    empleado.cargo.toLowerCase().includes(filtroMinusculas) ||
+                    empleado.id_grup.toString().includes(filtroMinusculas)
+                );
+            });
         },
 
         totalPages() {
@@ -150,40 +157,40 @@
     methods: {
 
         obtenerEmpleados() {
-        axios.get('/obtenerEmpleados')
-            .then((response) => {
-                if (response.data.empleados) {
-                    this.empleados = response.data.empleados;
+            axios.get('/obtenerEmpleados')
+                .then((response) => {
+                    if (response.data.empleados) {
+                        this.empleados = response.data.empleados;
 
-                    // Hacer una solicitud adicional para obtener los votos en ambas rondas
-                    axios.get('/obtenerVotosRondas')
-                        .then((responseVotos) => {
-                            const votosRondas = responseVotos.data.resultados;
+                        // Hacer una solicitud adicional para obtener los votos en ambas rondas
+                        axios.get('/obtenerVotosRondas')
+                            .then((responseVotos) => {
+                                const votosRondas = responseVotos.data.resultados;
 
-                            // Asignar los votos a cada empleado
-                            this.empleados.forEach(empleado => {
-                                const votoRonda = votosRondas.find(voto => voto.id_empleado === empleado.id);
+                                // Asignar los votos a cada empleado
+                                this.empleados.forEach(empleado => {
+                                    const votoRonda = votosRondas.find(voto => voto.id_empleado === empleado.id);
 
-                                if (votoRonda) {
-                                    empleado.votoRonda1 = votoRonda.voto_ronda1;
-                                    empleado.votoRonda2 = votoRonda.voto_ronda2;
-                                } else {
-                                    empleado.votoRonda1 = false;
-                                    empleado.votoRonda2 = false;
-                                }
+                                    if (votoRonda) {
+                                        empleado.votoRonda1 = votoRonda.voto_ronda1;
+                                        empleado.votoRonda2 = votoRonda.voto_ronda2;
+                                    } else {
+                                        empleado.votoRonda1 = false;
+                                        empleado.votoRonda2 = false;
+                                    }
+                                });
+                            })
+                            .catch((errorVotos) => {
+                                console.error("Error al obtener los votos en ambas rondas", errorVotos);
                             });
-                        })
-                        .catch((errorVotos) => {
-                            console.error("Error al obtener los votos en ambas rondas", errorVotos);
-                        });
-                } else {
-                    console.log(response.data.message);
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    },
+                    } else {
+                        console.log(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
 
         async obtenerRegistrosVotos() {
             try {
@@ -195,7 +202,32 @@
             }
         },
 
+        exportarExcel() {
+            const empleadosSinVotar = this.empleadosFiltrados.filter(empleado => !empleado.votoRonda1 && !empleado.votoRonda2);
 
+            if (empleadosSinVotar.length === 0) {
+                Swal.fire('Info', 'No hay empleados que no hayan votado.', 'info');
+                return;
+            }
+
+            // Crear un objeto que represente el contenido del archivo Excel
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.json_to_sheet(empleadosSinVotar);
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'EmpleadosSinVotar');
+
+            // Crear un blob con el contenido del libro Excel
+            const blob = XLSX.write(workbook, { bookType: 'xlsx', type: 'blob' });
+
+            // Crear un objeto URL para el blob y abrir una ventana de descarga
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'EmpleadosSinVotar.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        },
 
         gotoPage(page) {
             if (page >= 1 && page <= this.totalPages) {

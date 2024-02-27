@@ -61,6 +61,7 @@ Route::get('/verificarDatosEnTablas', [AdminController::class, 'verificarDatosEn
 Route::post('/agregarEvento', [AdminController::class, 'agregarEvento']);
 Route::get('/detalleEvento/{id}', [AdminController::class, 'detalleEvento']);
 Route::post('/editarEvento', [AdminController::class, 'editarEvento']);
+Route::get('/verificarGanadores/{id}', [AdminController::class, 'verificarGanadores']);
 Route::delete('/eliminarEvento/{id}', [AdminController::class, 'eliminarEvento']);
 
 

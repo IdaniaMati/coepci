@@ -174,7 +174,7 @@ class AdminController extends Controller
                 'hayRegistros' => $empleadosCount > 0 || $registrosCount > 0,
             ]);
         } catch (\Exception $e) {
-            
+
             return response()->json([
                 'error' => 'Hubo un error al verificar la existencia de registros.',
             ], 500);
@@ -221,9 +221,17 @@ class AdminController extends Controller
         }
     }
 
+    public function verificarGanadores($idEvento)
+    {
+        try {
+            // Verificar si hay registros en la tabla ganadores asociados al evento
+            $ganadoresCount = DB::table('ganadores')->where('id_conc', $idEvento)->count();
 
-
-
+            return response()->json(['tieneGanadores' => $ganadoresCount > 0]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hubo un error al verificar la existencia de ganadores.']);
+        }
+    }
 
     public function eliminarEvento($idEvento)
     {
