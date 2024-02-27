@@ -7,11 +7,12 @@
         <div class="card-container">
             <div class="card">
                 <div class="nav-item d-flex align-items-center">
+                    <button class="btn btn-primary" @click="descargarFormato">Descargar Formato</button>
                     <h5 class="card-header"><strong>Importar Empleados</strong></h5>
                     <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                     <button class="btn btn-success" @click="importarEmpleados">Importar Empleados</button>
-
                 </div>
+
                 <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Empleados</button>
             </div>
         </div>
@@ -142,6 +143,8 @@
 </style>
 
 <script>
+import { utils as XLSXUtils } from 'xlsx';
+import { writeFile } from 'xlsx';
 
 
 export default {
@@ -179,6 +182,13 @@ export default {
     methods: {
         handleFileUpload(event) {
             this.archivo = event.target.files[0];
+        },
+
+        descargarFormato() {
+            const wb = XLSXUtils.book_new();
+            const ws = XLSXUtils.aoa_to_sheet([['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'cargo', 'id_grup']]);
+            XLSXUtils.book_append_sheet(wb, ws, 'Formato Empleados');
+            writeFile(wb, 'Formato_Empleados.xlsx');
         },
 
         async importarEmpleados() {

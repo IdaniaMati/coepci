@@ -109,7 +109,7 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function obtenerFechaFinConcurso()
     {
         try {
@@ -173,7 +173,7 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-    public function obtenerConcursoId() 
+    public function obtenerConcursoId()
     {
         $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
 
@@ -291,17 +291,17 @@ class EmpleadoLoginController extends Controller
             foreach ($resultadosGrupo as $resultado) {
                 $idNom = $resultado->id_nom;
                 $votos = $resultado->votos;
-        
+
                 $empleado = Empleado::find($idNom);
-        
+
                 if ($empleado) {
                     $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
-        
+
                     $existente = Ganadores::where('id_conc', $idConcurso)
                         ->where('id_grup', $idGrupo)
                         ->where('id_emp', $nombreCompleto)
                         ->exists();
-        
+
                     if (!$existente) {
                         Ganadores::create([
                             'id_conc' => $idConcurso,

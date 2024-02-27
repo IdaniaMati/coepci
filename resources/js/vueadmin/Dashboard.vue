@@ -107,7 +107,6 @@
 </style>
 
 <script>
-/* import XLSX from 'xlsx'; */
 import { utils as XLSXUtils, writeFile } from 'xlsx';
 
     export default {
@@ -224,7 +223,7 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             const blob = writeFile(workbook, 'Empleados.xlsx', { bookType: 'xlsx', type: 'blob' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            
+
             a.href = url;
             a.download = 'Empleados.xlsx';
             document.body.appendChild(a);
