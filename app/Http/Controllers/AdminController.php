@@ -192,11 +192,13 @@ class AdminController extends Controller
     public function editarEvento(Request $request)
     {
         $validaciones = $request->validate([
-            'id' => 'required|integer',  // Asegúrate de validar el ID correctamente
+            'id' => 'required|integer',
             'descripcion' => 'required',
             'fechaIni1ronda' => 'required',
             'fechaIni2ronda' => 'required',
-            'fechaFin' => 'required'
+            'fechaFin' => 'required',
+            'comentario' => 'required',
+
         ]);
 
         try {
@@ -207,6 +209,7 @@ class AdminController extends Controller
                 'fechaIni1ronda' => $validaciones['fechaIni1ronda'],
                 'fechaIni2ronda' => $validaciones['fechaIni2ronda'],
                 'fechaFin' => $validaciones['fechaFin'],
+                'comentario' => $validaciones['comentario'],
             ];
 
             $EditaEvento = DB::table("concursos")->where("id", $validaciones['id'])->update($data);

@@ -38,7 +38,7 @@
       },
 
       created() {
-
+        this.calcularYGuardarGanadores();
     },
 
       methods: {
@@ -48,6 +48,17 @@
 
         resultadosHistoricos() {
           window.location.href = '/historico';
+        },
+
+        calcularYGuardarGanadores() {
+        axios
+            .get("/calcular-y-guardar-ganadores")
+            .then((response) => {
+            console.log(response.data.message);
+            })
+            .catch((error) => {
+            console.error("Error al calcular y guardar ganadores", error);
+            });
         },
       },
     };

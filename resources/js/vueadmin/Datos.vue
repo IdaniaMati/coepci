@@ -140,6 +140,12 @@
   body.modal-open .modal-backdrop {
     opacity: 0.5;
   }
+  .custom-input {
+    width: 400px;
+    height: 100px;
+    resize: none;
+    white-space: pre-line;
+}
 </style>
 
 <script>
@@ -304,44 +310,72 @@ export default {
 
         editarEvento() {
             var idEvento = this.ideve;
+            this.cerrarModal();
 
-            let data = {
-                id: idEvento,
-                descripcion: this.descripcion,
-                fechaIni1ronda: this.fechaIni1ronda,
-                fechaIni2ronda: this.fechaIni2ronda,
-                fechaFin: this.fechaFin,
-            };
-
-            axios
-                .post(`/editarEvento`, data)
-                .then((response) => {
-
-                    if (response.data.success) {
-                    // Operación exitosa, muestra un mensaje de éxito en la vista
-                        Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: response.data.message,
-                        showConfirmButton: false,
-                        timer: 1800
-                    });
-                    this.limpiarvar();
-                    this.cerrarModal();
-                    this.obtenerEvento();
-                } else {
-                    // Operación con error, muestra un mensaje de error en la vista
+            Swal.fire({
+                title: '¿Estás seguro de que quieres editar este evento?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, editar',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
                     Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: response.data.message,
-                });
-                }
-                })
-                .catch((error) => {
+                        title: 'Por favor, ingresa una justificación para la edición:',
+                        input: 'text',
+                        inputPlaceholder: 'Justificación...',
+                        customClass: {
+                            input: 'custom-input'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Guardar',
+                        cancelButtonText: 'Cancelar',
+                        inputValidator: (value) => {
+                            return !value && 'Debes proporcionar una justificación para editar el evento.';
+                        }
 
-                });
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let data = {
+                                id: idEvento,
+                                descripcion: this.descripcion,
+                                fechaIni1ronda: this.fechaIni1ronda,
+                                fechaIni2ronda: this.fechaIni2ronda,
+                                fechaFin: this.fechaFin,
+                                comentario: result.value,
+                            };
+
+                            axios.post(`/editarEvento`, data)
+                                .then((response) => {
+                                    if (response.data.success) {
+                                        Swal.fire({
+                                            position: 'center',
+                                            icon: 'success',
+                                            title: response.data.message,
+                                            showConfirmButton: false,
+                                            timer: 1800
+                                        });
+                                        this.limpiarvar();
+                                        /* this.cerrarModal(); */
+                                        this.obtenerEvento();
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: response.data.message,
+                                        });
+                                    }
+                                })
+                                .catch((error) => {
+                                    // Manejo de errores
+                                });
+                        }
+                    });
+                }
+            });
         },
+
+
 
         datalleEvento(idEvento) {
 

@@ -56,6 +56,13 @@
         <p v-if="resultadosRonda.length === 0" class="text-center mt-4">{{ `No hay resultados para la Ronda ${ronda}.` }}</p>
     </div>
 
+    <div class="row mb-5">
+            <label class="col-sm-1 col-form-label"></label>
+            <div class="col-sm-10 d-flex justify-content-center">
+              <button type="button" class="btn btn-primary mx-auto fs-5" @click="regresar">Regresar</button>
+            </div>
+          </div>
+
   </div>
 </template>
 
@@ -80,10 +87,14 @@
       this.obtenerResultados();
       this.obtenerGanadoresV();
 
-      this.calcularYGuardarGanadores();
+      /* this.calcularYGuardarGanadores(); */
     },
 
     methods: {
+        regresar() {
+            window.location.href = '/nominaciones';
+        },
+
       obtenerResultados() {
         axios.get(`/obtenerResultados?ronda=1`)
           .then(response => {
@@ -130,7 +141,7 @@
             return numeradosResultados;
         },
 
-      calcularYGuardarGanadores() {
+      /* calcularYGuardarGanadores() {
         axios
             .get("/calcular-y-guardar-ganadores")
             .then((response) => {
@@ -139,7 +150,7 @@
             .catch((error) => {
             console.error("Error al calcular y guardar ganadores", error);
             });
-        },
+        }, */
 
       obtenerGanadoresV() {
         axios.get("/obtenerGanadoresV")
@@ -162,7 +173,7 @@
                 ganadores: ganadoresGrupo
                 });
             }
-            
+
             this.mensajeNoVotaciones = "";
             })
             .catch(error => {

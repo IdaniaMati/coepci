@@ -259,7 +259,7 @@ class EmpleadoLoginController extends Controller
         return response()->json($resultados);
     }
 
-    public function calcularYGuardarGanadores()
+    public function calcularYGuardarGanadores() //Resultados automaticos
     {
         $fechaFinConcurso = Concurso::value('fechaFin');
 
@@ -356,16 +356,24 @@ class EmpleadoLoginController extends Controller
         }
     }
 
+
     public function obtenerHistorico()
     {
         try {
-            $historico = Ganadores::select('concursos.descripcion as concurso', 'ganadores.id_grup', 'ganadores.id_emp')
+            $historico = Ganadores::select('concursos.descripcion as concurso', 'concursos.fechaIni1ronda', 'ganadores.id_grup', 'ganadores.id_emp')
                 ->join('concursos', 'ganadores.id_conc', '=', 'concursos.id')
                 ->get();
 
-            $historicoAgrupado = $historico->groupBy('concurso')->map(function ($concurso) {
-                return $concurso->groupBy('id_grup')->map(function ($grupo) {
-                    return $grupo->pluck('id_emp');
+            $historicoAgrupado = $historico->groupBy(function ($item) {
+                return Carbon::parse($item->fechaIni1ronda)->format('Y'); // Agrupar por año
+            })->map(function ($concursoPorAno) {
+                return $concursoPorAno->groupBy('concurso')->map(function ($grupoPorConcurso) {
+                    return [
+                        'descripcion' => $grupoPorConcurso->first()->concurso,
+                        'grupos' => $grupoPorConcurso->groupBy('id_grup')->map(function ($ganadoresPorGrupo) {
+                            return $ganadoresPorGrupo->pluck('id_emp');
+                        }),
+                    ];
                 });
             });
 
@@ -374,7 +382,6 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
 
     /* ============login de usuario============ */
     public function loginForm()
