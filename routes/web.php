@@ -14,6 +14,7 @@ Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResult
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
 Route::get('/obtenerHistorico', [EmpleadoLoginController::class, 'obtenerHistorico'])->name('obtenerHistorico');
+Route::get('/obtenerVotosTodosEmpleados/{idConcurso}', [EmpleadoLoginController::class, 'obtenerVotosTodosEmpleados'])->name('obtenerVotosTodosEmpleados');
 
 
 
@@ -22,6 +23,9 @@ Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('emplea
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
 Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
+
+/* Route::get('/copiarDatosAHistoricoVotos', [EmpleadoLoginController::class, 'copiarDatosAHistoricoVotos'])->name('copiarDatosAHistoricoVotos'); */
+
 Route::get('/obtenerGanadoresV', [EmpleadoLoginController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
 Route::get('/obtenerGanadores', [EmpleadoLoginController::class, 'obtenerGanadores'])->name('obtenerGanadores');
 

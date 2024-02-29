@@ -39,6 +39,7 @@
 
       created() {
         this.calcularYGuardarGanadores();
+        /* this.copiarDatosAHistoricoVotos(); */
     },
 
       methods: {
@@ -60,6 +61,17 @@
             console.error("Error al calcular y guardar ganadores", error);
             });
         },
+
+        /* copiarDatosAHistoricoVotos() {
+        axios
+            .get("/copiarDatosAHistoricoVotos")
+            .then((response) => {
+            console.log(response.data.message);
+            })
+            .catch((error) => {
+            console.error("Error al calcular y guardar ganadores", error);
+            });
+        }, */
       },
     };
   </script>

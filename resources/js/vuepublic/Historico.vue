@@ -8,7 +8,7 @@
             <div>
               <ul class="nav nav-tabs" role="tablist">
                 <li v-for="(concursoPorAnio, anio) in historico" :key="anio" class="nav-item">
-                  <a :id="`tab-${anio}`" :href="`#pane-${anio}`" class="nav-link" :aria-controls="`pane-${anio}`" data-bs-toggle="tab" role="tab">
+                  <a :id="`tab-${anio}`" :href="`#pane-${anio}`" class="nav-link" :aria-controls="`pane-${anio}`" data-bs-toggle="tab" role="tab" @click="cambiarPestana(anio)">
                     {{ anio }} <!-- Año de concurso -->
                   </a>
                 </li>
@@ -30,6 +30,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-12 mt-3">
+                            <div>
+                            <button type="button" class="btn btn-primary mx-auto fs-5" @click="obtenerVotosTodosEmpleados(concurso.id_conc)">Ver Empleados Votados</button>
+                            </div> <br>
+
+                            <div v-if="mostrarInfoEmpleados && votosTodosEmpleados && votosTodosEmpleados.length > 0">
+                                <div v-for="(grupoInfo, grupoIndex) in votosTodosEmpleados" :key="grupoIndex" class="mb-3">
+                                    <strong>Ronda {{ grupoInfo.ronda }}:</strong>
+                                    <div class="row">
+                                        <div v-for="(grupo, grupoKey) in grupoInfo.empleadosPorRonda" :key="grupoKey" class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">{{ `Grupo ${grupo.grupo}` }}</h6>
+                                                    <ul class="list-group">
+                                                        <li v-for="(empleado, empleadoIndex) in grupo.empleados" :key="empleadoIndex" class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <span>{{ empleado.nombre }}</span>
+                                                            <span class="badge bg-primeros">{{ empleado.novotos }} votos</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
               </div>
@@ -86,6 +115,15 @@
     background-color: #440412;
     border: 1px solid #440412;
   }
+
+
+  .bg-primeros{
+  background-color: #ab0a3d;
+}
+
+.bg-segundos{
+  background-color: #9c9312;
+}
   </style>
 
 <script>
@@ -95,6 +133,9 @@ export default {
   data() {
     return {
       historico: {},
+      votosTodosEmpleados: {},
+      mostrarInfoEmpleados: false,
+      pestañaActual: null,
     };
   },
 
@@ -103,6 +144,13 @@ export default {
   },
 
   methods: {
+    cambiarPestana(anio) {
+      // Cambiar la pestaña actual
+      this.pestañaActual = anio;
+      // Ocultar la lista de empleados al cambiar de pestaña
+      this.mostrarInfoEmpleados = false;
+    },
+
     regresar() {
       window.location.href = '/nominaciones';
     },
@@ -117,6 +165,51 @@ export default {
           console.error('Error al obtener historico', error);
         });
     },
+
+    obtenerVotosTodosEmpleados(idConcurso) {
+        axios.get(`/obtenerVotosTodosEmpleados/${idConcurso}`)
+        .then(response => {
+            if (response.data && typeof response.data === 'object') {
+            const votosPorRondaYGrupo = response.data.votosPorRondaYGrupo;
+            const votosEmpleados = [];
+
+            for (const ronda in votosPorRondaYGrupo) {
+                if (Object.prototype.hasOwnProperty.call(votosPorRondaYGrupo, ronda)) {
+                const grupos = votosPorRondaYGrupo[ronda];
+
+                const empleadosPorRonda = [];
+                for (const grupo in grupos) {
+                    if (Object.prototype.hasOwnProperty.call(grupos, grupo)) {
+                    const empleados = grupos[grupo].map(empleado => ({
+                        nombre: empleado.nombre,
+                        novotos: empleado.novotos
+                    }));
+
+                    empleadosPorRonda.push({
+                        grupo: Number(grupo),
+                        empleados
+                    });
+                    }
+                }
+
+                votosEmpleados.push({
+                    ronda: Number(ronda),
+                    empleadosPorRonda
+                });
+                }
+            }
+            this.mostrarInfoEmpleados = !this.mostrarInfoEmpleados;
+
+            this.votosTodosEmpleados = votosEmpleados.sort((a, b) => a.ronda - b.ronda);
+            } else {
+            console.error('La respuesta del servidor no tiene la estructura esperada.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener votos por ronda y grupo', error);
+        });
+    },
+
   },
 };
 </script>
