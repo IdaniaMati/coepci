@@ -34,6 +34,11 @@ class AdminController extends Controller
         }
     }
 
+    public function export()
+    {
+        return Excel::download(new Registro, 'registros-sin-votar.xlsx');
+    }
+
     public function obtenerRegistrosVotos()
     {
         try {

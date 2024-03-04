@@ -10,12 +10,16 @@
                 <div class="info-item">
                     <strong>Total Empleados:</strong> {{ empleados.length }}
                 </div>
+                
                 <div class="info-item">
                     <strong>Ronda 1 - Votaron:</strong> {{ votosRonda1 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda1 }}
                 </div>
                 <div class="info-item">
                     <strong>Ronda 2 - Votaron:</strong> {{ votosRonda2 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda2 }}
                 </div>
+                </div>
+                <div class="nav-item d-flex align-items-center">
+                    <button class="btn btn-success" @click="descargarEmpleados">Descargar</button>
                 </div>
 
                 <div class="nav-item d-flex align-items-center">
@@ -145,9 +149,13 @@
     mounted() {
         this.obtenerEmpleados();
         this.obtenerRegistrosVotos();
-     },
+    },
 
     methods: {
+
+        descargarEmpleados() {
+            window.location.href = '/export';
+        },
 
         obtenerEmpleados() {
         axios.get('/obtenerEmpleados')
@@ -194,8 +202,6 @@
                     console.error(error);
             }
         },
-
-
 
         gotoPage(page) {
             if (page >= 1 && page <= this.totalPages) {

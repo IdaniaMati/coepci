@@ -4,6 +4,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmpleadoLoginController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Exports\Personalsinvoto;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 
 
@@ -47,6 +49,7 @@ Route::get('/dashboard', function () {return view('admin.dashboard');})->middlew
 Route::get('/obtenerEmpleados', [AdminController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
 Route::get('/obtenerRegistrosVotos', [AdminController::class, 'obtenerRegistrosVotos']);
 Route::get('/obtenerVotosRondas', [AdminController::class, 'obtenerVotosRondas']);
+Route::get('/export', [AdminController::class, 'export']);
 
 /*-----------------------* Ajustes*/
 Route::get('/datos', function () { return view('admin.datos');})->middleware(['auth', 'verified'])->name('datos');
