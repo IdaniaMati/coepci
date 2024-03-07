@@ -34,6 +34,8 @@
 
 
 
+
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -79,6 +81,8 @@
 
     <!-- Main JS -->
     <script src="../assets/js/main.js"></script>
+
+    <script src="../assets/js/form-basic-inputs.js"></script>
 
     <!-- Page JS -->
 

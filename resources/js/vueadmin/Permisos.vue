@@ -1,0 +1,218 @@
+<template>
+    <div>
+        <div class="text-center mb-4">
+            <h2><strong>GESTIÓN DE PERMISOS</strong></h2>
+        </div>
+
+
+        <div class="card-container">
+            <div class="card">
+
+                <div class="nav-item d-flex align-items-center">
+                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Permiso</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre Completo</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="permiso in paginatedPermisos" :key="permiso.id">
+                                <td>{{ permiso.id }}</td>
+                                <td>{{ permiso.name }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" @click="datalleEvento(permiso.id)">Editar</button>&nbsp;
+                                    <button class="btn btn-danger btn-sm" @click="eliminarEvento(permiso.id)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="container">
+                    <div class="modal fade" id="largeModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><strong>Permisos</strong></h5>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Descripción del Permiso</label>
+                                                <input v-model="name" class="form-control" placeholder="Descripción" required/>
+                                                <div v-if="!name" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button v-if="bandera === 0" class="btn btn-primary" @click="agregarPermiso">Guardar</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarEvento">Editar</button>
+                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <!-- Agregamos el paginador -->
+                <div class="row justify-content-center">
+                    <div class="col-md-auto">
+                        <button @click="paginaAnterior" :disabled="pagina === 1" class="btn btn-primary mr-2">
+                        Anterior
+                        </button>
+                    </div>
+                    <div class="col-md-auto">
+                        <ul class="pagination">
+                        <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
+                            <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
+                        </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-auto">
+                        <button @click="paginaSiguiente" :disabled="pagina === totalPaginas" class="btn btn-primary ml-2">
+                        Siguiente
+                        </button>
+                    </div>
+                </div>
+                <!-- Fin del paginador -->
+                <br>
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+</template>
+
+<style>
+  body.modal-open .modal-backdrop {
+    opacity: 0.5;
+  }
+  .custom-input {
+    width: 400px;
+    height: 100px;
+    resize: none;
+    white-space: pre-line;
+}
+</style>
+
+<script>
+import Swal from 'sweetalert2';
+
+export default {
+
+    data() {
+        return {
+            permisos: [],
+            permiso: [],
+            pagina: 1,
+            totalPaginas: 0,
+            registrosPorPagina: 7,
+            bandera: "",
+            name: "",
+        };
+    },
+
+    mounted() {
+        this.obtenerPermisos();
+        this.calcularTotalPaginas();
+    },
+
+    computed: {
+        paginatedPermisos() {
+            const startIndex = (this.pagina - 1) * this.registrosPorPagina;
+            const endIndex = startIndex + this.registrosPorPagina;
+            return this.permisos.slice(startIndex, endIndex);
+        },
+    },
+
+    methods: {
+
+        obtenerPermisos() {
+            axios.get('/obtenerPermisos')
+                .then((response) => {
+                    if (response.data.permiso) {
+                        this.permisos = response.data.permiso;
+                        this.calcularTotalPaginas();
+                    } else {
+                        console.log(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+        agregarPermiso() {
+            axios.post('/agregarPermisos', { name: this.name })
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire('Éxito', 'Rol agregado exitosamente.', 'success');
+                        this.cerrarModal();
+                        this.obtenerPermisos();
+                    } else {
+                        Swal.fire('Error', response.data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    this.cerrarModal();
+                    Swal.fire('Error', 'Se produjo un error al agregar el rol.', 'error');
+                });
+        },
+
+        nuevo() {
+            this.limpiarvar();
+            this.bandera = 0;
+            this.abrirModal();
+        },
+
+        abrirModal() {
+            $("#largeModal").modal({ backdrop: "static", keyboard: false });
+            $("#largeModal").modal("toggle");
+        },
+
+        cerrarModal() {
+            $("#largeModal").modal("hide");
+        },
+
+        limpiarvar() {
+            this.name = null;
+        },
+
+        calcularTotalPaginas() {
+            this.totalPaginas = Math.ceil(this.permisos.length / this.registrosPorPagina);
+        },
+
+        paginaAnterior() {
+            if (this.pagina > 1) {
+                this.pagina--;
+            }
+        },
+
+        paginaSiguiente() {
+            if (this.pagina < this.totalPaginas) {
+                this.pagina++;
+            }
+        },
+
+        cambiarPagina(numero) {
+            this.pagina = numero;
+        },
+    }
+};
+</script>

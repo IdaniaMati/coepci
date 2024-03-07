@@ -38,7 +38,14 @@ app.component('dashboard-vue', Dashboard);
 import Datos from './vueadmin/Datos.vue';
 app.component('datos-vue', Datos);
 
-import Historial from './vueadmin/Historial.vue';
-app.component('historial-vue', Historial);
+
+import Usuarios from './vueadmin/Usuarios.vue';
+app.component('usuarios-vue', Usuarios);
+
+import Roles from './vueadmin/Roles.vue';
+app.component('roles-vue', Roles);
+
+import Permisos from './vueadmin/Permisos.vue';
+app.component('permisos-vue', Permisos);
 
 app.mount('#app');
