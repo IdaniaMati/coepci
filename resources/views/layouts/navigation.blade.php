@@ -12,15 +12,21 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')">
+                        {{ __('Usuarios') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('roles')" :active="request()->routeIs('roles')">
+                        {{ __('Roles') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('permisos')" :active="request()->routeIs('permisos')">
+                        {{ __('Permisos') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('datos')" :active="request()->routeIs('datos')">
                         {{ __('Ajustes') }}
                     </x-nav-link>
-                    {{-- <x-nav-link :href="route('historial')" :active="request()->routeIs('historial')">
-                        {{ __('Historial') }}
-                    </x-nav-link> --}}
                 </div>
             </div>
 

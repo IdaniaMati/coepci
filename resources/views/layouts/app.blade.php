@@ -29,6 +29,10 @@
     <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
         {{-- Desbloquear para usar boostrap --}}
     {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> --}}
+    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> --}}
+
+
+
 
 
 
@@ -77,6 +81,8 @@
 
     <!-- Main JS -->
     <script src="../assets/js/main.js"></script>
+
+    <script src="../assets/js/form-basic-inputs.js"></script>
 
     <!-- Page JS -->
 

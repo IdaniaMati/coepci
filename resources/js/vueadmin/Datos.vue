@@ -7,11 +7,12 @@
         <div class="card-container">
             <div class="card">
                 <div class="nav-item d-flex align-items-center">
+                    <button class="btn btn-primary" @click="descargarFormato">Descargar Formato</button>
                     <h5 class="card-header"><strong>Importar Empleados</strong></h5>
                     <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                     <button class="btn btn-success" @click="importarEmpleados">Importar Empleados</button>
-
                 </div>
+
                 <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Empleados</button>
             </div>
         </div>
@@ -139,9 +140,17 @@
   body.modal-open .modal-backdrop {
     opacity: 0.5;
   }
+  .custom-input {
+    width: 400px;
+    height: 100px;
+    resize: none;
+    white-space: pre-line;
+}
 </style>
 
 <script>
+import { utils as XLSXUtils } from 'xlsx';
+import { writeFile } from 'xlsx';
 
 
 export default {
@@ -179,6 +188,13 @@ export default {
     methods: {
         handleFileUpload(event) {
             this.archivo = event.target.files[0];
+        },
+
+        descargarFormato() {
+            const wb = XLSXUtils.book_new();
+            const ws = XLSXUtils.aoa_to_sheet([['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'cargo', 'id_grup']]);
+            XLSXUtils.book_append_sheet(wb, ws, 'Formato Empleados');
+            writeFile(wb, 'Formato_Empleados.xlsx');
         },
 
         async importarEmpleados() {
@@ -294,44 +310,72 @@ export default {
 
         editarEvento() {
             var idEvento = this.ideve;
+            this.cerrarModal();
 
-            let data = {
-                id: idEvento,
-                descripcion: this.descripcion,
-                fechaIni1ronda: this.fechaIni1ronda,
-                fechaIni2ronda: this.fechaIni2ronda,
-                fechaFin: this.fechaFin,
-            };
-
-            axios
-                .post(`/editarEvento`, data)
-                .then((response) => {
-
-                    if (response.data.success) {
-                    // Operación exitosa, muestra un mensaje de éxito en la vista
-                        Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: response.data.message,
-                        showConfirmButton: false,
-                        timer: 1800
-                    });
-                    this.limpiarvar();
-                    this.cerrarModal();
-                    this.obtenerEvento();
-                } else {
-                    // Operación con error, muestra un mensaje de error en la vista
+            Swal.fire({
+                title: '¿Estás seguro de que quieres editar este evento?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, editar',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
                     Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: response.data.message,
-                });
-                }
-                })
-                .catch((error) => {
+                        title: 'Por favor, ingresa una justificación para la edición:',
+                        input: 'text',
+                        inputPlaceholder: 'Justificación...',
+                        customClass: {
+                            input: 'custom-input'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Guardar',
+                        cancelButtonText: 'Cancelar',
+                        inputValidator: (value) => {
+                            return !value && 'Debes proporcionar una justificación para editar el evento.';
+                        }
 
-                });
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let data = {
+                                id: idEvento,
+                                descripcion: this.descripcion,
+                                fechaIni1ronda: this.fechaIni1ronda,
+                                fechaIni2ronda: this.fechaIni2ronda,
+                                fechaFin: this.fechaFin,
+                                comentario: result.value,
+                            };
+
+                            axios.post(`/editarEvento`, data)
+                                .then((response) => {
+                                    if (response.data.success) {
+                                        Swal.fire({
+                                            position: 'center',
+                                            icon: 'success',
+                                            title: response.data.message,
+                                            showConfirmButton: false,
+                                            timer: 1800
+                                        });
+                                        this.limpiarvar();
+                                        /* this.cerrarModal(); */
+                                        this.obtenerEvento();
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: response.data.message,
+                                        });
+                                    }
+                                })
+                                .catch((error) => {
+                                    // Manejo de errores
+                                });
+                        }
+                    });
+                }
+            });
         },
+
+
 
         datalleEvento(idEvento) {
 
@@ -353,19 +397,33 @@ export default {
             });
         },
 
-        async  eliminarEvento(idEvento) {
-            const confirmed = await Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esto eliminará el evento seleccionado.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí'
-            });
+        async eliminarEvento(idEvento) {
+            try {
+                const tieneGanadores = await this.verificarGanadores(idEvento);
 
-            if (confirmed.isConfirmed) {
-                try {
+                if (tieneGanadores) {
+                    Swal.fire('Advertencia', 'No puedes eliminar un evento con ganadores registrados.', 'warning');
+                    return;
+                }
+
+                const fechaFinEvento = this.eventos.find(evento => evento.id === idEvento).fechaFin;
+
+                if (this.fechaActualEsMayor(fechaFinEvento)) {
+                    Swal.fire('Advertencia', 'No puedes eliminar un evento que no ha terminado.', 'warning');
+                    return;
+                }
+
+                const confirmed = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esto eliminará el evento seleccionado.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí'
+                });
+
+                if (confirmed.isConfirmed) {
                     const response = await axios.delete(`/eliminarEvento/${idEvento}`);
 
                     if (response.data.success) {
@@ -374,11 +432,30 @@ export default {
                     } else {
                         Swal.fire('Error', response.data.error, 'error');
                     }
-                } catch (error) {
-                    console.error(error);
-                    Swal.fire('Error', 'Hubo un error al eliminar el evento.', 'error');
                 }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al eliminar el evento.', 'error');
             }
+        },
+
+        async verificarGanadores(idEvento) {
+            console.log(idEvento);
+            try {
+                const response = await axios.get(`/verificarGanadores/${idEvento}`);
+                return response.data.tieneGanadores;
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al verificar la existencia de ganadores.', 'error');
+                return true;
+            }
+        },
+
+        fechaActualEsMayor(fecha) {
+            const fechaFinEvento = new Date(fecha + 'T23:59:59');
+            const fechaActual = new Date();
+
+            return fechaActual < fechaFinEvento;
         },
 
         nuevo() {
