@@ -31,21 +31,23 @@
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.id_depen }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datalleEvento(user.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarEvento(user.id)">Eliminar</button>
+                                    <button class="btn btn-primary btn-sm" @click="datalleUsuario(user.id)">Editar</button>&nbsp;
+                                    <button class="btn btn-danger btn-sm" @click="eliminarUsuario(user.id)">Eliminar</button>&nbsp;
+                                    <button class="btn btn-secondary btn-sm" @click="detalleRol(user.id)">Asignar Roles</button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
+                <!-- Modal Agregar Usuario -->
                 <div class="container">
-                    <div class="modal fade" id="largeModal" tabindex="-1">
+                    <div class="modal fade" id="modalusuarios" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title"><strong>Usuarios</strong></h5>
-                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalUsuario" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form>
@@ -86,8 +88,35 @@
 
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarUsuario">Guardar</button>
-                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarEvento">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarUsuario">Editar</button>
+                                    <button class="btn btn-secondary" @click="cerrarModalUsuario" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal agregar Roles -->
+                <div class="container">
+                    <div class="modal fade" id="modalroles" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><strong>Roles</strong></h5>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalRoles" aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <label>Selecciona los roles:</label>
+                                    <div v-for="role in roles" :key="role.id" class="form-check">
+                                        <input type="checkbox" class="form-check-input" :id="'role-' + role.id" v-model="selectedRoles" :value="role.id"/>
+                                        <label class="form-check-label" :for="'role-' + role.id">{{ role.name }}</label>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button v-if="bandera === 3" class="btn btn-primary" @click="asignarRoles">Guardar Roles</button>
+                                    <button class="btn btn-secondary" @click="cerrarModalRoles" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
@@ -139,6 +168,7 @@
 
 <script>
 import Swal from 'sweetalert2';
+import { ref, reactive } from 'vue';
 
 export default {
 
@@ -146,6 +176,9 @@ export default {
         return {
             users: [],
             user: [],
+            roles: [],
+            selectedRoles: [],
+            userRoles: {},
             pagina: 1,
             totalPaginas: 0,
             registrosPorPagina: 7,
@@ -154,6 +187,8 @@ export default {
             email: "",
             id_depen: "",
             password: "",
+            iduse: "",
+            idro: "",
 
         };
     },
@@ -173,6 +208,7 @@ export default {
 
     methods: {
 
+        /* Metodos de Usuario */
         obtenerUsuarios() {
             axios.get('/obtenerUsers')
                 .then((response) => {
@@ -201,7 +237,7 @@ export default {
                 .then(response => {
                     if (response.data.success) {
                         Swal.fire('Éxito', 'Usuario agregado exitosamente.', 'success');
-                        this.cerrarModal();
+                        this.cerrarModalUsuario();
                         this.obtenerUsuarios();
                     } else {
                         Swal.fire('Error', response.data.message, 'error');
@@ -209,24 +245,155 @@ export default {
                 })
                 .catch(error => {
                     console.error(error);
-                    this.cerrarModal();
+                    this.cerrarModalUsuario();
                     Swal.fire('Error', 'Se produjo un error al agregar el usuario.', 'error');
                 });
         },
 
+        datalleUsuario(idUser) {
+
+        this.iduse = idUser;
+        this.bandera = 1;
+        this.abrirModalUsuario();
+
+        axios.get("/detalleUsuario/" + idUser)
+            .then((response) => {
+                const usuario = response.data;
+                this.name = usuario.name;
+                this.email = usuario.email;
+                this.id_depen = usuario.id_depen;
+                this.password = usuario.password;
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        },
+
+        editarUsuario() {
+            var idUser = this.iduse;
+            this.cerrarModalUsuario();
+
+            let data = {
+                id: idUser,
+                name: this.name,
+                email: this.email,
+                id_depen: this.id_depen,
+                password: this.password,
+
+            };
+
+            axios.post(`/editarUsuario`, data)
+                .then((response) => {
+                    if (response.data.success) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 1800
+                        });
+                        this.limpiarvar();
+                        this.cerrarModalUsuario();
+                        this.obtenerUsuarios();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message,
+                        });
+                    }
+                })
+                .catch((error) => {
+
+                });
+
+        },
+
+        abrirModalUsuario() {
+            $("#modalusuarios").modal({ backdrop: "static", keyboard: false });
+            $("#modalusuarios").modal("toggle");
+        },
+
+        cerrarModalUsuario() {
+            $("#modalusuarios").modal("hide");
+        },
+
+
+        /* Metodos de Roles */
+        detalleRol(idRol) {
+
+        this.idro = idRol;
+        this.bandera = 3;
+        this.idRolesSeleccionado = idRol;
+        this.abrirModalRoles();
+
+        axios.get(`/obtenerRolesUsuario/${this.idro}`)
+                .then((response) => {
+                const rolesAsignados = response.data.roles;
+
+                const rolesArray = Array.isArray(rolesAsignados)
+                    ? rolesAsignados
+                    : Object.values(rolesAsignados);
+
+                if (!this.userRoles[this.idro]) {
+                    this.userRoles[this.idro] = ref(reactive([]));
+                }
+
+                this.userRoles[this.idro].value = rolesArray;
+                this.selectedRoles = rolesArray.map(role => role.id);
+                })
+                .catch((error) => {
+                console.error(error);
+                });
+
+
+        axios.get('/obtenerRoles')
+            .then((response) => {
+                    if (response.data.role) {
+                        this.roles = response.data.role;
+
+                    } else {
+                        console.log(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+        asignarRoles() {
+            const idUser = this.idRolesSeleccionado;
+
+            axios.post('/asignarRoles', { idUser, selectedRoles: this.selectedRoles })
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire('Éxito', 'Roles asignados correctamente.', 'success');
+                        this.cerrarModalRoles();
+                    } else {
+                        Swal.fire('Error', response.data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    Swal.fire('Error', 'Se produjo un error al asignar roles.', 'error');
+                });
+        },
+
+        abrirModalRoles() {
+            $("#modalroles").modal({ backdrop: "static", keyboard: false });
+            $("#modalroles").modal("toggle");
+        },
+
+        cerrarModalRoles() {
+            $("#modalroles").modal("hide");
+        },
+
+        /* General */
         nuevo() {
             this.limpiarvar();
             this.bandera = 0;
-            this.abrirModal();
-        },
-
-        abrirModal() {
-            $("#largeModal").modal({ backdrop: "static", keyboard: false });
-            $("#largeModal").modal("toggle");
-        },
-
-        cerrarModal() {
-            $("#largeModal").modal("hide");
+            this.abrirModalUsuario();
         },
 
         limpiarvar() {
