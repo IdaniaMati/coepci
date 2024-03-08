@@ -7,6 +7,7 @@ use App\Models\Concurso;
 use App\Models\Ganadores;
 use App\Models\Registro;
 use App\Models\HistoricoVotos;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,20 @@ use Illuminate\Support\Carbon;
 
 class EmpleadoLoginController extends Controller
 {
+
+    public function Obtenerpermisos()
+    {
+        $idUser = Auth::user()->id;
+        $list_users = User::select('permissions.name')
+        ->join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+        ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+        ->join('role_has_permissions', 'role_has_permissions.role_id', '=', 'roles.id')
+        ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->where('model_has_roles.model_id', $idUser)
+        ->get();
+        return $list_users;
+
+    }
 
     /* ============login de usuario============ */
     public function showLoginForm()
@@ -49,7 +64,7 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-    
+
     /* ============Votación Usuario============ */
     public function Principal()
     {

@@ -9,7 +9,7 @@
             <div class="card">
 
                 <div class="nav-item d-flex align-items-center">
-                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Usuario</button>
+                    <button v-if="hab_permisos('Crear_usuarios')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Usuario</button>
                 </div>
 
                 <div class="table-container">
@@ -31,9 +31,9 @@
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.id_depen }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datalleUsuario(user.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarUsuario(user.id)">Eliminar</button>&nbsp;
-                                    <button class="btn btn-secondary btn-sm" @click="detalleRol(user.id)">Asignar Roles</button>
+                                    <button v-if="hab_permisos('Editar_usuarios')" class="btn btn-primary btn-sm" @click="datalleUsuario(user.id)">Editar</button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_usuarios')" class="btn btn-danger btn-sm" @click="eliminarUsuario(user.id)">Eliminar</button>&nbsp;
+                                    <button v-if="hab_permisos('Asignar_roles_usuarios')" class="btn btn-secondary btn-sm" @click="detalleRol(user.id)">Asignar Roles</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -169,8 +169,13 @@
 <script>
 import Swal from 'sweetalert2';
 import { ref, reactive } from 'vue';
+import permisos from "../permisos/permisos.vue";
 
 export default {
+
+    components: {
+
+    },extends:permisos,
 
     data() {
         return {
@@ -189,6 +194,7 @@ export default {
             password: "",
             iduse: "",
             idro: "",
+            lista_permisos:[],
 
         };
     },
@@ -196,6 +202,7 @@ export default {
     mounted() {
         this.obtenerUsuarios();
         this.calcularTotalPaginas();
+        this.obtenerPermisos();
     },
 
     computed: {
@@ -207,6 +214,20 @@ export default {
     },
 
     methods: {
+
+        obtenerPermisos(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+                    console.error(error);
+
+                });
+
+        },
 
         /* Metodos de Usuario */
         obtenerUsuarios() {

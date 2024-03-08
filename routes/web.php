@@ -44,6 +44,10 @@ Route::middleware(['auth:empleado'])->group(function () {
 });
 
 
+
+/*------------------------* Permisos ------------------------*/
+Route::get('/Obtenerpermisos', [EmpleadoLoginController::class, 'Obtenerpermisos'])->name('Obtenerpermisos');
+
 /*-----------------------* Dashboard ------------------------*/
 Route::get('/dashboard', function () {return view('admin.dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/obtenerEmpleados', [AdminController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');

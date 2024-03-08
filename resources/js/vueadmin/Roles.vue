@@ -9,7 +9,7 @@
             <div class="card">
 
                 <div class="nav-item d-flex align-items-center">
-                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Rol</button>
+                    <button v-if="hab_permisos('Crear_roles')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Rol</button>
                 </div>
 
                 <div class="table-container">
@@ -26,9 +26,9 @@
                                 <td>{{ role.id }}</td>
                                 <td>{{ role.name }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datalleRol(role.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarRol(role.id)">Eliminar</button>&nbsp;
-                                    <button class="btn btn-secondary btn-sm" @click="detallePermiso(role.id)">Asignar Permisos</button>
+                                    <button v-if="hab_permisos('Editar_roles')" class="btn btn-primary btn-sm" @click="datalleRol(role.id)">Editar</button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_roles')" class="btn btn-danger btn-sm" @click="eliminarRol(role.id)">Eliminar</button>&nbsp;
+                                    <button v-if="hab_permisos('Asignar_roles_permisos')" class="btn btn-secondary btn-sm" @click="detallePermiso(role.id)">Asignar Permisos</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -77,10 +77,22 @@
                                 </div>
 
                                 <div class="modal-body">
-                                    <label>Selecciona los permisos:</label>
-                                    <div v-for="permiso in permisos" :key="permiso.id" class="form-check">
-                                        <input type="checkbox" class="form-check-input" :id="'permiso-' + permiso.id" v-model="selectedPermisos" :value="permiso.id"/>
-                                        <label class="form-check-label" :for="'permiso-' + permiso.id">{{ permiso.name }}</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Selecciona los permisos:</label>
+                                            <div v-for="permiso in permisos.slice(0, Math.ceil(permisos.length / 2))" :key="permiso.id" class="form-check">
+                                                <input type="checkbox" class="form-check-input" :id="'permiso-' + permiso.id" v-model="selectedPermisos" :value="permiso.id"/>
+                                                <label class="form-check-label" :for="'permiso-' + permiso.id">{{ permiso.name }}</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label>&nbsp;</label>
+                                            <div v-for="permiso in permisos.slice(Math.ceil(permisos.length / 2))" :key="permiso.id" class="form-check">
+                                                <input type="checkbox" class="form-check-input" :id="'permiso-' + permiso.id" v-model="selectedPermisos" :value="permiso.id"/>
+                                                <label class="form-check-label" :for="'permiso-' + permiso.id">{{ permiso.name }}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -92,6 +104,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <br>
                 <!-- Agregamos el paginador -->
@@ -142,8 +155,13 @@
 <script>
 import Swal from 'sweetalert2';
 import { ref, reactive } from 'vue';
+import permisos from "../permisos/permisos.vue";
 
 export default {
+
+    components: {
+
+    },extends:permisos,
 
     data() {
         return {
@@ -159,12 +177,14 @@ export default {
             name: "",
             idro: "",
             idpe: "",
+            lista_permisos:[],
         };
     },
 
     mounted() {
         this.obtenerRoles();
         this.calcularTotalPaginas();
+        this.obtenerPermisos();
     },
 
     computed: {
@@ -176,6 +196,20 @@ export default {
     },
 
     methods: {
+
+        obtenerPermisos(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+                    console.error(error);
+
+                });
+
+        },
 
         /* Metodos de Roles */
         obtenerRoles() {

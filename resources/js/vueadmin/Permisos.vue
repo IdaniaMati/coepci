@@ -9,7 +9,7 @@
             <div class="card">
 
                 <div class="nav-item d-flex align-items-center">
-                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Permiso</button>
+                    <button v-if="hab_permisos('Crear_permisos')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Permiso</button>
                 </div>
 
                 <div class="table-container">
@@ -26,8 +26,8 @@
                                 <td>{{ permiso.id }}</td>
                                 <td>{{ permiso.name }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datallePermiso(permiso.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarPermiso(permiso.id)">Eliminar</button>
+                                    <button v-if="hab_permisos('Editar_permisos')" class="btn btn-primary btn-sm" @click="datallePermiso(permiso.id)">Editar</button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_permisos')" class="btn btn-danger btn-sm" @click="eliminarPermiso(permiso.id)">Eliminar</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -112,8 +112,13 @@
 
 <script>
 import Swal from 'sweetalert2';
+import permisos from "../permisos/permisos.vue";
 
 export default {
+
+    components: {
+
+    },extends:permisos,
 
     data() {
         return {
@@ -125,12 +130,14 @@ export default {
             bandera: "",
             name: "",
             idper: "",
+            lista_permisos:[],
         };
     },
 
     mounted() {
         this.obtenerPermisos();
         this.calcularTotalPaginas();
+        this.obtenerPermisos_user();
     },
 
     computed: {
@@ -142,6 +149,20 @@ export default {
     },
 
     methods: {
+
+        obtenerPermisos_user(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+                    console.error(error);
+
+                });
+
+        },
 
         obtenerPermisos() {
             axios.get('/obtenerPermisos')
