@@ -101,6 +101,17 @@ class UserController extends Controller
         }
     }
 
+    public function eliminarUsuario($id)
+    {
+        try {
+            User::findOrFail($id)->delete();
+
+            return response()->json(['success' => true, 'message' => 'Rol eliminado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function asignarRoles(Request $request)
     {
         try {

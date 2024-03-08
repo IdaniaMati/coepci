@@ -72,6 +72,17 @@ class RoleController extends Controller
         }
     }
 
+    public function eliminarRol($id)
+    {
+        try {
+            Role::findOrFail($id)->delete();
+
+            return response()->json(['success' => true, 'message' => 'Rol eliminado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function asignarpermisos(Request $request)
     {
         try {
