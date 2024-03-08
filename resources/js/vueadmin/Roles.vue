@@ -28,7 +28,7 @@
                                 <td>
                                     <button class="btn btn-primary btn-sm" @click="datalleRol(role.id)">Editar</button>&nbsp;
                                     <button class="btn btn-danger btn-sm" @click="eliminarEvento(role.id)">Eliminar</button>&nbsp;
-                                    <button class="btn btn-secondary btn-sm" @click="detallePermiso(role.id)">Agregar Permisos</button>
+                                    <button class="btn btn-secondary btn-sm" @click="detallePermiso(role.id)">Asignar Permisos</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -42,7 +42,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title"><strong>Roles</strong></h5>
-                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalRol" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form>
@@ -59,7 +59,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarRol">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarRol">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-secondary" @click="cerrarModalRol" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title"><strong>Permisos</strong></h5>
-                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalPermiso" aria-label="Close"></button>
                                 </div>
 
                                 <div class="modal-body">
@@ -86,7 +86,7 @@
 
                                 <div class="modal-footer">
                                     <button v-if="bandera === 3" class="btn btn-primary" @click="asignarPermiso">Guardar Permisos</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-secondary" @click="cerrarModalPermiso" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

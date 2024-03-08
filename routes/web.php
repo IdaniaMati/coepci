@@ -72,6 +72,10 @@ Route::delete('/eliminarEvento/{id}', [AdminController::class, 'eliminarEvento']
 Route::get('/usuarios', function () { return view('admin.usuarios');})->middleware(['auth', 'verified'])->name('usuarios');
 Route::get('/obtenerUsers', [UserController::class, 'obtenerUsers']);
 Route::post('/agregarUsuario', [UserController::class, 'agregarUsuario']);
+Route::get('/detalleUsuario/{id}', [UserController::class, 'detalleUsuario']);
+Route::post('/editarUsuario', [UserController::class, 'editarUsuario']);
+Route::post('/asignarRoles', [UserController::class, 'asignarRoles']);
+Route::get('/obtenerRolesUsuario/{idUser}', [UserController::class, 'obtenerRolesUsuario']);
 
 /*-----------------------* Roles ------------------------*/
 Route::get('/roles', function () { return view('admin.roles');})->middleware(['auth', 'verified'])->name('roles');

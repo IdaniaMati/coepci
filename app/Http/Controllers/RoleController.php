@@ -94,13 +94,6 @@ class RoleController extends Controller
         }
     }
 
-    /* public function obtenerPermisosRol($idRol)
-    {
-        $role = Role::findOrFail($idRol);
-        $permisos = $role->permissions;
-
-        return response()->json(['permisos' => $permisos]);
-    } */
 
     public function obtenerPermisosRol($idRol)
     {
