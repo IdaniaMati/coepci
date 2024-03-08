@@ -310,6 +310,44 @@ export default {
 
         },
 
+        eliminarUsuario(idUser){
+            Swal.fire({
+                title: '¿Estás seguro de que deseas eliminar este Usuario?',
+                text: "No se podra revertir dicha acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si',
+                cancelButtonText: 'No'
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.delete("/eliminarUsuario/" + idUser)
+                        .then(response => {
+
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: response.data.message,
+                                showConfirmButton: false,
+                                timer: 1800
+                            });
+                            this.obtenerUsuarios();
+                        })
+                        .catch((error) => {
+                            console.error(error);
+
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message,
+                        });
+                    });
+                }
+            })
+        },
+
         abrirModalUsuario() {
             $("#modalusuarios").modal({ backdrop: "static", keyboard: false });
             $("#modalusuarios").modal("toggle");

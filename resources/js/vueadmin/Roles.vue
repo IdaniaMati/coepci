@@ -27,7 +27,7 @@
                                 <td>{{ role.name }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm" @click="datalleRol(role.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarEvento(role.id)">Eliminar</button>&nbsp;
+                                    <button class="btn btn-danger btn-sm" @click="eliminarRol(role.id)">Eliminar</button>&nbsp;
                                     <button class="btn btn-secondary btn-sm" @click="detallePermiso(role.id)">Asignar Permisos</button>
                                 </td>
                             </tr>
@@ -262,6 +262,44 @@ export default {
 
                 });
 
+        },
+
+        eliminarRol(idRol){
+            Swal.fire({
+                title: '¿Estás seguro de que deseas eliminar este Rol?',
+                text: "No se podra revertir dicha acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si',
+                cancelButtonText: 'No'
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.delete("/eliminarRol/" + idRol)
+                        .then(response => {
+
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: response.data.message,
+                                showConfirmButton: false,
+                                timer: 1800
+                            });
+                            this.obtenerRoles();
+                        })
+                        .catch((error) => {
+                            console.error(error);
+
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message,
+                        });
+                    });
+                }
+            })
         },
 
         abrirModalRol() {

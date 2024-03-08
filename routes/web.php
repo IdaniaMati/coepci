@@ -71,6 +71,7 @@ Route::get('/obtenerUsers', [UserController::class, 'obtenerUsers']);
 Route::post('/agregarUsuario', [UserController::class, 'agregarUsuario']);
 Route::get('/detalleUsuario/{id}', [UserController::class, 'detalleUsuario']);
 Route::post('/editarUsuario', [UserController::class, 'editarUsuario']);
+Route::delete('/eliminarUsuario/{id}', [UserController::class, 'eliminarUsuario']);
 Route::post('/asignarRoles', [UserController::class, 'asignarRoles']);
 Route::get('/obtenerRolesUsuario/{idUser}', [UserController::class, 'obtenerRolesUsuario']);
 
@@ -80,6 +81,7 @@ Route::get('/obtenerRoles', [RoleController::class, 'obtenerRoles']);
 Route::post('/agregarRol', [RoleController::class, 'agregarRol']);
 Route::get('/detalleRol/{id}', [RoleController::class, 'detalleRol']);
 Route::post('/editarRol', [RoleController::class, 'editarRol']);
+Route::delete('/eliminarRol/{id}', [RoleController::class, 'eliminarRol']);
 Route::post('/asignarpermisos', [RoleController::class, 'asignarpermisos']);
 Route::get('/obtenerPermisosRol/{idRol}', [RoleController::class, 'obtenerPermisosRol']);
 
@@ -88,6 +90,9 @@ Route::get('/obtenerPermisosRol/{idRol}', [RoleController::class, 'obtenerPermis
 Route::get('/permisos', function () { return view('admin.permisos');})->middleware(['auth', 'verified'])->name('permisos');
 Route::get('/obtenerPermisos', [PermissionController::class, 'obtenerPermisos']);
 Route::post('/agregarPermisos', [PermissionController::class, 'agregarPermisos']);
+Route::get('/detallePermiso/{id}', [PermissionController::class, 'detallePermiso']);
+Route::post('/editarPermiso', [PermissionController::class, 'editarPermiso']);
+Route::delete('/eliminarPermiso/{id}', [PermissionController::class, 'eliminarPermiso']);
 
 
 

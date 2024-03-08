@@ -26,8 +26,8 @@
                                 <td>{{ permiso.id }}</td>
                                 <td>{{ permiso.name }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datalleEvento(permiso.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarEvento(permiso.id)">Eliminar</button>
+                                    <button class="btn btn-primary btn-sm" @click="datallePermiso(permiso.id)">Editar</button>&nbsp;
+                                    <button class="btn btn-danger btn-sm" @click="eliminarPermiso(permiso.id)">Eliminar</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -56,7 +56,7 @@
 
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarPermiso">Guardar</button>
-                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarEvento">Editar</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarPermiso">Editar</button>
                                     <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
@@ -124,6 +124,7 @@ export default {
             registrosPorPagina: 7,
             bandera: "",
             name: "",
+            idper: "",
         };
     },
 
@@ -173,6 +174,97 @@ export default {
                     this.cerrarModal();
                     Swal.fire('Error', 'Se produjo un error al agregar el rol.', 'error');
                 });
+        },
+
+        datallePermiso(idPerm) {
+
+        this.idper = idPerm;
+        this.bandera = 1;
+        this.abrirModal();
+
+        axios.get("/detallePermiso/" + idPerm)
+            .then((response) => {
+                const permiso = response.data[0];
+                this.name = permiso.name;
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        },
+
+        editarPermiso() {
+            var idPerm = this.idper;
+            this.cerrarModal();
+
+            let data = {
+                id: idPerm,
+                name: this.name,
+            };
+
+            axios.post(`/editarPermiso`, data)
+                .then((response) => {
+                    if (response.data.success) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 1800
+                        });
+                        this.limpiarvar();
+                        this.cerrarModal();
+                        this.obtenerPermisos();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message,
+                        });
+                    }
+                })
+                .catch((error) => {
+
+                });
+
+        },
+
+        eliminarPermiso(idPerm){
+            Swal.fire({
+                title: '¿Estás seguro de que deseas eliminar este Permiso?',
+                text: "No se podra revertir dicha acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si',
+                cancelButtonText: 'No'
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.delete("/eliminarPermiso/" + idPerm)
+                        .then(response => {
+
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: response.data.message,
+                                showConfirmButton: false,
+                                timer: 1800
+                            });
+                            this.obtenerPermisos();
+                        })
+                        .catch((error) => {
+                            console.error(error);
+
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message,
+                        });
+                    });
+                }
+            })
         },
 
         nuevo() {
