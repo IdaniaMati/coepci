@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('apellido_paterno', 255)->nullable();
             $table->string('apellido_materno', 255)->nullable();
             $table->string('cargo', 255)->nullable(false);
+            $table->foreignId('id_depen')->constrained('dependencias');
             $table->timestamps();
         });
     }

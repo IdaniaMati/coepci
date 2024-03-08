@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('id_grup')->constrained('grupos')->index('registros_id_grup_foreign'); 
             $table->foreignId('id_conc')->constrained('concursos')->index('registros_id_conc_foreign'); 
             $table->date('fecha')->nullable();
+            $table->foreignId('id_depen')->constrained('dependencias');
             $table->timestamps();
         });
     }

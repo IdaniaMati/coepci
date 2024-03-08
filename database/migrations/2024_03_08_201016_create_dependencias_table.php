@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grupos', function (Blueprint $table) {
-            $table->id()->autoIncrement();
-            $table->string('grupo', 255)->nullable();
-            $table->foreignId('id_depen')->constrained('dependencias');
+        Schema::create('dependencias', function (Blueprint $table) {
+            $table->id();
+            $table->string('descripcion');
             $table->timestamps();
         });
     }
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grupos');
+        Schema::dropIfExists('dependencias');
     }
 };

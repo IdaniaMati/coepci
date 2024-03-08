@@ -7,8 +7,6 @@ use App\Http\Controllers\Auth\EmpleadoLoginController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Exports\Personalsinvoto;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 
 
