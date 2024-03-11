@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
 use App\Models\Registro;
 use Illuminate\Http\Request;
@@ -17,7 +17,16 @@ class DashboardController extends Controller
     public function obtenerEmpleados()
     {
         try {
-            $empleados = Empleado::all();
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $depen_user = $user->id_depen;
+            $empleados = Empleado::where('id_depen', $depen_user)
+                ->get();
 
             if ($empleados->isEmpty()) {
                 return response()->json(['message' => 'No hay empleados en el sistema.']);
@@ -32,9 +41,18 @@ class DashboardController extends Controller
     public function obtenerRegistrosVotos()
     {
         try {
-            $votosRonda1 = Registro::where('ronda', 1)->distinct('id_vot')->count('id_vot');
-            $votosRonda2 = Registro::where('ronda', 2)->distinct('id_vot')->count('id_vot');
-            $empleadosTotales = Empleado::count(); // Supongamos que tienes un modelo Empleado
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $depen_user = $user->id_depen;
+
+            $votosRonda1 = Registro::where('ronda', 1)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot');
+            $votosRonda2 = Registro::where('ronda', 2)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot');
+            $empleadosTotales = Empleado::where('id_depen', $depen_user)->count();
 
             $empleadosNoVotaronRonda1 = $empleadosTotales - $votosRonda1;
             $empleadosNoVotaronRonda2 = $empleadosTotales - $votosRonda2;
@@ -53,7 +71,16 @@ class DashboardController extends Controller
     public function obtenerVotosRondas()
     {
         try {
-            $empleados = Empleado::all();
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $depen_user = $user->id_depen;
+
+            $empleados = Empleado::where('id_depen', $depen_user)->get();
             $resultados = [];
 
             foreach ($empleados as $empleado) {

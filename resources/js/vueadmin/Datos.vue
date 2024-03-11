@@ -168,6 +168,7 @@ export default {
             fechaIni1ronda: "",
             fechaIni2ronda: "",
             fechaFin: "",
+            numeroDependencia: null,
 
         };
     },
@@ -186,13 +187,14 @@ export default {
     },
 
     methods: {
+
         handleFileUpload(event) {
             this.archivo = event.target.files[0];
         },
 
         descargarFormato() {
             const wb = XLSXUtils.book_new();
-            const ws = XLSXUtils.aoa_to_sheet([['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'cargo', 'id_grup']]);
+            const ws = XLSXUtils.aoa_to_sheet([['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'cargo', 'id_grup', 'id_depen']]);
             XLSXUtils.book_append_sheet(wb, ws, 'Formato Empleados');
             writeFile(wb, 'Formato_Empleados.xlsx');
         },
@@ -264,8 +266,8 @@ export default {
         obtenerEvento() {
             axios.get('/obtenerEvento')
                 .then((response) => {
-                    if (response.data.concurso) {
-                        this.eventos = response.data.concurso;
+                    if (response.data.eventos) {
+                        this.eventos = response.data.eventos;
                         this.calcularTotalPaginas();
                     } else {
                         console.log(response.data.message);
@@ -374,8 +376,6 @@ export default {
                 }
             });
         },
-
-
 
         datalleEvento(idEvento) {
 

@@ -18,6 +18,7 @@ class Empleado extends Authenticatable
         'curp',
         'cargo',
         'id_grup',
+        'id_depen',
     ];
 
     public function empleados()

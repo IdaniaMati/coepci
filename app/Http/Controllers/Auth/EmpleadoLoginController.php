@@ -45,22 +45,70 @@ class EmpleadoLoginController extends Controller
         $user = Empleado::where('curp', $curp)->first();
 
         if ($user) {
-            // Obtener la fecha de inicio del concurso
-            $fechaInicioConcurso = $this->obtenerFechaInicioConcurso()->original['fechaInicio'];
+            $fechaInicioConcursoResponse = $this->obtenerFechaInicioConcurso($request);
 
-            // Obtener la fecha actual
+            if (!$fechaInicioConcursoResponse->original['success']) {
+                return response()->json(['success' => false, 'error' => $fechaInicioConcursoResponse->original['error']]);
+            }
+
+            $fechaInicioConcurso = $fechaInicioConcursoResponse->original['fechaInicio'];
             $fechaActual = Carbon::now();
 
-            // Verificar si aún no ha comenzado el concurso
             if ($fechaActual < $fechaInicioConcurso) {
                 return response()->json(['success' => false, 'error' => 'El concurso aún no ha comenzado']);
             }
 
+            $idDependenciaUsuario = $user->id_depen;
+
+            $ultimoEvento = Concurso::where('id_depen', $idDependenciaUsuario)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if (!$ultimoEvento) {
+                return response()->json(['success' => false, 'error' => 'No hay eventos para la dependencia del usuario']);
+            }
+
+            $fechaFinEvento = $ultimoEvento->fechaFin;
+
+            if ($fechaActual > $fechaFinEvento) {
+                return response()->json(['success' => false, 'error' => 'El concurso ya ha finalizado']);
+            }
+
             Auth::guard('empleado')->login($user);
 
-            return response()->json(['success' => true, 'redirect' => route('Principal')]); /* VotacionEmpleado */
+            return response()->json(['success' => true, 'redirect' => route('Principal')]);
         } else {
-            return response()->json(['success' => false]);
+            return response()->json(['success' => false, 'error' => 'CURP no encontrada']);
+        }
+    }
+
+    public function obtenerFechaInicioConcurso(Request $request)
+    {
+        try {
+            $curp = $request->input('curp');
+
+            $usuario = Empleado::where('curp', $curp)->first();
+
+            if (!$usuario) {
+                return response()->json(['success' => false, 'error' => 'Usuario no encontrado'], 404);
+            }
+
+            $idDependenciaUsuario = $usuario->id_depen;
+
+            $concurso = Concurso::where('id_depen', $idDependenciaUsuario)
+                ->orderBy('fechaIni1ronda', 'desc')
+                ->first();
+
+            if (!$concurso) {
+                return response()->json(['success' => false, 'error' => 'No se encontró información del concurso para la dependencia del usuario'], 404);
+            }
+
+            $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
+            $fechaFin = Carbon::parse($concurso->fechaFin);
+
+            return response()->json(['success' => true, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -92,23 +140,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-    public function obtenerFechaInicioConcurso()
-    {
-        try {
-            $concurso = Concurso::orderBy('fechaIni1ronda', 'desc')->first();
-
-            if ($concurso) {
-                $fechaInicio = Carbon::parse($concurso->fechaIni1ronda);
-                $fechaFin = Carbon::parse($concurso->fechaFin); // Agregado
-
-                return response()->json(['fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]); // Modificado
-            } else {
-                return response()->json(['error' => 'No se encontró información del concurso'], 404);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
 
     public function obtenerSegundaFechaConcurso()
     {
