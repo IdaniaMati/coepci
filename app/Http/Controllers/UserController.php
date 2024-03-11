@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    
+
+    public function showUserForm()
+    {
+        return view('admin.usuarios');
+    }
+
     public function obtenerUsers()
     {
         try {

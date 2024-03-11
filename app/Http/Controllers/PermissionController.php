@@ -9,6 +9,12 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
+
+    public function showPermissionForm()
+    {
+        return view('admin.permisos');
+    }
+
     public function obtenerPermisos()
     {
         try {

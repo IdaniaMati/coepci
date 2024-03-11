@@ -18,22 +18,19 @@ use Illuminate\Support\Carbon;
 
 class AdminController extends Controller
 {
-    /* ============dashnoard============ */
-    public function obtenerEmpleados()
+
+    /* public function __construct()
     {
-        try {
-            $empleados = Empleado::all();
+        $this->middleware('can: Modulo_Ajustes')->only('showDatosForm');
+        // $this->middleware(['permission:Modulo_Ajustes'])->only('showDatosForm');
+    } */
 
-            if ($empleados->isEmpty()) {
-                return response()->json(['message' => 'No hay empleados en el sistema.']);
-            }
-
-            return response()->json(['empleados' => $empleados]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+    public function showDatosForm()
+    {
+        return view('admin.datos');
     }
 
+<<<<<<< HEAD
     public function export()
     {
         return Excel::download(new Registro, 'registros-sin-votar.xlsx');
@@ -84,6 +81,8 @@ class AdminController extends Controller
     }
 
     /* ============Ajustes============ */
+=======
+>>>>>>> c95d93e1e3fcfc1d1f74fb86ebeb27577ab17f09
     public function obtenerEvento()
     {
         try {
@@ -251,11 +250,5 @@ class AdminController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
-
-
-
-
 
 }
