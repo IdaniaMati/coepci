@@ -11,6 +11,12 @@ use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
+
+    public function showRoleForm()
+    {
+        return view('admin.roles');
+    }
+
     public function obtenerRoles()
     {
         try {
