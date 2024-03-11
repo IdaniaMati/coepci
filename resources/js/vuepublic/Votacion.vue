@@ -149,7 +149,7 @@
                 axios.get(`/obtenerOpcionesVotacion/${ronda}`)
                 .then((response) => {
                     //console.log('Datos recibidos:', response.data);
-
+                    
                     try {
                         let dataArray;
 

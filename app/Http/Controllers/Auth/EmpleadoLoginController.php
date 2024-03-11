@@ -144,19 +144,31 @@ class EmpleadoLoginController extends Controller
     public function obtenerSegundaFechaConcurso()
     {
         try {
-            $concurso = Concurso::first();
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $idDependenciaUsuario = $user->id_depen;
+
+            $concurso = Concurso::where('id_depen', $idDependenciaUsuario)
+                ->orderBy('fechaIni1ronda', 'desc')
+                ->first();
 
             if ($concurso) {
                 $fechaSegunda = Carbon::parse($concurso->fechaIni2ronda);
 
                 return response()->json(['fechaSegundo' => $fechaSegunda]);
             } else {
-                return response()->json(['error' => 'No se encontró información del concurso'], 404);
+                return response()->json(['error' => 'No se encontró información del concurso para la dependencia del usuario'], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function obtenerFechaFinConcurso()
     {
@@ -178,13 +190,24 @@ class EmpleadoLoginController extends Controller
     public function obtenerOpcionesVotacion($ronda)
     {
         try {
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $idDependenciaUsuario = $user->id_depen;
+
             if ($ronda == 1) {
-                $opciones = Empleado::all();
+                $opciones = Empleado::where('id_depen', $idDependenciaUsuario)
+                ->get();
             } elseif ($ronda == 2) {
                 $opciones = DB::table('empleados')
                     ->join('registros', 'empleados.id', '=', 'registros.id_nom')
                     ->select('empleados.id', 'empleados.nombre', 'empleados.apellido_paterno','empleados.apellido_materno', 'registros.id_grup', DB::raw('COUNT(registros.id_nom) AS votos'))
                     ->where('registros.ronda', 1)
+                    ->where('empleados.id_depen', $idDependenciaUsuario) //empleados de la dependencia
                     ->groupBy('empleados.id', 'registros.id_grup')
                     ->orderBy('registros.id_grup')
                     ->orderByDesc('votos')
@@ -203,7 +226,6 @@ class EmpleadoLoginController extends Controller
                     }
                 });
 
-                // Ordenar alfabéticamente las opciones dentro de cada grupo
             $resultadosLimitados->each(function ($grupo) {
                 $grupo->sortBy(function ($opcion) {
                     return $opcion->nombre . ' ' . $opcion->apellido_paterno . ' ' . $opcion->apellido_materno;
@@ -223,7 +245,18 @@ class EmpleadoLoginController extends Controller
 
     public function obtenerConcursoId()
     {
-        $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
+
+        $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+        $idDependenciaUsuario = $user->id_depen;
+
+        $ultimoConcurso = Concurso::where('id_depen', $idDependenciaUsuario)
+            ->orderBy('created_at', 'desc')
+            ->first();
 
         return response()->json(['ultimoConcursoId' => $ultimoConcurso->id]);
     }
