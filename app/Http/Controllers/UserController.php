@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Dependencias;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
 {
-
-    
 
     public function showUserForm()
     {
@@ -30,6 +30,23 @@ class UserController extends Controller
             }
 
             return response()->json(['user' => $user]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerUserDependencia()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $depen_user = $user->id_depen;
+
+            return response()->json(['depen_user' => $depen_user]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -58,11 +75,23 @@ class UserController extends Controller
         }
     }
 
+    public function obtenerDependencia()
+    {
+        try {
+            $depen = Dependencias::all();
+
+            if ($depen->isEmpty()) {
+                return response()->json(['message' => 'No hay dependencias']);
+            }
+
+            return response()->json(['user' => $depen]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function detalleUsuario($id)
     {
-
-        /* $user = User::where('id',$id)->get();
-        return response()->json($user); */
         $user = User::find($id);
         return response()->json($user);
     }
@@ -74,28 +103,24 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required',
             'id_depen' => 'required',
-            'password' => 'required',
-
+            'password' => 'nullable',
         ]);
 
         try {
             DB::beginTransaction();
 
-            if ($request->has('password')) {
+            $user = User::find($validaciones['id']);
 
-                $password = Hash::make($request->input('password'));
-                $data = array(
-                    'name' => $validaciones['name'],
-                    'email' => $validaciones['email'],
-                    'id_depen' => $validaciones['id_depen'],
-                    'password' => $password,
-                );
-            }else{
-                $data = array(
-                    'name' =>$validaciones['name'],
-                    'email' => $validaciones['email'],
-                );
+            if ($request->has('password')) {
+                if ($request->input('password') !== $user->password) {
+                    $password = Hash::make($request->input('password'));
+                    $data['password'] = $password;
+                }
             }
+
+            $data['name'] = $validaciones['name'];
+            $data['email'] = $validaciones['email'];
+            $data['id_depen'] = $validaciones['id_depen'];
 
             $editaUsuario = DB::table("users")->where("id", $validaciones['id'])->update($data);
 
@@ -108,6 +133,7 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => $errors]);
         }
     }
+
 
     public function eliminarUsuario($id)
     {

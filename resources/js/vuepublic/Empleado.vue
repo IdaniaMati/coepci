@@ -1,19 +1,19 @@
 <template>
   <div class="authentication-wrapper authentication-basic container-p-y">
     <div class="authentication-inner">
-      <!-- Register -->
+
       <div class="card">
         <div class="card-body">
-          <!-- Logo -->
+
           <div class="app-brand justify-content-center">
-              <!-- Replace the image source with the correct path for your Vue project -->
+
               <img src="assets/img/logo-2.png" alt="" height="150px" />
 
           </div>
           <div class="justify-content-center">
             <h2 class="app-brand-text fw-bolder">COEPCI</h2>
           </div>
-          <!-- /Logo -->
+
           <h4 class="mb-2">Sistema de Votación para el Comité de Ética y Prevención de Conflicto de Interés</h4>
           <p class="mb-4">Para iniciar la votación es necesario ingresar su CURP</p>
 
@@ -23,43 +23,27 @@
                 <label class="form-label" for="curp">CURP</label>
               </div>
               <div class="input-group input-group-merge">
-                <input
-                  v-model="curp"
-                  type="text"
-                  id="curp"
-                  class="form-control"
-                  name="curp"
-                  :disabled="isVotacionDesactivada || isVotacionFin"
-                  maxlength="18"
-                  required
-                />
-                <!-- You may need to replace this icon with the Vue equivalent -->
-                
+                <input v-model="curp" type="text" id="curp" class="form-control" name="curp" maxlength="18" required/>
+
+
               </div>
             </div>
             <div class="mb-3">
-              <button
-                class="btn btn-primary d-grid w-100"
-                type="button"
-                @click="ingresar"
-                :disabled="isVotacionDesactivada || isVotacionFin"
-              >
-                Ingresar
-              </button>
+              <button class="btn btn-primary d-grid w-100" type="button" @click="ingresar"> Ingresar </button>
             </div>
-            <div v-if="isVotacionDesactivada || isVotacionFin || errorMensaje" class="announcement-box">
-        <p class="announcement-text">
-          {{ isVotacionDesactivada ? 'El sistema de votación se encuentra desactivado.' : (isVotacionFin ? 'Las votaciones han finalizado. Gracias por Participar' : errorMensaje) }}
-          <br />
-          {{ (!isVotacionDesactivada && !isVotacionFin && errorMensaje) ? 'Favor de verificar la fecha en la cual el concurso inicie. Si ya se encuentra activa la convocatoria, favor de recargar la página.' : '' }}
-        </p>
-      </div>
+            <!-- <div v-if="isVotacionDesactivada || isVotacionFin || errorMensaje" class="announcement-box">
+                <p class="announcement-text">
+                {{ isVotacionDesactivada ? 'El sistema de votación se encuentra desactivado.' : (isVotacionFin ? 'Las votaciones han finalizado. Gracias por Participar' : errorMensaje) }}
+                <br />
+                {{ (!isVotacionDesactivada && !isVotacionFin && errorMensaje) ? 'Favor de verificar la fecha en la cual el concurso inicie. Si ya se encuentra activa la convocatoria, favor de recargar la página.' : '' }}
+                </p>
+            </div> -->
           </form>
         </div>
       </div>
-      <!-- /Register -->
 
-      
+
+
     </div>
   </div>
 </template>
@@ -79,10 +63,11 @@ export default {
   },
 
   created() {
-    this.verificarFechaVotacion();
+    /* this.verificarFechaVotacion(); */
   },
 
   methods: {
+
     ingresar() {
       if (!this.curp) {
         this.showErrorAlert("Por favor, ingresa una CURP para continuar.");
@@ -98,21 +83,21 @@ export default {
         curp: this.curp,
       };
 
-      axios
-        .post("/EmpleadoLogin", dataarray)
+      axios.post("/EmpleadoLogin", dataarray)
         .then((response) => {
-          if (response.data.success) {
-            window.location.href = response.data.redirect;
-          } else {
-            this.showErrorAlert("CURP no encontrada");
-          }
+            if (response.data.success) {
+                window.location.href = response.data.redirect;
+            } else {
+                this.showErrorAlert(response.data.error || "Error desconocido al intentar iniciar sesión.");
+            }
         })
         .catch((error) => {
-          console.error(error);
+            console.error(error);
+            this.showErrorAlert("Hubo un error al intentar iniciar sesión.");
         });
-    },
+},
 
-    verificarFechaVotacion() {
+    /* verificarFechaVotacion() {
       axios
         .get("/obtenerFechaInicioConcurso")
         .then((response) => {
@@ -135,7 +120,8 @@ export default {
           this.errorMensaje = "No se encontró información del concurso";
           console.error(error);
         });
-    },
+    }, */
+
     showErrorAlert(message) {
       Swal.fire({
         icon: "error",
@@ -143,10 +129,11 @@ export default {
         text: message,
       });
     },
+
   },
 };
 </script>
 
 <style scoped>
 /* Add your scoped styles here if needed */
-</style>  
+</style>

@@ -29,7 +29,7 @@
                                 <td>{{ user.id }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.email }}</td>
-                                <td>{{ user.id_depen }}</td>
+                                <td>{{ descripcionDepen(user.id_depen) }}</td>
                                 <td>
                                     <button v-if="hab_permisos('Editar_usuarios')" class="btn btn-primary btn-sm" @click="datalleUsuario(user.id)">Editar</button>&nbsp;
                                     <button v-if="hab_permisos('Eliminar_usuarios')" class="btn btn-danger btn-sm" @click="eliminarUsuario(user.id)">Eliminar</button>&nbsp;
@@ -70,8 +70,7 @@
                                                 <label>Dependencia</label>
                                                 <select v-model="id_depen" class="form-select">
                                                     <option disabled selected>Seleccionar</option>
-                                                    <option value="91">91</option>
-                                                    <option value="92">92</option>
+                                                    <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
                                                 </select>
                                                 <div v-if="!id_depen" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
@@ -181,6 +180,7 @@ export default {
         return {
             users: [],
             user: [],
+            dependencias: [],
             roles: [],
             selectedRoles: [],
             userRoles: {},
@@ -201,6 +201,7 @@ export default {
 
     mounted() {
         this.obtenerUsuarios();
+        this.obtenerDependecias();
         this.calcularTotalPaginas();
         this.obtenerPermisos();
     },
@@ -231,19 +232,35 @@ export default {
 
         /* Metodos de Usuario */
         obtenerUsuarios() {
-            axios.get('/obtenerUsers')
-                .then((response) => {
-                    if (response.data.user) {
-                        this.users = response.data.user;
-                        this.calcularTotalPaginas();
-                    } else {
-                        console.log(response.data.message);
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        axios.get('/obtenerUsers')
+            .then((response) => {
+                if (response.data.user) {
+                    this.users = response.data.user;
+                    this.calcularTotalPaginas();
+                } else {
+                    console.log(response.data.message);
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         },
+
+        obtenerDependecias(){
+        axios.get('/obtenerDependencia')
+            .then((response) => {
+                this.dependencias = response.data.user;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        },
+
+        descripcionDepen(idDepen) {
+            const dependencia = this.dependencias.find(dep => dep.id === idDepen);
+            return dependencia ? dependencia.descripcion : 'Sin descripción';
+        },
+
 
         agregarUsuario() {
 
@@ -447,6 +464,7 @@ export default {
         cerrarModalRoles() {
             $("#modalroles").modal("hide");
         },
+
 
         /* General */
         nuevo() {

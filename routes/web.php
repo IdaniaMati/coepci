@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
+    /* Route::get('/obtenerUserDependencia', [UserController::class, 'obtenerUserDependencia']); */
 });
 
 /*----------------------- Ajustes ------------------------*/
@@ -82,6 +83,7 @@ Route::middleware(['auth', 'can:Modulo_Ajustes'])->group(function () {
 Route::middleware(['auth', 'can:Modulo_Usuario'])->group(function () {
     Route::get('/usuarios', [UserController::class, 'showUserForm'])->name('usuarios');
     Route::get('/obtenerUsers', [UserController::class, 'obtenerUsers']);
+    Route::get('/obtenerDependencia', [UserController::class, 'obtenerDependencia']);
     Route::post('/agregarUsuario', [UserController::class, 'agregarUsuario']);
     Route::get('/detalleUsuario/{id}', [UserController::class, 'detalleUsuario']);
     Route::post('/editarUsuario', [UserController::class, 'editarUsuario']);

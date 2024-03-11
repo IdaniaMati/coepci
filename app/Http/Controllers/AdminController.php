@@ -30,7 +30,7 @@ class AdminController extends Controller
         return view('admin.datos');
     }
 
-    public function obtenerEvento()
+    /* public function obtenerEvento()
     {
         try {
             $concurso = Concurso::all();
@@ -43,6 +43,26 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    } */
+
+    public function obtenerEvento()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $depen_user = $user->id_depen;
+
+            $eventos = Concurso::where('id_depen', $depen_user)
+                ->get();
+
+            return response()->json(['eventos' => $eventos]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function importarEmpleados(Request $request)
@@ -52,9 +72,15 @@ class AdminController extends Controller
         ]);
 
         try {
-            $archivo = $request->file('archivo');
+                $user = Auth::user();
 
-            Excel::import(new EmpleadosImport, $archivo);
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $archivo = $request->file('archivo');
+            //dd($user->id_depen);
+            Excel::import(new EmpleadosImport($user->id_depen), $archivo);
 
             return response()->json(['success' => true, 'message' => 'Empleados importados correctamente']);
         } catch (\Exception $e) {
@@ -65,15 +91,22 @@ class AdminController extends Controller
     public function vaciarBaseDatos()
     {
         try {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            $user = Auth::user();
 
-            if (Registro::count() > 0) {
-                Registro::truncate();
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
-            if (Empleado::count() > 0) {
-                Empleado::truncate();
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+            if (Registro::where('id_depen', $user->id_depen)->count() > 0) {
+                Registro::where('id_depen', $user->id_depen)->delete();
+            }
+
+            if (Empleado::where('id_depen', $user->id_depen)->count() > 0) {
+                Empleado::where('id_depen', $user->id_depen)->delete();
             } else {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
                 return response()->json(['success' => false, 'message' => 'La base de datos ya está vacía']);
             }
 
@@ -85,9 +118,19 @@ class AdminController extends Controller
         }
     }
 
+
     public function agregarEvento(Request $request)
     {
         try {
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $depen_user = $user->id_depen;
+
             $request->validate([
                 'descripcion' => 'required',
                 'fechaIni1ronda' => 'required|date',
@@ -100,6 +143,7 @@ class AdminController extends Controller
             $nuevoEvento->fechaIni1ronda = $request->fechaIni1ronda;
             $nuevoEvento->fechaIni2ronda = $request->fechaIni2ronda;
             $nuevoEvento->fechaFin = $request->fechaFin;
+            $nuevoEvento->id_depen = $depen_user;
             $nuevoEvento->save();
 
             return response()->json(['success' => true, 'message' => 'Evento guardado exitosamente']);
@@ -118,8 +162,15 @@ class AdminController extends Controller
     public function verificarDatosEnTablas()
     {
         try {
-            $empleadosCount = Empleado::count() > 0;
-            $registrosCount = Registro::count() > 0;
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $empleadosCount = Empleado::where('id_depen', $user->id_depen)->count() > 0;
+            $registrosCount = Registro::where('id_depen', $user->id_depen)->count() > 0;
 
             return response()->json([
                 'hayRegistros' => $empleadosCount > 0 || $registrosCount > 0,

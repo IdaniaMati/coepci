@@ -162,7 +162,6 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
                     if (response.data.empleados) {
                         this.empleados = response.data.empleados;
 
-                        // Hacer una solicitud adicional para obtener los votos en ambas rondas
                         axios.get('/obtenerVotosRondas')
                             .then((responseVotos) => {
                                 const votosRondas = responseVotos.data.resultados;
