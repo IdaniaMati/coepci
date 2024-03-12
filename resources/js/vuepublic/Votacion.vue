@@ -16,14 +16,14 @@
                             <h5 class="mb-0">Grupo {{ grupo.numero }}</h5>
                         </div>
                         <div class="card-body col-xxl">
-                            <div class="col-sm-10" v-for="i in grupo.numCandidatos">
+                            <div class="col-sm-10" v-for="(i, index) in grupo.numCandidatos" :key="index">
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
 
                                 <div class="col-sm-10">
                                 <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
                                     <option disabled selected>Seleccionar</option>
-                                    <option v-for="opcion in grupo.opciones" :value="opcion.id">
+                                    <option v-for="opcion in grupo.opciones" :value="opcion.id" :key="opcion.id">
                                         {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
                                     </option>
                                 </select>
@@ -149,7 +149,6 @@
                 axios.get(`/obtenerOpcionesVotacion/${ronda}`)
                 .then((response) => {
                     //console.log('Datos recibidos:', response.data);
-
                     try {
                         let dataArray;
 
@@ -211,6 +210,14 @@
             enviarVotacion() {
                 this.obtenerIdUsuarioAutenticado();
 
+                const idDepen = this.idUsuarioAutenticado ? this.idUsuarioAutenticado.id_depen : null;
+
+                if (!idDepen) {
+                    console.error('Error: id_depen no disponible.');
+                    return;
+                }
+
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const ronda = urlParams.get('ronda');
 
@@ -237,7 +244,6 @@
                         }
 
                         if (errores.length > 0) {
-                            // Mostrar mensajes de error al usuario
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Errores',
@@ -256,6 +262,9 @@
                                 const votanteId = this.idUsuarioAutenticado;
                                 const grupoId = this.grupos[i].numero;
 
+                                const idDepen = this.idUsuarioAutenticado ? this.idUsuarioAutenticado.id_depen : null;
+
+
                                 promises.push(
                                     axios.post('/enviarVotacion', {
                                         votante_id: votanteId,
@@ -263,6 +272,7 @@
                                         grupo_id: grupoId,
                                         concurso_id: ultimoConcursoId,
                                         ronda: ronda,
+                                        id_depen: idDepen,
                                     })
                                 );
                             }

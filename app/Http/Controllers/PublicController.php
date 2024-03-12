@@ -25,6 +25,7 @@ class PublicController extends Controller
 
     public function resultado(Request $request)
     {
+        
         $ronda = $request->get('ronda', 1);
 
         $registros = Registro::where('ronda', $ronda)->get();

@@ -14,9 +14,9 @@
                 </li>
               </ul>
               <div class="tab-content">
-                <div v-for="(concursoPorAno, anio) in historico" :key="anio" :id="`pane-${anio}`" class="tab-pane" role="tabpanel">
+                <div v-for="(concursoPorAnio, anio) in historico" :key="anio" :id="`pane-${anio}`" class="tab-pane" role="tabpanel">
                     <!-- <h5 class="mb-3">{{ anio }}</h5> -->
-                    <div v-for="(concurso, concursoKey) in concursoPorAno" :key="concursoKey" class="row">
+                    <div v-for="(concurso, concursoKey) in concursoPorAnio" :key="concursoKey" class="row">
                         <h6 class="mb-3"><strong>{{ concurso.descripcion }}</strong></h6>
                         <div v-for="(grupo, grupoIndex) in concurso.grupos" :key="grupoIndex" class="col-md-6 col-lg-4 mb-3">
                             <div class="card h-100">

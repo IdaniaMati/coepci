@@ -70,7 +70,7 @@
                                                 <label>Dependencia</label>
                                                 <select v-model="id_depen" class="form-select">
                                                     <option disabled selected>Seleccionar</option>
-                                                    <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
+                                                    <option v-for="dependencia in dependencias" :key="dependencia.id" :value="dependencia.id">{{ dependencia.descripcion }}</option>
                                                 </select>
                                                 <div v-if="!id_depen" class="text-danger">Este campo es obligatorio.</div>
                                             </div>

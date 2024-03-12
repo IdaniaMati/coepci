@@ -8,15 +8,18 @@ use App\Models\Ganadores;
 use App\Models\Registro;
 use App\Models\HistoricoVotos;
 use App\Models\User;
+use App\Models\Dependencias;
 use App\Http\Controllers\Controller;
 use Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 
 class EmpleadoLoginController extends Controller
 {
+
 
     public function Obtenerpermisos()
     {
@@ -112,7 +115,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-
     /* ============Votación Usuario============ */
     public function Principal()
     {
@@ -132,14 +134,20 @@ class EmpleadoLoginController extends Controller
     public function obtenerIdUsuarioAutenticado(Request $request)
     {
         try {
-            $idUsuario = Auth::id();
-
-            return response()->json(['id' => $idUsuario]);
+            $user = Auth::user();
+    
+            if ($user) {
+                $idUsuario = $user->id;
+                $idDepen = $user->id_depen;
+    
+                return response()->json(['id' => $idUsuario, 'id_depen' => $idDepen]);
+            } else {
+                return response()->json(['error' => 'Usuario no autenticado'], 401);
+            }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
 
     public function obtenerSegundaFechaConcurso()
     {
@@ -175,6 +183,18 @@ class EmpleadoLoginController extends Controller
         }
     }
 
+    public function VotacionEmpleado()
+    {
+        return view('auth.votacion');
+    }
+
+    public function obtenerConcursoId()
+    {
+        $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
+
+        return response()->json(['ultimoConcursoId' => $ultimoConcurso->id]);
+    }
+
     public function obtenerOpcionesVotacion($ronda)
     {
         try {
@@ -203,7 +223,7 @@ class EmpleadoLoginController extends Controller
                     }
                 });
 
-                // Ordenar alfabéticamente las opciones dentro de cada grupo
+
             $resultadosLimitados->each(function ($grupo) {
                 $grupo->sortBy(function ($opcion) {
                     return $opcion->nombre . ' ' . $opcion->apellido_paterno . ' ' . $opcion->apellido_materno;
@@ -214,35 +234,27 @@ class EmpleadoLoginController extends Controller
                     return $grupo->all();
                 });
             }
-            //dd($opciones->toSql());
             return response()->json($opciones);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al obtener las opciones de votación']);
         }
     }
 
-    public function obtenerConcursoId()
-    {
-        $ultimoConcurso = Concurso::orderBy('id', 'desc')->first();
-
-        return response()->json(['ultimoConcursoId' => $ultimoConcurso->id]);
-    }
-
-    public function VotacionEmpleado()
-    {
-        return view('auth.votacion');
-    }
-
     public function enviarVotacion(Request $request)
     {
         try {
+            Log::info('Datos recibidos:', $request->all());
+
             $request->validate([
                 'votante_id' => 'required',
                 'candidato_id' => 'required',
                 'grupo_id' => 'required',
                 'concurso_id' => 'required',
                 'ronda' => 'required',
+                'id_depen' => 'required',
             ]);
+
+            $idDepen = $request->input('id_depen');
 
             Registro::create([
                 'id_vot' => $request->input('votante_id'),
@@ -250,6 +262,7 @@ class EmpleadoLoginController extends Controller
                 'id_grup' => $request->input('grupo_id'),
                 'id_conc' => $request->input('concurso_id'),
                 'ronda' => $request->input('ronda'),
+                'id_depen' => $request->input('id_depen'),
             ]);
 
             return response()->json(['success' => true, 'message' => 'Voto registrado con éxito']);
@@ -264,8 +277,6 @@ class EmpleadoLoginController extends Controller
         return redirect()->route('empleado.login');
     }
 
-
-    /* ============Vistas Públicas============ */
     public function obtenerResultados(Request $request)
     {
         $ronda = $request->get('ronda', 1);
@@ -469,8 +480,8 @@ class EmpleadoLoginController extends Controller
 
             $historicoAgrupado = $historico->groupBy(function ($item) {
                 return Carbon::parse($item->fechaIni1ronda)->format('Y');
-            })->map(function ($concursoPorAno) {
-                return $concursoPorAno->groupBy('concurso')->map(function ($grupoPorConcurso) {
+            })->map(function ($concursoPorAnio) {
+                return $concursoPorAnio->groupBy('concurso')->map(function ($grupoPorConcurso) {
                     return [
                         'id_conc' => $grupoPorConcurso->first()->id_conc,
                         'descripcion' => $grupoPorConcurso->first()->concurso,
@@ -507,7 +518,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-
     /* ============login de usuario============ */
     public function loginForm()
     {
@@ -530,7 +540,7 @@ class EmpleadoLoginController extends Controller
         return view('public.historico');
     }
 
-    public function resultado(Request $request)
+    public function resultado(Request $request,$dependencia = null)
     {
         $ronda = $request->get('ronda', 1);
 
@@ -569,7 +579,7 @@ class EmpleadoLoginController extends Controller
             });
         }
 
-        return view('public.ronda', ['resultados' => $resultados, 'ronda' => $ronda]);
+        return view('public.ronda', ['resultados' => $resultados, 'ronda' => $ronda, 'dependencia' => $dependencia]);
     }
 
 }

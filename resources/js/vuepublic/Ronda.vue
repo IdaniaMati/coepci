@@ -92,7 +92,7 @@
 
     methods: {
         regresar() {
-            window.location.href = '/nominaciones';
+            window.location.href = '/nominaciones'+ this.dependencia;
         },
 
       obtenerResultados() {

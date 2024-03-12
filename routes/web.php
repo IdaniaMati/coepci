@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 /*------------------------ Resultados Públicos ------------------------*/
 Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
-Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
+Route::get('/resultado/{dependencia}',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');

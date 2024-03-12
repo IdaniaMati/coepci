@@ -15,7 +15,16 @@
             </p>
           </div>
           <div class="row mb-5">
+            <div class="mb-3">
+              <label for="exampleFormControlSelect1" class="form-label">Dependencia</label>
+              <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
+                <option disabled selected>Seleccionar</option>
+                <option v-for="dependencia in dependencias" :key="dependencia.id" :value="dependencia.id">{{ dependencia.descripcion }}</option>
+              </select>
+              <div v-if="!id_depen" class="text-danger">Este campo es obligatorio.</div>
+            </div>
             <div class="col-sm-10 offset-sm-1 d-flex justify-content-center">
+              <br>
               <button type="button" class="btn btn-primary mx-auto fs-5" @click="resultados">
                 Ver Resultados {{ currentYear }}
               </button>
@@ -34,21 +43,43 @@
       data() {
         return {
           currentYear: new Date().getFullYear(),
+          selectedDependencia: null,
+          dependencias: [],
         };
       },
 
       created() {
         this.calcularYGuardarGanadores();
-        /* this.copiarDatosAHistoricoVotos(); */
-    },
+        this.obtenerDependencias();
+      },
 
       methods: {
         resultados() {
-          window.location.href = '/resultado';
+          if (this.selectedDependencia) {
+            window.location.href = `/resultado/${this.selectedDependencia}`;
+          } else {
+            alert('Por favor, selecciona una dependencia antes de ver los resultados.');
+          }
         },
 
         resultadosHistoricos() {
-          window.location.href = '/historico';
+          if (this.selectedDependencia) {
+            // Redirigir a la página de resultados históricos con el ID de la dependencia seleccionada
+            window.location.href = `/historico/${this.selectedDependencia}`;
+          } else {
+            // Manejar caso en el que no se ha seleccionado ninguna dependencia
+            alert('Por favor, selecciona una dependencia antes de ver los resultados históricos.');
+          }
+        },
+
+        obtenerDependencias(){
+        axios.get('/obtenerDependencia')
+            .then((response) => {
+                this.dependencias = response.data.user;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         },
 
         calcularYGuardarGanadores() {
