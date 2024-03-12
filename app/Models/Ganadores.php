@@ -14,4 +14,9 @@ class Ganadores extends Model
         'id_grup',
         'id_emp',
     ];
+
+    public function concurso()
+    {
+        return $this->belongsTo(Concurso::class, 'id');
+    }
 }

@@ -16,4 +16,9 @@ class Registro extends Model
         'id_conc',
         'ronda',
     ];
+
+    public function concurso()
+    {
+        return $this->belongsTo(Concurso::class, 'id_conc');
+    }
 }

@@ -2,9 +2,21 @@
     <div>
       <div class="col-xxl">
         <div class="card mb-4">
-          <br>
-          <h3 class="mb-0 text-center fs-4">Historico de Integrantes de COEPCI</h3>
+          <br><br>
+            <div class="sign-title">
+                <h1 class="title-text text-center">Historico de Integrantes de COEPCI</h1>
+            </div>
+
           <div class="card-body">
+
+            <div class="mb-3">
+                <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
+                <select v-model="id_depen" @change="cambiarDependencia" class="form-select">
+                    <option disabled selected>Seleccionar</option>
+                    <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
+                </select>
+            </div>
+
             <div>
               <ul class="nav nav-tabs" role="tablist">
                 <li v-for="(concursoPorAnio, anio) in historico" :key="anio" class="nav-item">
@@ -136,18 +148,36 @@ export default {
       votosTodosEmpleados: {},
       mostrarInfoEmpleados: false,
       pestañaActual: null,
+      dependencias: [],
+        id_depen: null,
     };
   },
 
   created() {
+
+    this.obtenerDependecias();
     this.obtenerHistorico();
+    this.cambiarDependencia();
   },
 
   methods: {
+
+    obtenerDependecias(){
+        axios.get('/obtenerDependencias')
+            .then((response) => {
+                this.dependencias = response.data.user;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        },
+
+    cambiarDependencia() {
+        this.obtenerHistorico(this.id_depen);
+    },
+
     cambiarPestana(anio) {
-      // Cambiar la pestaña actual
       this.pestañaActual = anio;
-      // Ocultar la lista de empleados al cambiar de pestaña
       this.mostrarInfoEmpleados = false;
     },
 
@@ -155,8 +185,10 @@ export default {
       window.location.href = '/nominaciones';
     },
 
-    obtenerHistorico() {
-      axios.get('/obtenerHistorico')
+
+
+    obtenerHistorico(idDependencia) {
+      axios.get(`/obtenerHistorico?idDependencia=${idDependencia}`)
         .then(response => {
           console.log(response.data);
           this.historico = response.data.historico;
@@ -165,6 +197,8 @@ export default {
           console.error('Error al obtener historico', error);
         });
     },
+
+
 
     obtenerVotosTodosEmpleados(idConcurso) {
         axios.get(`/obtenerVotosTodosEmpleados/${idConcurso}`)
