@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
+use App\Models\Concurso;
 use App\Models\Registro;
 use Illuminate\Http\Request;
 
@@ -48,10 +49,19 @@ class DashboardController extends Controller
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
+            $concursosDependencia = Concurso::where('id_depen', $user->id_depen)->pluck('id');
+
+            $votosRonda1 = 0;
+            $votosRonda2 = 0;
+                if ($concursosDependencia->isNotEmpty()) {
+                    $votosRonda1 = Registro::where('ronda', 1)->whereIn('id_conc', $concursosDependencia)->distinct('id_vot')->count('id_vot');
+                    $votosRonda2 = Registro::where('ronda', 2)->whereIn('id_conc', $concursosDependencia)->distinct('id_vot')->count('id_vot');
+                }
+
             $depen_user = $user->id_depen;
 
-            $votosRonda1 = Registro::where('ronda', 1)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot');
-            $votosRonda2 = Registro::where('ronda', 2)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot');
+            /* $votosRonda1 = Registro::where('ronda', 1)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot');
+            $votosRonda2 = Registro::where('ronda', 2)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot'); */
             $empleadosTotales = Empleado::where('id_depen', $depen_user)->count();
 
             $empleadosNoVotaronRonda1 = $empleadosTotales - $votosRonda1;

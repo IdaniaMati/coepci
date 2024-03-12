@@ -99,8 +99,12 @@ class AdminController extends Controller
 
             DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
-            if (Registro::where('id_depen', $user->id_depen)->count() > 0) {
-                Registro::where('id_depen', $user->id_depen)->delete();
+            $concursosDependencia = Concurso::where('id_depen', $user->id_depen)->pluck('id');
+
+            if ($concursosDependencia->isNotEmpty()) {
+                if (Registro::whereIn('id_conc', $concursosDependencia)->count() > 0) {
+                    Registro::whereIn('id_conc', $concursosDependencia)->delete();
+                }
             }
 
             if (Empleado::where('id_depen', $user->id_depen)->count() > 0) {
@@ -154,7 +158,20 @@ class AdminController extends Controller
 
     public function verificarEventos()
     {
-        $hayRegistros = Registro::count() > 0;
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no autenticado'], 401);
+        }
+
+        $concursosDependencia = Concurso::where('id_depen', $user->id_depen)->pluck('id');
+
+        $hayRegistros = 0;
+            if ($concursosDependencia->isNotEmpty()) {
+                $hayRegistros = Registro::whereIn('id_conc', $concursosDependencia)->count() > 0;
+            }
+
+
 
         return response()->json(['hayRegistros' => $hayRegistros]);
     }
@@ -169,8 +186,14 @@ class AdminController extends Controller
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
+            $concursosDependencia = Concurso::where('id_depen', $user->id_depen)->pluck('id');
+
             $empleadosCount = Empleado::where('id_depen', $user->id_depen)->count() > 0;
-            $registrosCount = Registro::where('id_depen', $user->id_depen)->count() > 0;
+
+            $registrosCount = 0;
+            if ($concursosDependencia->isNotEmpty()) {
+                $registrosCount = Registro::whereIn('id_conc', $concursosDependencia)->count() > 0;
+            }
 
             return response()->json([
                 'hayRegistros' => $empleadosCount > 0 || $registrosCount > 0,

@@ -37,9 +37,9 @@
         </div>
         <div class="row mb-5">
           <br>
-          <div class="col-sm-10 d-flex justify-content-center" adaptive-text>
-            <button type="button" class="btn btn-primary mx-auto fs-5 " @click="votarprimera">Primera Ronda</button> 
-            <button type="button" class="btn btn-primary mx-auto fs-5 " @click="votarsegunda" :disabled="isVotacionDesactivada">Segunda Ronda</button>
+          <div class="col-sm-12 d-flex justify-content-center" adaptive-text>
+            <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarprimera">Primera Ronda</button>
+            <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarsegunda" :disabled="isVotacionDesactivada">Segunda Ronda</button>
           </div>
         </div>
       </div>

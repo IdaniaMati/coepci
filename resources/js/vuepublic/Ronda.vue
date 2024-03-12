@@ -7,6 +7,14 @@
       </div>
     </div>
 
+    <div class="mb-3">
+        <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
+        <select v-model="id_depen" @change="cambiarDependencia" class="form-select">
+            <option disabled selected>Seleccionar</option>
+            <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
+        </select>
+    </div>
+
     <!--Resultado final del concurso-->
     <br>
     <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
@@ -75,6 +83,8 @@
     data() {
       return {
         mensajeNoVotaciones: "",
+        dependencias: [],
+        id_depen: null,
         resultadosPorRonda: {
           1: [],
           2: [],
@@ -84,105 +94,147 @@
     },
 
     created() {
-      this.obtenerResultados();
-      this.obtenerGanadoresV();
+        this.obtenerDependecias();
+        this.obtenerResultados();
+        this.obtenerGanadoresV();
 
       /* this.calcularYGuardarGanadores(); */
     },
 
     methods: {
+
         regresar() {
             window.location.href = '/nominaciones'+ this.dependencia;
         },
 
-      obtenerResultados() {
-        axios.get(`/obtenerResultados?ronda=1`)
-          .then(response => {
-            this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
-          })
-          .catch(error => {
-            if (error.response && error.response.status === 404) {
-              this.resultadosPorRonda[1] = [];
-            } else {
-              console.error('Error al obtener resultados de la ronda 1', error);
-            }
-          });
-
-        axios.get(`/obtenerResultados?ronda=2`)
-          .then(response => {
-            this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
-          })
-          .catch(error => {
-            if (error.response && error.response.status === 404) {
-              this.resultadosPorRonda[2] = [];
-            } else {
-              console.error('Error al obtener resultados de la ronda 2', error);
-            }
-          });
-      },
-
-      agregarNumeracion(resultados) {
-            if (typeof resultados !== 'object' || resultados === null) {
-                return {};
-            }
-
-            let numeradosResultados = {};
-            for (let ronda in resultados) {
-                if (resultados.hasOwnProperty(ronda) && Array.isArray(resultados[ronda])) {
-                    numeradosResultados[ronda] = resultados[ronda].map((votado, index) => ({
-                        ...votado,
-                        numero: index + 1
-                    }));
-                } else {
-                    numeradosResultados[ronda] = [];
-                }
-            }
-
-            return numeradosResultados;
-        },
-
-      /* calcularYGuardarGanadores() {
-        axios
-            .get("/calcular-y-guardar-ganadores")
+        obtenerDependecias(){
+        axios.get('/obtenerDependencias')
             .then((response) => {
-            console.log(response.data.message);
+                this.dependencias = response.data.user;
             })
             .catch((error) => {
-            console.error("Error al calcular y guardar ganadores", error);
+                console.error(error);
+            });
+        },
+
+        cambiarDependencia() {
+            this.obtenerResultados(this.id_depen);
+            this.obtenerGanadoresV(this.id_depen);
+        },
+
+        obtenerResultados(idDependencia) {
+
+            axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
+            .then(response => {
+                this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 404) {
+                this.resultadosPorRonda[1] = [];
+                } else {
+                console.error('Error al obtener resultados de la ronda 1', error);
+                }
+            });
+
+            axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
+            .then(response => {
+                this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 404) {
+                this.resultadosPorRonda[2] = [];
+                } else {
+                console.error('Error al obtener resultados de la ronda 2', error);
+                }
+            });
+        },
+
+        /* obtenerResultados() {
+            axios.get(`/obtenerResultados?ronda=1`)
+            .then(response => {
+                this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 404) {
+                this.resultadosPorRonda[1] = [];
+                } else {
+                console.error('Error al obtener resultados de la ronda 1', error);
+                }
+            });
+
+            axios.get(`/obtenerResultados?ronda=2`)
+            .then(response => {
+                this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 404) {
+                this.resultadosPorRonda[2] = [];
+                } else {
+                console.error('Error al obtener resultados de la ronda 2', error);
+                }
             });
         }, */
 
-      obtenerGanadoresV() {
-        axios.get("/obtenerGanadoresV")
-            .then(response => {
-            this.ganadores = [];
+        agregarNumeracion(resultados) {
+                if (typeof resultados !== 'object' || resultados === null) {
+                    return {};
+                }
 
-            if (response.data.message) {
-              this.mensajeNoVotaciones = "No hay resultados para la Ronda 1.";
-              return;
-            }
+                let numeradosResultados = {};
+                for (let ronda in resultados) {
+                    if (resultados.hasOwnProperty(ronda) && Array.isArray(resultados[ronda])) {
+                        numeradosResultados[ronda] = resultados[ronda].map((votado, index) => ({
+                            ...votado,
+                            numero: index + 1
+                        }));
+                    } else {
+                        numeradosResultados[ronda] = [];
+                    }
+                }
 
-            for (let grupo in response.data.ganadores) {
-                let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-                numero: index + 1,
-                nombre: ganador.id_emp
-                }));
+                return numeradosResultados;
+            },
 
-                this.ganadores.push({
-                grupo: grupo,
-                ganadores: ganadoresGrupo
+        /* calcularYGuardarGanadores() {
+            axios
+                .get("/calcular-y-guardar-ganadores")
+                .then((response) => {
+                console.log(response.data.message);
+                })
+                .catch((error) => {
+                console.error("Error al calcular y guardar ganadores", error);
                 });
-            }
+            }, */
 
-            this.mensajeNoVotaciones = "";
-            })
-            .catch(error => {
-            console.error('Error al obtener ganadores', error);
-            });
+        obtenerGanadoresV(idDependencia) {
+            axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+                .then(response => {
+                this.ganadores = [];
+
+                /* if (response.data.message) {
+                    this.mensajeNoVotaciones = "No hay resultados para la Ronda 1.";
+                return;
+                } */
+
+                for (let grupo in response.data.ganadores) {
+                    let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+                    numero: index + 1,
+                    nombre: ganador.id_emp
+                    }));
+
+                    this.ganadores.push({
+                    grupo: grupo,
+                    ganadores: ganadoresGrupo
+                    });
+                }
+
+                /* this.mensajeNoVotaciones = ""; */
+                })
+                .catch(error => {
+                console.error('Error al obtener ganadores', error);
+                });
+            },
         },
-
-
-    },
   };
 
 </script>

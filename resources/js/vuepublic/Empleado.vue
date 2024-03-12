@@ -31,13 +31,7 @@
             <div class="mb-3">
               <button class="btn btn-primary d-grid w-100" type="button" @click="ingresar"> Ingresar </button>
             </div>
-            <!-- <div v-if="isVotacionDesactivada || isVotacionFin || errorMensaje" class="announcement-box">
-                <p class="announcement-text">
-                {{ isVotacionDesactivada ? 'El sistema de votación se encuentra desactivado.' : (isVotacionFin ? 'Las votaciones han finalizado. Gracias por Participar' : errorMensaje) }}
-                <br />
-                {{ (!isVotacionDesactivada && !isVotacionFin && errorMensaje) ? 'Favor de verificar la fecha en la cual el concurso inicie. Si ya se encuentra activa la convocatoria, favor de recargar la página.' : '' }}
-                </p>
-            </div> -->
+
           </form>
         </div>
       </div>
@@ -63,64 +57,39 @@ export default {
   },
 
   created() {
-    /* this.verificarFechaVotacion(); */
+
   },
 
   methods: {
 
     ingresar() {
-      if (!this.curp) {
-        this.showErrorAlert("Por favor, ingresa una CURP para continuar.");
-        return;
-      }
+        if (!this.curp) {
+            this.showErrorAlert("Por favor, ingresa una CURP para continuar.");
+            return;
+        }
 
-      if (this.curp.length !== 18) {
-        this.showErrorAlert("La CURP debe contener 18 caracteres.");
-        return;
-      }
+        if (this.curp.length !== 18) {
+            this.showErrorAlert("La CURP debe contener 18 caracteres.");
+            return;
+        }
 
-      const dataarray = {
-        curp: this.curp,
-      };
+        const dataarray = {
+            curp: this.curp,
+        };
 
-      axios.post("/EmpleadoLogin", dataarray)
-        .then((response) => {
-            if (response.data.success) {
-                window.location.href = response.data.redirect;
-            } else {
-                this.showErrorAlert(response.data.error || "Error desconocido al intentar iniciar sesión.");
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-            this.showErrorAlert("Hubo un error al intentar iniciar sesión.");
-        });
-},
-
-    /* verificarFechaVotacion() {
-      axios
-        .get("/obtenerFechaInicioConcurso")
-        .then((response) => {
-          if (response.data.fechaInicio && response.data.fechaFin) {
-            const fechaInicioConcurso = new Date(response.data.fechaInicio);
-            const fechaFinConcurso = new Date(response.data.fechaFin);
-
-            this.isVotacionDesactivada = new Date() < fechaInicioConcurso;
-            this.isVotacionFin = new Date() > fechaFinConcurso;
-
-            // Restablece el mensaje de error en caso de éxito
-            this.errorMensaje = null;
-          } else {
-            // Almacena el mensaje de error en una variable
-            this.errorMensaje = "No existe información del concurso";
-          }
-        })
-        .catch((error) => {
-          // Almacena el mensaje de error en una variable
-          this.errorMensaje = "No se encontró información del concurso";
-          console.error(error);
-        });
-    }, */
+        axios.post("/EmpleadoLogin", dataarray)
+            .then((response) => {
+                if (response.data.success) {
+                    window.location.href = response.data.redirect;
+                } else {
+                    this.showErrorAlert(response.data.error || "Error desconocido al intentar iniciar sesión.");
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                this.showErrorAlert("Hubo un error al intentar iniciar sesión.");
+            });
+    },
 
     showErrorAlert(message) {
       Swal.fire({
