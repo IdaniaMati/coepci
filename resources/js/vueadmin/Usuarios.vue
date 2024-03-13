@@ -7,6 +7,11 @@
 
         <div class="card-container">
             <div class="card">
+                <div class="nav-item d-flex align-items-center">
+                    <h5 class="card-header"><strong>Usuarios</strong></h5>
+                    <i class="bx bx-search fs-4 lh-0"></i>
+                    <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                </div>
 
                 <div class="nav-item d-flex align-items-center">
                     <button v-if="hab_permisos('Crear_usuarios')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Usuario</button>
@@ -178,6 +183,7 @@ export default {
 
     data() {
         return {
+            filtro: '',
             users: [],
             user: [],
             dependencias: [],
@@ -207,10 +213,31 @@ export default {
     },
 
     computed: {
+
+        usuariosFiltrados() {
+            const filtroMinusculas = this.filtro.toLowerCase();
+            return this.users.filter((usuarios) => {
+                const nombreCompleto = `${usuarios.name}`;
+                const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                const nombreDependencia = this.dependencias.find(dep => dep.id === usuarios.id_depen)?.descripcion || '';
+
+                return (
+                    nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
+                    nombreSinAcentos.includes(filtroMinusculas) ||
+                    usuarios.email.toLowerCase().includes(filtroMinusculas) ||
+                    nombreDependencia.toLowerCase().includes(filtroMinusculas)
+                );
+            });
+        },
+
+        totalPages() {
+            return Math.ceil(this.usuariosFiltrados.length / this.perPage);
+        },
+
         paginatedUsuarios() {
             const startIndex = (this.pagina - 1) * this.registrosPorPagina;
             const endIndex = startIndex + this.registrosPorPagina;
-            return this.users.slice(startIndex, endIndex);
+            return this.usuariosFiltrados.slice(startIndex, endIndex);
         },
     },
 

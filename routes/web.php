@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\EmpleadoLoginController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\DependenciaController;
+use App\Http\Controllers\VedaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
@@ -93,6 +95,22 @@ Route::middleware(['auth', 'can:Modulo_Usuario'])->group(function () {
     Route::get('/obtenerRolesUsuario/{idUser}', [UserController::class, 'obtenerRolesUsuario']);
 });
 
+
+/*----------------------- Dependencias ------------------------*/
+Route::middleware(['auth', 'can:Modulo_Dependencias'])->group(function () {
+    Route::get('/dependencias', [DependenciaController::class, 'showDependenciasForm'])->name('dependencias');
+    Route::get('/obtenerDependencias', [DependenciaController::class, 'obtenerDependencias']);
+    Route::post('/agregarDependencia', [DependenciaController::class, 'agregarDependencia']);
+    Route::get('/detalleDependencia/{id}', [DependenciaController::class, 'detalleDependencia']);
+    Route::post('/editarDependencia', [DependenciaController::class, 'editarDependencia']);
+    Route::delete('/eliminarDependencia/{id}', [DependenciaController::class, 'eliminarDependencia']);
+});
+
+/*----------------------- Veda ------------------------*/
+Route::middleware(['auth', 'can:Modulo_Veda'])->group(function () {
+    Route::get('/veda', [VedaController::class, 'showVedaForm'])->name('veda');
+});
+
 /*----------------------- Roles ------------------------*/
 // Route::get('/roles', function () { return view('admin.roles');})->middleware(['auth', 'verified'])->name('roles');
 Route::middleware(['auth', 'can:Modulo_Roles'])->group(function () {
@@ -117,6 +135,7 @@ Route::middleware(['auth', 'can:Modulo_Permisos'])->group(function () {
     Route::post('/editarPermiso', [PermissionController::class, 'editarPermiso']);
     Route::delete('/eliminarPermiso/{id}', [PermissionController::class, 'eliminarPermiso']);
 });
+
 
 
 /*---------------------- Acciones Perfil ------------------------*/

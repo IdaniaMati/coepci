@@ -35,9 +35,18 @@ app.component('historico-vue', historico);
 import Dashboard from './vueadmin/Dashboard.vue';
 app.component('dashboard-vue', Dashboard);
 
+
+
+import Dependencias from './vueadmin/Dependencias.vue';
+app.component('dependencias-vue', Dependencias);
+
+import Veda from './vueadmin/Veda.vue';
+app.component('veda-vue', Veda);
+
+
+
 import Datos from './vueadmin/Datos.vue';
 app.component('datos-vue', Datos);
-
 
 import Usuarios from './vueadmin/Usuarios.vue';
 app.component('usuarios-vue', Usuarios);

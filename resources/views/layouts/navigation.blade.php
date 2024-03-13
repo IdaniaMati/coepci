@@ -17,6 +17,14 @@
                         {{ __('Usuarios') }}
                     </x-nav-link>
                     @endcan
+
+                    <x-nav-link :href="route('dependencias')" :active="request()->routeIs('dependencias')">
+                        {{ __('Dependencias') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('veda')" :active="request()->routeIs('veda')">
+                        {{ __('Veda Electoral') }}
+                    </x-nav-link>
+                    
                     @can('Modulo_Roles')
                     <x-nav-link :href="route('roles')" :active="request()->routeIs('roles')">
                         {{ __('Roles') }}

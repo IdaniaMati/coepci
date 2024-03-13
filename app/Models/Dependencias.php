@@ -9,4 +9,7 @@ class Dependencias extends Model
 {
     use HasFactory;
     protected $table = 'dependencias';
+    protected $fillable = [
+        'descripcion',
+    ];
 }
