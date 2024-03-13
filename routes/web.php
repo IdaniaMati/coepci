@@ -18,6 +18,7 @@ Route::get('/obtenerDependencias', [UserController::class, 'obtenerDependencia']
 Route::get('/resultado/dependencia',[EmpleadoLoginController::class, 'resultadoPorDependencia'])->name('resultado.dependencia');
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
+Route::get('/historico/dependencia',[EmpleadoLoginController::class, 'historicoDependencia'])->name('historico.dependencia');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
 Route::get('/obtenerHistorico', [EmpleadoLoginController::class, 'obtenerHistorico'])->name('obtenerHistorico');
 Route::get('/obtenerVotosTodosEmpleados/{idConcurso}', [EmpleadoLoginController::class, 'obtenerVotosTodosEmpleados'])->name('obtenerVotosTodosEmpleados');

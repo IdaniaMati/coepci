@@ -319,6 +319,11 @@ class EmpleadoLoginController extends Controller
         return view('public.historico');
     }
 
+    public function historicoDependencia()
+    {
+        return view('public.historico_dependencia');
+    }
+
     public function resultado(Request $request)
     {
        
