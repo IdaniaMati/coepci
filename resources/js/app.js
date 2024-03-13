@@ -34,10 +34,8 @@ app.component('ronda-dependencia-vue', ronda_dependencia);
 import historico from './vuepublic/Historico.vue';
 app.component('historico-vue', historico);
 
-import historicodependencia from './vuepublic/HistoricoDependencia.vue';
-app.component('historico-dependencia-vue', historicodependencia);
-
-
+import historico_dependencia from './vuepublic/HistoricoDependencia.vue';
+app.component('historico-dependencia-vue', historico_dependencia);
 
 import Dashboard from './vueadmin/Dashboard.vue';
 app.component('dashboard-vue', Dashboard);

@@ -90,7 +90,6 @@
   
       created() {
         this.obtenerDependecias();
-        this.obtenerDependecias();
         this.cambiarDependencia(); 
 
         // Obtener el ID de la dependencia de la URL

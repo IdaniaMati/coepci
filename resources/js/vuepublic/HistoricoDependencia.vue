@@ -1,249 +1,301 @@
 <template>
-    <div>
+  <div>
       <div class="col-xxl">
-        <div class="card mb-4">
-          <br><br>
-            <div class="sign-title">
-                <h1 class="title-text text-center">Historico de Integrantes de COEPCI</h1>
-            </div>
+          <div class="card mb-4">
 
-          <div class="card-body">
-
-            <div class="mb-3">
-                <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
-                <select v-model="id_depen" @change="cambiarDependencia" class="form-select">
-                    <option disabled selected>Seleccionar</option>
-                    <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
-                </select>
-            </div>
-
-            <div>
-              <ul class="nav nav-tabs" role="tablist">
-                <li v-for="(concursoPorAnio, anio) in historico" :key="anio" class="nav-item">
-                  <a :id="`tab-${anio}`" :href="`#pane-${anio}`" class="nav-link" :aria-controls="`pane-${anio}`" data-bs-toggle="tab" role="tab" @click="cambiarPestana(anio)">
-                    {{ anio }} <!-- Año de concurso -->
-                  </a>
-                </li>
-              </ul>
-              <div class="tab-content">
-                <div v-for="(concursoPorAnio, anio) in historico" :key="anio" :id="`pane-${anio}`" class="tab-pane" role="tabpanel">
-                    <!-- <h5 class="mb-3">{{ anio }}</h5> -->
-                    <div v-for="(concurso, concursoKey) in concursoPorAnio" :key="concursoKey" class="row">
-                        <h6 class="mb-3"><strong>{{ concurso.descripcion }}</strong></h6>
-                        <div v-for="(grupo, grupoIndex) in concurso.grupos" :key="grupoIndex" class="col-md-6 col-lg-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h6 class="card-title">{{ `Grupo ${grupoIndex}` }}</h6>
-                                    <ul class="list-group">
-                                        <li v-for="(ganadores, ganadorIndex) in grupo" :key="ganadorIndex" class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span>{{ ganadores }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-3">
-                            <div>
-                            <button type="button" class="btn btn-primary mx-auto fs-5" @click="obtenerVotosTodosEmpleados(concurso.id_conc)">Ver Empleados Votados</button>
-                            </div> <br>
-
-                            <div v-if="mostrarInfoEmpleados && votosTodosEmpleados && votosTodosEmpleados.length > 0">
-                                <div v-for="(grupoInfo, grupoIndex) in votosTodosEmpleados" :key="grupoIndex" class="mb-3">
-                                    <strong>Ronda {{ grupoInfo.ronda }}:</strong>
-                                    <div class="row">
-                                        <div v-for="(grupo, grupoKey) in grupoInfo.empleadosPorRonda" :key="grupoKey" class="col-md-6 col-lg-4 mb-3">
-                                            <div class="card h-100">
-                                                <div class="card-body">
-                                                    <h6 class="card-title">{{ `Grupo ${grupo.grupo}` }}</h6>
-                                                    <ul class="list-group">
-                                                        <li v-for="(empleado, empleadoIndex) in grupo.empleados" :key="empleadoIndex" class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <span>{{ empleado.nombre }}</span>
-                                                            <span class="badge bg-primeros">{{ empleado.novotos }} votos</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
+              <div class="card-header d-flex justify-content-center align-items-center">
+                  <h3 class="mb-0 text-center fs-4">Formulario de votación</h3>
               </div>
-            </div>
+
+              <div class="card-body">
+                  <form>
+                  <div class="col-xxl">
+
+                      <div class="card mb-4" v-for="(grupo, index) in grupos" :key="index">
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                          <h5 class="mb-0">Grupo {{ grupo.numero }}</h5>
+                      </div>
+                      <div class="card-body col-xxl">
+                          <div class="col-sm-10" v-for="i in grupo.numCandidatos">
+                          <div class="row mb-3">
+                              <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
+
+                              <div class="col-sm-10">
+                              <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
+                                  <option disabled selected>Seleccionar</option>
+                                  <option v-for="opcion in grupo.opciones" :value="opcion.id">
+                                      {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
+                                  </option>
+                              </select>
+                              <div v-if="!votos[grupo.numero - 1][i - 1]" class="text-danger">Este campo es obligatorio.</div>
+                              </div>
+
+                          </div>
+                          </div>
+                      </div>
+                      </div>
+
+                  </div>
+                  <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label"></label>
+                      <div class="col-sm-10">
+                          <button type="button" class="btn btn-primary" @click="enviarVotacion" :disabled="yaVoto || !idUsuarioAutenticado">Enviar votación</button>
+                          &nbsp;&nbsp;&nbsp;&nbsp;
+                          <button type="button" class="btn btn-primary" @click="limpiarCampos" :disabled="yaVoto || !idUsuarioAutenticado">Limpiar campos</button>
+                      </div>
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                          <button type="button" class="btn btn-secondary ms-auto" @click="regresar">Regresar</button>
+                      </div>
+                  </div>
+                  </form>
+              </div>
+
           </div>
-          <div class="row mb-5">
-            <label class="col-sm-1 col-form-label"></label>
-            <div class="col-sm-10 d-flex justify-content-center">
-              <button type="button" class="btn btn-primary mx-auto fs-5" @click="regresar">Regresar</button>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  </template>
-
-  <style>
-
-    .concurso-card {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 20px;
-    }
-    .card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-
-  .card-title {
-    color: #B68400;
-    font-weight: bold;
-  }
-
-  .list-group-item {
-    border: 1px solid #ddd;
-    margin-bottom: 5px;
-  }
-
-  .card-body {
-    padding: 20px;
-  }
-
-  .fs-4 {
-    margin-bottom: 20px;
-  }
-
-  .btn-primary {
-    background-color: #AB0A3D;
-    border: 1px solid #AB0A3D;
-  }
-
-  .btn-primary:hover {
-    background-color: #440412;
-    border: 1px solid #440412;
-  }
-
-
-  .bg-primeros{
-  background-color: #ab0a3d;
-}
-
-.bg-segundos{
-  background-color: #9c9312;
-}
-  </style>
+  </div>
+</template>
 
 <script>
-import axios from 'axios';
+  import axios from "axios";
+  import Swal from 'sweetalert2'
+  import 'sweetalert2/dist/sweetalert2.min.css'
 
-export default {
-  data() {
-    return {
-      historico: {},
-      votosTodosEmpleados: {},
-      mostrarInfoEmpleados: false,
-      pestañaActual: null,
-      dependencias: [],
-        id_depen: null,
-    };
-  },
+  export default {
+      data() {
+          return {
+              grupos: [],
+              votos: [],
+              idUsuarioAutenticado: null,
+              yaVoto: false,
+          };
+      },
 
-  created() {
+      created() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const ronda = urlParams.get('ronda');
 
-    this.obtenerDependecias();
-    this.obtenerHistorico();
-    this.cambiarDependencia();
-  },
+          if (ronda === '2') {
+              axios.get('/obtenerSegundaFechaConcurso')
+                  .then((response) => {
+                      const fechaSegunda = response.data.fechaSegundo;
+                      const fechaActual = new Date();
 
-  methods: {
+                      if (new Date(fechaSegunda) <= fechaActual) {
+                          this.verificarVotoUsuarioEnRonda('2');
+                          this.obtenerOpcionesVotacion();
+                          this.obtenerIdUsuarioAutenticado();
+                      } else {
+                          Swal.fire({
+                              icon: 'info',
+                              title: 'Fecha aún no habilitada',
+                              text: 'La votación de la segunda ronda aún no está habilitada.',
+                          }).then(() => {
+                              window.location.href = '/Principal';
+                          });
+                      }
+                  })
+                  .catch((error) => {
+                      console.error(error);
+                  });
+          } else {
+              this.verificarVotoUsuarioEnRonda(ronda);
+              this.obtenerOpcionesVotacion();
+              this.obtenerIdUsuarioAutenticado();
+          }
+      },
 
-    obtenerDependecias(){
-        axios.get('/obtenerDependencias')
-            .then((response) => {
-                this.dependencias = response.data.user;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        },
+      methods: {
+          verificarVotoUsuarioEnRonda(ronda) {
+              axios.get(`/verificarVotoUsuarioActual/${ronda}`)
+                  .then((response) => {
+                      this.yaVoto = response.data.yaVoto;
+                      if (response.data.yaVoto) {
+                          Swal.fire({
+                              icon: 'info',
+                              title: 'Ya has realizado tu voto',
+                              text: 'No puedes votar más de una vez.',
+                          }).then(() => {
+                              window.location.href = '/Principal';
+                          });
+                      }
+                  })
+                  .catch((error) => {
+                      console.error(error);
+                  });
+          },
 
-    cambiarDependencia() {
-        this.obtenerHistorico(this.id_depen);
-    },
+          regresar() {
+              window.location.href = '/Principal';
+          },
 
-    cambiarPestana(anio) {
-      this.pestañaActual = anio;
-      this.mostrarInfoEmpleados = false;
-    },
+          ordenarOpcionesAlfabeticamente() {
+              this.grupos.forEach((grupo) => {
+                  grupo.opciones.sort((a, b) => {
+                      const nombreA = `${a.nombre} ${a.apellido_paterno} ${a.apellido_materno}`.toLowerCase();
+                      const nombreB = `${b.nombre} ${b.apellido_paterno} ${b.apellido_materno}`.toLowerCase();
+                      return nombreA.localeCompare(nombreB);
+                  });
+              });
+          },
 
-    regresar() {
-      window.location.href = '/nominaciones';
-    },
+          limpiarCampos() {
+              this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
+          },
+
+          obtenerOpcionesVotacion() {
+              const urlParams = new URLSearchParams(window.location.search);
+              const ronda = urlParams.get('ronda');
+
+              axios.get(`/obtenerOpcionesVotacion/${ronda}`)
+              .then((response) => {
+                  //console.log('Datos recibidos:', response.data);
+                  
+                  try {
+                      let dataArray;
+
+                      if (Array.isArray(response.data)) {
+                          dataArray = response.data;
+                      } else if (typeof response.data === 'object') {
+                          dataArray = Object.values(response.data);
+                      } else {
+                          //console.error('La respuesta no es un array ni un objeto.');
+                          return;
+                      }
+
+                      this.grupos = dataArray.reduce((accumulator, opcion) => {
+                          const existingGroup = accumulator.find((group) => group.numero === opcion.id_grup);
+
+                          if (existingGroup) {
+                              existingGroup.opciones.push(opcion);
+
+                              existingGroup.opciones.sort((a, b) => {
+                                  const aFullName = (a.nombre || '') + (a.apellido_paterno || '') + (a.apellido_materno || '');
+                                  const bFullName = (b.nombre || '') + (b.apellido_paterno || '') + (b.apellido_materno || '');
+                                  return aFullName.localeCompare(bFullName);
+                              });
+
+                              existingGroup.numCandidatos = Math.max(existingGroup.numCandidatos, 2);
+                          } else {
+                              accumulator.push({
+                                  numero: opcion.id_grup,
+                                  numCandidatos: opcion.id_grup === 3 ? 3 : 2,
+                                  opciones: [opcion],
+                              });
+                          }
+
+                          return accumulator;
+                      }, []);
+
+                      this.ordenarOpcionesAlfabeticamente();
+                      this.grupos.sort((a, b) => a.numero - b.numero);
+                      this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
+                  } catch (error) {
+                      console.error('Error al procesar los datos.', error);
+                  }
+              })
+              .catch((error) => {
+                  console.error('Error al obtener opciones de votación', error);
+              });
+          },
+
+          obtenerIdUsuarioAutenticado() {
+          axios.get("/obtenerIdUsuarioAutenticado")
+              .then((response) => {
+              this.idUsuarioAutenticado = response.data.id;
+              })
+              .catch((error) => {
+              console.error('Error al obtener el ID del usuario autenticado', error);
+              });
+          },
+
+          enviarVotacion() {
+              this.obtenerIdUsuarioAutenticado();
+
+              const urlParams = new URLSearchParams(window.location.search);
+              const ronda = urlParams.get('ronda');
+
+              axios.get('/obtenerConcursoId')
+                  .then(response => {
+                      const ultimoConcursoId = response.data.ultimoConcursoId;
+
+                      const candidatosPorGrupo = new Set();
+                      const errores = [];
+
+                      for (let i = 0; i < this.grupos.length; i++) {
+                          for (let j = 0; j < this.votos[i].length; j++) {
+                              const candidatoId = this.votos[i][j];
+
+                              if (candidatoId === null) {
+                                  errores.push('Debes seleccionar un candidato en cada grupo.');
+                              }
+
+                              if (candidatosPorGrupo.has(candidatoId)) {
+                                  errores.push('No puedes seleccionar al mismo candidato en un grupo.');
+                              }
+                              candidatosPorGrupo.add(candidatoId);
+                          }
+                      }
+
+                      if (errores.length > 0) {
+                          // Mostrar mensajes de error al usuario
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'Errores',
+                              html: errores.join('<br>'),
+                          });
+                          return;
+                      }
+
+                      // Continuar con el envío de votos si no hay errores
+
+                      const promises = [];
+
+                      for (let i = 0; i < this.grupos.length; i++) {
+                          for (let j = 0; j < this.votos[i].length; j++) {
+                              const candidatoId = this.votos[i][j];
+                              const votanteId = this.idUsuarioAutenticado;
+                              const grupoId = this.grupos[i].numero;
+
+                              promises.push(
+                                  axios.post('/enviarVotacion', {
+                                      votante_id: votanteId,
+                                      candidato_id: candidatoId,
+                                      grupo_id: grupoId,
+                                      concurso_id: ultimoConcursoId,
+                                      ronda: ronda,
+                                  })
+                              );
+                          }
+                      }
+
+                      Promise.all(promises)
+                          .then(responses => {
+                              console.log('Votos enviados con éxito', responses);
+
+                              Swal.fire({
+                                  icon: 'success',
+                                  title: 'Voto registrado',
+                                  text: 'Se han registrado su voto exitosamente',
+                                  timer: 2000,
+                                  showConfirmButton: false
+                              });
+
+                              setTimeout(() => {
+                                  this.limpiarCampos();
+                                  window.location.href = '/nominaciones';
+                              }, 2000);
+                          })
+                          .catch(error => {
+                              console.error('Error al enviar los votos', error);
+                          });
+                  })
+                  .catch(error => {
+                      console.error('Error al obtener el último concursoId', error);
+                  });
+          },
+
+      },
+  };
 
 
-
-    obtenerHistorico(idDependencia) {
-      axios.get(`/obtenerHistorico?idDependencia=${idDependencia}`)
-        .then(response => {
-          console.log(response.data);
-          this.historico = response.data.historico;
-        })
-        .catch(error => {
-          console.error('Error al obtener historico', error);
-        });
-    },
-
-
-
-    obtenerVotosTodosEmpleados(idConcurso) {
-        axios.get(`/obtenerVotosTodosEmpleados/${idConcurso}`)
-        .then(response => {
-            if (response.data && typeof response.data === 'object') {
-            const votosPorRondaYGrupo = response.data.votosPorRondaYGrupo;
-            const votosEmpleados = [];
-
-            for (const ronda in votosPorRondaYGrupo) {
-                if (Object.prototype.hasOwnProperty.call(votosPorRondaYGrupo, ronda)) {
-                const grupos = votosPorRondaYGrupo[ronda];
-
-                const empleadosPorRonda = [];
-                for (const grupo in grupos) {
-                    if (Object.prototype.hasOwnProperty.call(grupos, grupo)) {
-                    const empleados = grupos[grupo].map(empleado => ({
-                        nombre: empleado.nombre,
-                        novotos: empleado.novotos
-                    }));
-
-                    empleadosPorRonda.push({
-                        grupo: Number(grupo),
-                        empleados
-                    });
-                    }
-                }
-
-                votosEmpleados.push({
-                    ronda: Number(ronda),
-                    empleadosPorRonda
-                });
-                }
-            }
-            this.mostrarInfoEmpleados = !this.mostrarInfoEmpleados;
-
-            this.votosTodosEmpleados = votosEmpleados.sort((a, b) => a.ronda - b.ronda);
-            } else {
-            console.error('La respuesta del servidor no tiene la estructura esperada.');
-            }
-        })
-        .catch(error => {
-            console.error('Error al obtener votos por ronda y grupo', error);
-        });
-    },
-
-  },
-};
-</script>./HistoricoDependencia.vue
+</script>

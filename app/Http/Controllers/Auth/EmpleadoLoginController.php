@@ -326,7 +326,6 @@ class EmpleadoLoginController extends Controller
 
     public function resultado(Request $request)
     {
-       
         return view( 'public.ronda' );
     }
 
@@ -609,55 +608,5 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
-    /* public function obtenerHistorico()
-    {
-        try {
-            $historico = Ganadores::select('concursos.id as id_conc','concursos.descripcion as concurso', 'concursos.fechaIni1ronda', 'ganadores.id_grup', 'ganadores.id_emp')
-                ->join('concursos', 'ganadores.id_conc', '=', 'concursos.id')
-                ->get();
-
-            $historicoAgrupado = $historico->groupBy(function ($item) {
-                return Carbon::parse($item->fechaIni1ronda)->format('Y');
-            })->map(function ($concursoPorAno) {
-                return $concursoPorAno->groupBy('concurso')->map(function ($grupoPorConcurso) {
-                    return [
-                        'id_conc' => $grupoPorConcurso->first()->id_conc,
-                        'descripcion' => $grupoPorConcurso->first()->concurso,
-                        'grupos' => $grupoPorConcurso->groupBy('id_grup')->map(function ($ganadoresPorGrupo) {
-                            return $ganadoresPorGrupo->pluck('id_emp');
-                        }),
-                    ];
-                });
-            });
-
-
-            return response()->json(['historico' => $historicoAgrupado]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function obtenerVotosTodosEmpleados($idConcurso)
-    {
-        try {
-            $votosPorRondaYGrupo = HistoricoVotos::select('nombre', 'id_grup', 'id_conc', 'ronda', 'novotos')
-                ->where('id_conc', $idConcurso)
-                ->orderBy('ronda')
-                ->orderBy('id_grup')
-                ->orderByDesc('novotos')
-                ->get();
-
-
-                $votosAgrupados = $votosPorRondaYGrupo->groupBy(['ronda', 'id_grup']);
-
-            return response()->json(['votosPorRondaYGrupo' => $votosAgrupados]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    } */
-
-
 
 }
