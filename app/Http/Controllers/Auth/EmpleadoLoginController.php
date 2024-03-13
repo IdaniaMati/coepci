@@ -321,46 +321,19 @@ class EmpleadoLoginController extends Controller
 
     public function resultado(Request $request)
     {
-        /* $ronda = $request->get('ronda', 1);
-
-        $registros = Registro::where('ronda', $ronda)->get();
-
-        if ($registros->isEmpty()) {
-            return view('public.ronda', ['resultados' => null, 'ronda' => $ronda]);
-        }
-
-        $resultados = [];
-
-        foreach ($registros as $registro) {
-            $empleado = Empleado::find($registro->id_nom);
-
-            $grupo = $registro->id_grup;
-
-            if (!isset($resultados[$grupo])) {
-                $resultados[$grupo] = [];
-            }
-
-            if (isset($resultados[$grupo][$empleado->id])) {
-                $resultados[$grupo][$empleado->id]['votos']++;
-            } else {
-                $resultados[$grupo][$empleado->id] = [
-                    'nombre' => $empleado->nombre,
-                    'apellido_paterno' => $empleado->apellido_paterno,
-                    'apellido_materno' => $empleado->apellido_materno,
-                    'votos' => 1,
-                ];
-            }
-        }
-
-        foreach ($resultados as &$grupoResultados) {
-            usort($grupoResultados, function ($a, $b) {
-                return $b['votos'] - $a['votos'];
-            });
-        }
-
-        return view('public.ronda', ['resultados' => $resultados, 'ronda' => $ronda]); */
+       
         return view( 'public.ronda' );
     }
+
+    
+    public function resultadoPorDependencia(Request $request)
+    {
+        $idDependencia = $request->query('idDependencia');
+        return view( 'public.ronda_dependencia', compact('idDependencia') );
+        
+    }
+
+
 
 
     /* ============Vistas Públicas============ */
@@ -434,92 +407,6 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
-    /* public function obtenerGanadoresV()
-    {
-        try {
-            $ultimoConcurso = Concurso::latest()->first();
-
-            if (!$ultimoConcurso) {
-                return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
-            }
-
-            $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
-                ->select('ganadores.id_emp', 'ganadores.id_grup')
-                ->get();
-
-            $ganadoresAgrupados = $ganadores->groupBy('id_grup');
-
-            return response()->json(['ganadores' => $ganadoresAgrupados]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    } */
-
-    /* public function obtenerResultados(Request $request)
-    {
-        $ronda = $request->get('ronda', 1);
-
-        $registros = Registro::where('ronda', $ronda)->get();
-
-        if ($registros->isEmpty()) {
-            return response()->json(['message' => "No hay resultados para la Ronda $ronda."], 404);
-        }
-
-        $resultados = [];
-
-        foreach ($registros as $registro) {
-            $empleado = Empleado::find($registro->id_nom);
-
-            $grupo = $registro->id_grup;
-
-            if (!isset($resultados[$grupo])) {
-                $resultados[$grupo] = [];
-            }
-
-            if (isset($resultados[$grupo][$empleado->id])) {
-                $resultados[$grupo][$empleado->id]['votos']++;
-            } else {
-                $resultados[$grupo][$empleado->id] = [
-                    'nombre' => $empleado->nombre,
-                    'apellido_paterno' => $empleado->apellido_paterno,
-                    'apellido_materno' => $empleado->apellido_materno,
-                    'votos' => 1,
-                ];
-            }
-        }
-
-        foreach ($resultados as &$grupoResultados) {
-            usort($grupoResultados, function ($a, $b) {
-                return $b['votos'] - $a['votos'];
-            });
-        }
-
-        return response()->json($resultados);
-    }
- */
-    /* public function calcularYGuardarGanadores() //Resultados automaticos
-    {
-
-        $ultimoConcurso = Concurso::latest('id')->first();
-        $fechaFinConcurso = $ultimoConcurso->fechaFin;
-
-        if (now() > $fechaFinConcurso) {
-
-            $idUltimoConcurso = $ultimoConcurso->id;
-
-            $this->calcularYGuardarGanadoresPorGrupo($idUltimoConcurso, 1, 2);
-            $this->calcularYGuardarGanadoresPorGrupo($idUltimoConcurso, 2, 2);
-            $this->calcularYGuardarGanadoresPorGrupo($idUltimoConcurso, 3, 3);
-
-            $this->copiarDatosAHistoricoVotos();
-
-            return response()->json(['message' => 'Ganadores calculados y guardados correctamente.']);
-        } else {
-            return response()->json(['message' => 'La fecha de finalización del concurso aún no ha pasado.']);
-        }
-    } */
 
     public function calcularYGuardarGanadores()
     {

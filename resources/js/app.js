@@ -28,6 +28,9 @@ app.component('nominacion-vue', nominacion);
 import ronda from './vuepublic/Ronda.vue';
 app.component('ronda-vue', ronda);
 
+import ronda_dependencia from './vuepublic/RondaDependencia.vue';
+app.component('ronda-dependencia-vue', ronda_dependencia);
+
 import historico from './vuepublic/Historico.vue';
 app.component('historico-vue', historico);
 

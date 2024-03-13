@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
 Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
 Route::get('/obtenerDependencias', [UserController::class, 'obtenerDependencia']);
-Route::get('/resultado/dependencia/{dependencia}',[EmpleadoLoginController::class, 'resultado'])->name('resultados');
+Route::get('/resultado/dependencia',[EmpleadoLoginController::class, 'resultadoPorDependencia'])->name('resultado.dependencia');
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
