@@ -97,6 +97,19 @@ class AdminController extends Controller
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
+            $concursos = Concurso::where('id_depen', $user->id_depen)->get();
+
+            if ($concursos->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'No hay concursos para esta dependencia']);
+            }
+
+            $ultimoConcurso = $concursos->last();
+            $fechaFinConcurso = $ultimoConcurso->fechaFin;
+
+            if (strtotime($fechaFinConcurso) > strtotime('now')) {
+                return response()->json(['success' => false, 'message' => 'No se puede vaciar la base de datos porque el último concurso aún no ha finalizado']);
+            }
+
             DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
             $concursosDependencia = Concurso::where('id_depen', $user->id_depen)->pluck('id');
@@ -121,7 +134,6 @@ class AdminController extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
-
 
     public function agregarEvento(Request $request)
     {

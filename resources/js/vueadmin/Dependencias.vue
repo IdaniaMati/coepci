@@ -191,15 +191,15 @@ export default {
         obtenerDependencias() {
             axios.get('/obtenerDependencias')
                 .then((response) => {
-                    if (response.data.dependencia) {
-                        this.dependencias = response.data.dependencia;
+                    if (response.data.user) {
+                        this.dependencias = response.data.user;
                         this.calcularTotalPaginas();
                     } else {
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 

@@ -219,11 +219,11 @@ export default {
                         this.roles = response.data.role;
                         this.calcularTotalPaginas();
                     } else {
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 
@@ -380,11 +380,11 @@ export default {
                         this.permisos = response.data.permiso;
 
                     } else {
-                        console.log(response.data.message);
+                        //(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 

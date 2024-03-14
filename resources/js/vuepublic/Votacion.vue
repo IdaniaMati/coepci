@@ -149,7 +149,7 @@
                 axios.get(`/obtenerOpcionesVotacion/${ronda}`)
                 .then((response) => {
                     //console.log('Datos recibidos:', response.data);
-                    
+
                     try {
                         let dataArray;
 
@@ -270,7 +270,7 @@
 
                         Promise.all(promises)
                             .then(responses => {
-                                console.log('Votos enviados con éxito', responses);
+                                //console.log('Votos enviados con éxito', responses);
 
                                 Swal.fire({
                                     icon: 'success',

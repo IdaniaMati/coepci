@@ -207,7 +207,7 @@ export default {
 
     mounted() {
         this.obtenerUsuarios();
-        this.obtenerDependecias();
+        this.obtenerDependencias();
         this.calcularTotalPaginas();
         this.obtenerPermisos();
     },
@@ -265,16 +265,16 @@ export default {
                     this.users = response.data.user;
                     this.calcularTotalPaginas();
                 } else {
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                 }
             })
             .catch((error) => {
-                console.error(error);
+                //console.error(error);
             });
         },
 
-        obtenerDependecias(){
-        axios.get('/obtenerDependencia')
+        obtenerDependencias(){
+        axios.get('/obtenerDependencias')
             .then((response) => {
                 this.dependencias = response.data.user;
             })
@@ -287,7 +287,6 @@ export default {
             const dependencia = this.dependencias.find(dep => dep.id === idDepen);
             return dependencia ? dependencia.descripcion : 'Sin descripción';
         },
-
 
         agregarUsuario() {
 
@@ -375,22 +374,20 @@ export default {
 
         },
 
-        eliminarUsuario(idUser){
+        eliminarUsuario(idUser) {
             Swal.fire({
                 title: '¿Estás seguro de que deseas eliminar este Usuario?',
-                text: "No se podra revertir dicha acción!",
+                text: "No se podrá revertir dicha acción!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Si',
                 cancelButtonText: 'No'
-
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        axios.delete("/eliminarUsuario/" + idUser)
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete("/eliminarUsuario/" + idUser)
                         .then(response => {
-
                             Swal.fire({
                                 position: 'center',
                                 icon: 'success',
@@ -403,15 +400,24 @@ export default {
                         .catch((error) => {
                             console.error(error);
 
-                            Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: response.data.message,
+                            if (error.response.data.error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error...',
+                                    text: error.response.data.error,
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Error al eliminar el usuario',
+                                });
+                            }
                         });
-                    });
                 }
-            })
+            });
         },
+
 
         abrirModalUsuario() {
             $("#modalusuarios").modal({ backdrop: "static", keyboard: false });
@@ -457,11 +463,11 @@ export default {
                         this.roles = response.data.role;
 
                     } else {
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 

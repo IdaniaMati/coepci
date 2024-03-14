@@ -8,25 +8,36 @@
         <div class="card">
           <div class="card-body">
             <div class="form-check form-switch mb-2">
-              <input v-model="vedaActiva" v-if="hab_permisos('Activar_Veda')" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+              <input v-model="vedaActiva" @change="cambiarEstadoVeda" v-if="hab_permisos('Activar_Veda')" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
               <label class="form-check-label" for="flexSwitchCheckDefault">Veda Electoral</label>
             </div>
           </div>
 
           <div class="table-container">
             <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Imagen Actual</th>
-                  <th>Nueva Imagen</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in imagenes" :key="index">
-                  <td><img :src="item.imagenActual" alt="Imagen Actual" class="imagen-preview"></td>
-                  <td><img :src="item.nuevaImagen" alt="Nueva Imagen" class="imagen-preview"></td>
-                </tr>
-              </tbody>
+                <thead>
+                    <tr>
+                    <th>Imágenes Activas</th>
+                    <th>Imágenes Inactivas</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <template v-if="imagenesActivas.length > 0 || imagenesInactivas.length > 0">
+                        <tr v-for="(active, index) in imagenesActivas" :key="'row-' + index">
+                        <td><img :src="active.ruta" alt="Imagen Actual" class="imagen-preview"></td>
+                        <td v-if="index < imagenesInactivas.length">
+                            <img :src="imagenesInactivas[index].ruta" alt="Imagen Actual" class="imagen-preview">
+                        </td>
+
+                        </tr>
+                    </template>
+                    <template v-else>
+                        <tr>
+                        <td colspan="4">No hay imágenes para mostrar</td>
+                        </tr>
+                    </template>
+                </tbody>
             </table>
           </div>
         </div>
@@ -34,34 +45,29 @@
     </div>
   </template>
 
-<style>
+  <script>
+  import Swal from 'sweetalert2';
+  import permisos from "../permisos/permisos.vue";
 
-</style>
-
-<script>
-import Swal from 'sweetalert2';
-import permisos from "../permisos/permisos.vue";
-
-export default {
+  export default {
 
     components: {
 
     },extends:permisos,
 
     data() {
-        return {
-            lista_permisos:[],
-            vedaActiva: false,
-            imagenes: [
-                { imagenActual: 'assets/img/logo-2.png',
-                    nuevaImagen: 'assets/img/veda/Escudo.png'
-                },
-            ],
-        };
+      return {
+        lista_permisos:[],
+        vedaActiva: false,
+        imagenesActivas: [],
+        imagenesInactivas: [],
+      };
     },
 
     mounted() {
-        this.obtenerPermisos_user();
+      this.obtenerPermisos_user();
+      this.obtenerEstadoVeda();
+      this.obtenerImagenes();
     },
 
     computed: {
@@ -69,28 +75,83 @@ export default {
     },
 
     methods: {
-
         obtenerPermisos_user(){
             axios
-                .get("/Obtenerpermisos")
-                .then((response) => {
-                    this.lista_permisos  = response.data;
-
-                })
-                .catch((error) => {
-                    console.error(error);
-
-                });
-
+            .get("/Obtenerpermisos")
+            .then((response) => {
+                this.lista_permisos  = response.data;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         },
 
-    }
-};
-</script>
+        obtenerEstadoVeda() {
+            axios
+            .get("/obtenerEstadoVeda")
+            .then((response) => {
+                this.vedaActiva = response.data.estado === 1;
+            })
+            .catch((error) => {
+                console.error(error);
+                Swal.fire('Error al obtener el estado de la veda', '', 'error');
+            });
+        },
 
-<style>
+        cambiarEstadoVeda() {
+            const nuevoEstadoVeda = this.vedaActiva ? 1 : 0;
+
+            axios
+            .post("/cambiarEstadoVeda", { estado: nuevoEstadoVeda })
+            .then((response) => {
+                this.cambiarEstadoImagen(nuevoEstadoVeda);
+                this.obtenerImagenes();
+            })
+            .catch((error) => {
+                console.error(error);
+                Swal.fire('Error al cambiar el estado de la veda', '', 'error');
+            });
+        },
+
+        cambiarEstadoImagen(nuevoEstado) {
+            axios
+            .post("/cambiarEstadoImagen", { estado: nuevoEstado })
+            .then((response) => {
+                Swal.fire('Estado de la veda y las imágenes actualizado correctamente', '', 'success');
+            })
+            .catch((error) => {
+                console.error(error);
+                Swal.fire('Error al cambiar el estado de las imágenes', '', 'error');
+            });
+        },
+
+        obtenerImagenes() {
+        axios
+            .get("/Obtenertodasimagenes")
+            .then((response) => {
+                const activas = response.data.activas || [];
+                const inactivas = response.data.inactivas || [];
+                this.imagenesActivas = activas.map((item) => ({
+                    ruta: item.ruta,
+                    nuevaImagen: item.nuevaImagen
+                }));
+                this.imagenesInactivas = inactivas.map((item) => ({
+                    ruta: item.ruta,
+                    nuevaImagen: item.nuevaImagen
+                }));
+            })
+            .catch((error) => {
+                console.error(error);
+                Swal.fire('Error al obtener las imágenes', '', 'error');
+            });
+        },
+    }
+  };
+  </script>
+
+  <style>
   .imagen-preview {
     width: 50%;
     height: auto;
   }
-</style>
+  </style>

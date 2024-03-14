@@ -7,6 +7,7 @@ use App\Models\Concurso;
 use App\Models\Ganadores;
 use App\Models\Registro;
 use App\Models\HistoricoVotos;
+use App\Models\Dependencias;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Validator;
@@ -434,7 +435,6 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
 
     /* public function obtenerGanadoresV()
     {

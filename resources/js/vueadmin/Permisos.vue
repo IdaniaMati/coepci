@@ -171,11 +171,11 @@ export default {
                         this.permisos = response.data.permiso;
                         this.calcularTotalPaginas();
                     } else {
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 

@@ -94,7 +94,7 @@
     },
 
     created() {
-        this.obtenerDependecias();
+        this.obtenerDependencias();
         this.obtenerResultados();
         this.obtenerGanadoresV();
 
@@ -107,7 +107,7 @@
             window.location.href = '/nominaciones';
         },
 
-        obtenerDependecias(){
+        obtenerDependencias(){
         axios.get('/obtenerDependencias')
             .then((response) => {
                 this.dependencias = response.data.user;
@@ -194,17 +194,6 @@
 
                 return numeradosResultados;
             },
-
-        /* calcularYGuardarGanadores() {
-            axios
-                .get("/calcular-y-guardar-ganadores")
-                .then((response) => {
-                console.log(response.data.message);
-                })
-                .catch((error) => {
-                console.error("Error al calcular y guardar ganadores", error);
-                });
-            }, */
 
         obtenerGanadoresV(idDependencia) {
             axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)

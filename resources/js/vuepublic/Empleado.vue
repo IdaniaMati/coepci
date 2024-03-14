@@ -7,7 +7,8 @@
 
           <div class="app-brand justify-content-center">
 
-              <img src="assets/img/logo-2.png" alt="" height="150px" />
+              <!-- <img src="assets/img/logo-2.png" alt="" height="150px" /> -->
+              <img :src="rutaImagen" alt="" height="150px" />
 
           </div>
           <div class="justify-content-center">
@@ -54,6 +55,7 @@ export default {
       curp: "",
       isVotacionDesactivada: false,
       isVotacionFin: false,
+      rutaImagen: "",
     };
   },
 
@@ -62,7 +64,7 @@ export default {
   },
 
   created() {
-
+    this.obtenerImagenes();
   },
 
   methods: {
@@ -96,18 +98,34 @@ export default {
             });
     },
 
+    obtenerImagenes(){
+        axios
+            .get("/Obtenerimagenes/")
+            .then((response) => {
+                if (response.data.length > 0) {
+                    const imagenLogo = response.data.find(imagen => imagen.tipo === "logo" && imagen.estado === 1);
+                    if (imagenLogo) {
+                        this.rutaImagen = imagenLogo.ruta;
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    },
+
     showErrorAlert(message) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: message,
-      });
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: message,
+        });
     },
 
   },
 };
 </script>
 
-<style scoped>
-/* Add your scoped styles here if needed */
+<style>
+
 </style>

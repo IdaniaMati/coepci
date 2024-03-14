@@ -155,14 +155,14 @@ export default {
 
   created() {
 
-    this.obtenerDependecias();
+    this.obtenerDependencias();
     this.obtenerHistorico();
     this.cambiarDependencia();
   },
 
   methods: {
 
-    obtenerDependecias(){
+    obtenerDependencias(){
         axios.get('/obtenerDependencias')
             .then((response) => {
                 this.dependencias = response.data.user;
@@ -190,11 +190,11 @@ export default {
     obtenerHistorico(idDependencia) {
       axios.get(`/obtenerHistorico?idDependencia=${idDependencia}`)
         .then(response => {
-          console.log(response.data);
+          //console.log(response.data);
           this.historico = response.data.historico;
         })
         .catch(error => {
-          console.error('Error al obtener historico', error);
+          //console.error('Error al obtener historico', error);
         });
     },
 

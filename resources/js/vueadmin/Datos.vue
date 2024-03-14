@@ -270,11 +270,11 @@ export default {
                         this.eventos = response.data.eventos;
                         this.calcularTotalPaginas();
                     } else {
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 
@@ -440,12 +440,12 @@ export default {
         },
 
         async verificarGanadores(idEvento) {
-            console.log(idEvento);
+
             try {
                 const response = await axios.get(`/verificarGanadores/${idEvento}`);
                 return response.data.tieneGanadores;
             } catch (error) {
-                console.error(error);
+                //console.error(error);
                 Swal.fire('Error', 'Hubo un error al verificar la existencia de ganadores.', 'error');
                 return true;
             }

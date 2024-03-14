@@ -75,21 +75,6 @@ class UserController extends Controller
         }
     }
 
-    public function obtenerDependencia()
-    {
-        try {
-            $depen = Dependencias::all();
-
-            if ($depen->isEmpty()) {
-                return response()->json(['message' => 'No hay dependencias']);
-            }
-
-            return response()->json(['user' => $depen]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
     public function detalleUsuario($id)
     {
         $user = User::find($id);
@@ -134,15 +119,40 @@ class UserController extends Controller
         }
     }
 
-
-    public function eliminarUsuario($id)
+    public function eliminarUsuario($idUser)
     {
         try {
-            User::findOrFail($id)->delete();
 
-            return response()->json(['success' => true, 'message' => 'Rol eliminado correctamente']);
+            $user = User::findOrFail($idUser);
+
+            if ($user->hasRole('Administrador')) {
+
+                $role = Role::where('name', 'Administrador')->first();
+                $administradores = $role->users()->count();
+
+                if ($administradores <= 1) {
+                    return response()->json(['error' => 'No se puede eliminar el único administrador']);
+                }
+            }
+
+            $user->delete();
+
+            return response()->json(['message' => 'Usuario eliminado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al eliminar el usuario'], 500);
+        }
+    }
+
+    public function verificarAdministradores()
+    {
+        try {
+            $role = Role::where('name', 'Administrador')->first();
+
+            $administradores = $role->users()->count();
+
+            return response()->json(['administradores' => $administradores]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al verificar los administradores'], 500);
         }
     }
 

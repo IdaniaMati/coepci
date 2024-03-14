@@ -180,14 +180,14 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
                                 });
                             })
                             .catch((errorVotos) => {
-                                console.error("Error al obtener los votos en ambas rondas", errorVotos);
+                                //console.error("Error al obtener los votos en ambas rondas", errorVotos);
                             });
                     } else {
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
                 });
         },
 
@@ -197,7 +197,7 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
                 this.votosRonda1 = response.data.votosRonda1;
                 this.votosRonda2 = response.data.votosRonda2;
                 } catch (error) {
-                    console.error(error);
+                    //console.error(error);
             }
         },
 

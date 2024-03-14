@@ -20,10 +20,10 @@ class DependenciaController extends Controller
             $depen = Dependencias::all();
 
             if ($depen->isEmpty()) {
-                return response()->json(['message' => 'No hay Dependencias']);
+                return response()->json(['message' => 'No hay dependencias']);
             }
 
-            return response()->json(['dependencia' => $depen]);
+            return response()->json(['user' => $depen]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

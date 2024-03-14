@@ -55,23 +55,14 @@
         axios
             .get("/calcular-y-guardar-ganadores")
             .then((response) => {
-            console.log(response.data.message);
+            //console.log(response.data.message);
             })
             .catch((error) => {
-            console.error("Error al calcular y guardar ganadores", error);
+            //console.error("Error al calcular y guardar ganadores", error);
             });
         },
 
-        /* copiarDatosAHistoricoVotos() {
-        axios
-            .get("/copiarDatosAHistoricoVotos")
-            .then((response) => {
-            console.log(response.data.message);
-            })
-            .catch((error) => {
-            console.error("Error al calcular y guardar ganadores", error);
-            });
-        }, */
+
       },
     };
   </script>

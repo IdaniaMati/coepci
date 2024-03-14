@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Route;
 /*------------------------ Resultados Públicos ------------------------*/
 Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
 Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
-Route::get('/obtenerDependencias', [UserController::class, 'obtenerDependencia']);
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
@@ -29,7 +28,6 @@ Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('emplea
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
 Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
-// Route::get('/copiarDatosAHistoricoVotos', [EmpleadoLoginController::class, 'copiarDatosAHistoricoVotos'])->name('copiarDatosAHistoricoVotos');
 Route::get('/obtenerGanadoresV', [EmpleadoLoginController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
 Route::get('/obtenerGanadores', [EmpleadoLoginController::class, 'obtenerGanadores'])->name('obtenerGanadores');
 
@@ -48,24 +46,23 @@ Route::middleware(['auth:empleado'])->group(function () {
 });
 
 
-/*------------------------ Permisos ------------------------*/
+/*------------------------ GENERAL ------------------------*/
 Route::get('/Obtenerpermisos', [EmpleadoLoginController::class, 'Obtenerpermisos'])->name('Obtenerpermisos');
+Route::get('/obtenerDependencias', [DependenciaController::class, 'obtenerDependencias']);
+Route::get('/Obtenerimagenes/{tipo?}', [VedaController::class, 'Obtenerimagenes'])->name('Obtenerimagenes');
+Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertodasimagenes'])->name('Obtenertodasimagenes');
 
 
 /*----------------------- Dashboard ------------------------*/
-// Route::get('/dashboard', function () {return view('admin.dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
-    /* Route::get('/obtenerUserDependencia', [UserController::class, 'obtenerUserDependencia']); */
 });
 
-/*----------------------- Ajustes ------------------------*/
-// Route::get('/datos', function () { return view('admin.datos');})->middleware(['auth', 'verified'])->name('datos');
 
+/*----------------------- Ajustes ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Ajustes'])->group(function () {
     Route::get('/datos', [AdminController::class, 'showDatosForm'])->name('datos');
     Route::post('/importar-empleados', [AdminController::class, 'importarEmpleados']);
@@ -80,13 +77,11 @@ Route::middleware(['auth', 'can:Modulo_Ajustes'])->group(function () {
     Route::delete('/eliminarEvento/{id}', [AdminController::class, 'eliminarEvento']);
 });
 
-/*----------------------- Usuarios ------------------------*/
-// Route::get('/usuarios', function () { return view('admin.usuarios');})->middleware(['auth', 'verified'])->name('usuarios');
 
+/*----------------------- Usuarios ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Usuario'])->group(function () {
     Route::get('/usuarios', [UserController::class, 'showUserForm'])->name('usuarios');
     Route::get('/obtenerUsers', [UserController::class, 'obtenerUsers']);
-    Route::get('/obtenerDependencia', [UserController::class, 'obtenerDependencia']);
     Route::post('/agregarUsuario', [UserController::class, 'agregarUsuario']);
     Route::get('/detalleUsuario/{id}', [UserController::class, 'detalleUsuario']);
     Route::post('/editarUsuario', [UserController::class, 'editarUsuario']);
@@ -99,20 +94,23 @@ Route::middleware(['auth', 'can:Modulo_Usuario'])->group(function () {
 /*----------------------- Dependencias ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Dependencias'])->group(function () {
     Route::get('/dependencias', [DependenciaController::class, 'showDependenciasForm'])->name('dependencias');
-    Route::get('/obtenerDependencias', [DependenciaController::class, 'obtenerDependencias']);
     Route::post('/agregarDependencia', [DependenciaController::class, 'agregarDependencia']);
     Route::get('/detalleDependencia/{id}', [DependenciaController::class, 'detalleDependencia']);
     Route::post('/editarDependencia', [DependenciaController::class, 'editarDependencia']);
     Route::delete('/eliminarDependencia/{id}', [DependenciaController::class, 'eliminarDependencia']);
 });
 
+
 /*----------------------- Veda ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Veda'])->group(function () {
     Route::get('/veda', [VedaController::class, 'showVedaForm'])->name('veda');
+    Route::get('/obtenerEstadoVeda', [VedaController::class, 'obtenerEstadoVeda'])->name('obtenerEstadoVeda');
+    Route::post('/cambiarEstadoVeda', [VedaController::class, 'cambiarEstadoVeda'])->name('cambiarEstadoVeda');
+    Route::post('/cambiarEstadoImagen', [VedaController::class, 'cambiarEstadoImagen'])->name('cambiarEstadoImagen');
 });
 
+
 /*----------------------- Roles ------------------------*/
-// Route::get('/roles', function () { return view('admin.roles');})->middleware(['auth', 'verified'])->name('roles');
 Route::middleware(['auth', 'can:Modulo_Roles'])->group(function () {
     Route::get('/roles', [RoleController::class, 'showRoleForm'])->name('roles');
     Route::get('/obtenerRoles', [RoleController::class, 'obtenerRoles']);
@@ -126,7 +124,6 @@ Route::middleware(['auth', 'can:Modulo_Roles'])->group(function () {
 
 
 /*----------------------- Permisos ------------------------*/
-//Route::get('/permisos', function () { return view('admin.permisos');})->middleware(['auth', 'verified'])->name('permisos');
 Route::middleware(['auth', 'can:Modulo_Permisos'])->group(function () {
     Route::get('/permisos', [PermissionController::class, 'showPermissionForm'])->name('permisos');
     Route::get('/obtenerPermisos', [PermissionController::class, 'obtenerPermisos']);
@@ -135,7 +132,6 @@ Route::middleware(['auth', 'can:Modulo_Permisos'])->group(function () {
     Route::post('/editarPermiso', [PermissionController::class, 'editarPermiso']);
     Route::delete('/eliminarPermiso/{id}', [PermissionController::class, 'eliminarPermiso']);
 });
-
 
 
 /*---------------------- Acciones Perfil ------------------------*/
