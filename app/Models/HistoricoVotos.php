@@ -17,4 +17,5 @@ class HistoricoVotos extends Model
         'ronda',
         'novotos',
     ];
+
 }

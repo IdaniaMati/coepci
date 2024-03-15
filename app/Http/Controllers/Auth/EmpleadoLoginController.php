@@ -320,7 +320,14 @@ class EmpleadoLoginController extends Controller
         return view('public.historico');
     }
 
-    public function resultado(Request $request)
+    public function historicoDependencia()
+    {
+        return view('public.historico_dependencia');
+    }
+
+
+
+        public function resultado(Request $request)
     {
         /* $ronda = $request->get('ronda', 1);
 
@@ -361,6 +368,12 @@ class EmpleadoLoginController extends Controller
 
         return view('public.ronda', ['resultados' => $resultados, 'ronda' => $ronda]); */
         return view( 'public.ronda' );
+    }
+
+    public function resultadoPorDependencia(Request $request)
+    {
+        $idDependencia = $request->query('idDependencia');
+        return view( 'public.ronda_dependencia', compact('idDependencia') );
     }
 
 
@@ -695,6 +708,7 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function obtenerVotosTodosEmpleados($idConcurso)
     {

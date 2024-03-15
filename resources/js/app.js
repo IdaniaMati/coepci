@@ -1,8 +1,5 @@
 import './bootstrap';
 import { createApp } from 'vue';
-
-
-
 import Alpine from 'alpinejs';
 
 
@@ -31,19 +28,20 @@ app.component('ronda-vue', ronda);
 import historico from './vuepublic/Historico.vue';
 app.component('historico-vue', historico);
 
+import ronda_dependencia from './vuepublic/RondaDependencia.vue';
+app.component('ronda_dependencia-vue', ronda_dependencia);
+
+import historico_dependencia from './vuepublic/HistoricoDependencia.vue';
+app.component('historico_dependencia-vue', historico_dependencia);
 
 import Dashboard from './vueadmin/Dashboard.vue';
 app.component('dashboard-vue', Dashboard);
-
-
 
 import Dependencias from './vueadmin/Dependencias.vue';
 app.component('dependencias-vue', Dependencias);
 
 import Veda from './vueadmin/Veda.vue';
 app.component('veda-vue', Veda);
-
-
 
 import Datos from './vueadmin/Datos.vue';
 app.component('datos-vue', Datos);
