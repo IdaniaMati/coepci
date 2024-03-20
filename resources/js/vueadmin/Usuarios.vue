@@ -16,7 +16,7 @@
                 <div class="nav-item d-flex align-items-center">
                     <button v-if="hab_permisos('Crear_usuarios')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Usuario</button>
                 </div>
-
+                <!-- Tabla de lista de Usuarios -->
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
@@ -113,7 +113,8 @@
                                 <div class="modal-body">
                                     <label>Selecciona los roles:</label>
                                     <div v-for="role in roles" :key="role.id" class="form-check">
-                                        <input type="checkbox" class="form-check-input" :id="'role-' + role.id" v-model="selectedRoles" :value="role.id"/>
+                                        <input 
+                                        name="default-radio-1" class="form-check-input" type="radio" :id="'role-' + role.id" v-model="selectedRoles" :value="role.id"/>
                                         <label class="form-check-label" :for="'role-' + role.id">{{ role.name }}</label>
                                     </div>
                                 </div>
