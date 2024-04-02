@@ -7,6 +7,7 @@ use App\Models\Concurso;
 use App\Models\Registro;
 use Illuminate\Http\Request;
 
+
 class DashboardController extends Controller
 {
 
