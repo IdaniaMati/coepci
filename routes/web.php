@@ -135,6 +135,11 @@ Route::middleware(['auth', 'can:Modulo_Permisos'])->group(function () {
     Route::delete('/eliminarPermiso/{id}', [PermissionController::class, 'eliminarPermiso']);
 });
 
+/*----------------------- LOGS ------------------------*/
+Route::middleware(['auth', 'can:Modulo_Log'])->group(function () {
+    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+});
+
 
 /*---------------------- Acciones Perfil ------------------------*/
 Route::middleware('auth')->group(function () {
