@@ -40,6 +40,9 @@ app.component('dashboard-vue', Dashboard);
 import Dependencias from './vueadmin/Dependencias.vue';
 app.component('dependencias-vue', Dependencias);
 
+import Respaldo from './vueadmin/Respaldo.vue';
+app.component('respaldo-vue', Respaldo);
+
 import Veda from './vueadmin/Veda.vue';
 app.component('veda-vue', Veda);
 
