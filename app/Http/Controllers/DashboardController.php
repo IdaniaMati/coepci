@@ -6,6 +6,9 @@ use App\Models\Empleado;
 use App\Models\Concurso;
 use App\Models\Registro;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 
 
 class DashboardController extends Controller
@@ -15,6 +18,64 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard');
     }
+
+    // ------> Respaldo de base de datos
+    public function respaldo()
+    {
+        return view('admin.respaldo');
+    }
+
+    public function exportAllData()
+    {
+        // Obtener todas las tablas de la base de datos "coepci"
+        $tables = DB::select('SHOW TABLES FROM coepci');
+    
+        $sql = '';
+    
+        foreach ($tables as $table) {
+            $tableName = reset($table);
+    
+            // Obtener la estructura de la tabla
+            $tableStructure = DB::select("SHOW CREATE TABLE $tableName")[0]->{'Create Table'};
+            $tableStructure = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $tableStructure);
+            $sql .= "$tableStructure;\n\n";
+    
+            // Obtener los datos de cada tabla
+            $rows = DB::table($tableName)->get();
+    
+            if ($rows->count() > 0) {
+                // Obtener los nombres de las columnas
+                $columns = collect($rows[0])->keys()->map(function ($columnName) {
+                    return "`$columnName`";
+                })->implode(', ');
+    
+                // Generar SQL INSERT con los nombres de las columnas
+                $sql .= "INSERT INTO `$tableName` ($columns) VALUES ";
+    
+                $values = $rows->map(function ($row) {
+                    $row = (array) $row;
+                    return '(' . implode(', ', array_map(function ($value) {
+                        // Si el valor es numérico, no poner comillas
+                        return is_numeric($value) ? $value : "'" . addslashes($value) . "'";
+                    }, $row)) . ')';
+                })->implode(",\n");
+    
+                $sql .= "$values;\n\n";
+            }
+        }
+    
+        // Descargar el archivo SQL
+        $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Content-Type: application/sql');
+        echo $sql;
+        exit;
+    }
+    
+    
+    
+
+    // ------> Respaldo de base de datos
 
     public function obtenerEmpleados()
     {

@@ -3,6 +3,7 @@
         <div class="layout-container">
             <div id="app">
                 <dashboard-vue></dashboard-vue>
+                
             </div>
         </div>
 

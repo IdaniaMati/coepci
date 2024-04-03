@@ -11,6 +11,7 @@ use App\Http\Controllers\VedaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
+use Spatie\DbDumper\Databases\MySql;
 
 
 /*------------------------ Resultados Públicos ------------------------*/
@@ -58,6 +59,8 @@ Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertoda
 /*----------------------- Dashboard ------------------------*/
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
+    Route::get('/respaldo', [DashboardController::class, 'respaldo'])->name('respaldo');
+    Route::get('/respaldofile', [DashboardController::class, 'exportAllData'])->name('respaldofile.all.data');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);

@@ -47,6 +47,9 @@
                         {{ __('Ajustes') }}
                     </x-nav-link>
                     @endcan
+                    <x-nav-link :href="route('respaldo')" :active="request()->routeIs('respaldo')">
+                        {{ __('Respaldo') }}
+                    </x-nav-link>
                 </div>
             </div>
 
