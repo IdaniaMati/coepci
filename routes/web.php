@@ -60,7 +60,7 @@ Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertoda
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
     Route::get('/respaldo', [DashboardController::class, 'respaldo'])->name('respaldo');
-    Route::get('/respaldofile', [DashboardController::class, 'exportAllData'])->name('respaldofile.all.data');
+    Route::get('/respaldofile', [DashboardController::class, 'exportAllData'])->name('respaldofile');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);

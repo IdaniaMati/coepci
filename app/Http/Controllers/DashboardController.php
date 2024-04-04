@@ -82,11 +82,16 @@ class DashboardController extends Controller
 ";
     
         // Descargar el archivo SQL
-        $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
+        /* $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Content-Type: application/sql');
         echo $sql;
-        exit;
+        exit; */
+        // Descargar el archivo SQL
+        $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
+        return response($sql)
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
+            ->header('Content-Type', 'application/sql');
     }
     
     

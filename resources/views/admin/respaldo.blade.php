@@ -3,7 +3,7 @@
         <div class="layout-container">
             <div id="app">
                 <respaldo-vue></respaldo-vue>
-                <a href="{{ route('respaldofile.all.data') }}" class="btn btn-primary">Exportar Datos</a>
+                <a href="{{ route('respaldofile') }}" class="btn btn-primary">Exportar Datos</a>
             </div>
         </div>
 
