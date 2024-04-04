@@ -17,6 +17,8 @@ return new class extends Migration
             $table->date('fechaIni1ronda')->nullable();
             $table->date('fechaIni2ronda')->nullable();
             $table->date('fechaFin')->nullable();
+            $table->text('comentario')->nullable();
+            $table->integer('id_depen')->nullable();
             $table->timestamps();
         });
     }
