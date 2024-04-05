@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/respaldofile', [DashboardController::class, 'exportAllData'])->name('respaldofile');
     Route::get('/getBackupFileInfo', [DashboardController::class, 'getBackupFileInfo'])->name('getBackupFileInfo');
     Route::get('/getBackupList', [DashboardController::class, 'getBackupList'])->name('getBackupList');
+    Route::get('/downloadBackup/{filename}', [DashboardController::class, 'downloadBackup'])->name('downloadBackup');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);

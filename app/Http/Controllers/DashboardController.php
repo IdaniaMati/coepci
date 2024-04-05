@@ -129,12 +129,25 @@ class DashboardController extends Controller
     }
     
     public function getBackupList()
-{
-    $backups = DB::table('respaldo')->get();
+    {
+        $backups = DB::table('respaldo')->get();
+        
+        return response()->json(['backups' => $backups]);
+    }
     
-    return response()->json(['backups' => $backups]);
-}
-    
+    public function downloadBackup($filename)
+    {
+        $filePath = Storage::disk('backups')->path($filename);
+        
+        // Verificar si el archivo existe
+        if (Storage::disk('backups')->exists($filename)) {
+            // Descargar el archivo
+            return response()->download($filePath, $filename, ['Content-Type' => 'application/sql']);
+        } else {
+            // Si el archivo no existe, devolver una respuesta de error
+            return response()->json(['error' => 'El archivo de respaldo no existe'], 404);
+        }
+    }
     
 
     // ------> Respaldo de base de datos
