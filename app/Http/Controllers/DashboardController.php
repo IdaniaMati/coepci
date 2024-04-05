@@ -41,7 +41,9 @@ class DashboardController extends Controller
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 ";
-    
+        
+        $totalSize = 0;
+
         foreach ($tables as $table) {
             $tableName = reset($table);
     
@@ -71,6 +73,8 @@ class DashboardController extends Controller
                 })->implode(",\n");
     
                 $sql .= "$values;\n\n";
+                // Calcular el tamaño de los datos insertados en esta tabla y sumarlo al total
+            $totalSize += strlen($values);
             }
         }
 
@@ -83,21 +87,53 @@ class DashboardController extends Controller
 ";
     
         // Descargar el archivo SQL
-        /* $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
-        header('Content-Disposition: attachment; filename="' . $fileName . '"');
-        header('Content-Type: application/sql');
-        echo $sql;
-        exit; */
-        // Descargar el archivo SQL
         $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
         $filePath = Storage::disk('backups')->path($fileName);
-    File::put($filePath, $sql);
+        File::put($filePath, $sql);
 
-    // Descargar el archivo SQL
-    return response()
-        ->download($filePath, $fileName, ['Content-Type' => 'application/sql']);
+    }
+
+    public function getBackupFileInfo()
+    {
+        $backupDirectory = Storage::disk('backups')->path('/');
+    
+        $files = Storage::disk('backups')->files();
+        
+        $fileInfo = [];
+    
+        foreach ($files as $file) {
+            $filePath = $backupDirectory . $file;
+            
+            // Obtener la fecha de creación del archivo
+            $creationDate = date('Y-m-d H:i:s', filectime($filePath));
+    
+            // Obtener el tamaño del archivo en MB
+            $fileSizeInBytes = filesize($filePath);
+            $fileSizeInMB = round($fileSizeInBytes / 1024 / 1024, 2);
+    
+            $fileInfo[] = [
+                'filename' => $file,
+                'creation_date' => $creationDate,
+                'size_mb' => $fileSizeInMB
+            ];
+    
+            // Insertar los datos en la tabla "respaldo"
+            DB::table('respaldo')->insert([
+                'filename' => $file,
+                'creation_date' => $creationDate,
+                'size_mb' => $fileSizeInMB
+            ]);
+        }
+    
+        return response()->json(['message' => 'Backup info retrieved successfully']);
     }
     
+    public function getBackupList()
+{
+    $backups = DB::table('respaldo')->get();
+    
+    return response()->json(['backups' => $backups]);
+}
     
     
 

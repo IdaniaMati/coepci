@@ -21,26 +21,22 @@
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
-                        <tr>
+                            <tr>
                             <th style="width: 10%;">Id</th>
                             <th style="width: 20%;">Archivo</th>
-                            <th style="width: 15%;">Tamaño</th>
-                            <th style="width: 25%;"> </th>
-                        </tr>
+                            <th style="width: 15%;">Tamaño (MB)</th>
+                            <th style="width: 25%;">Acción</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td> </td>
-                                <td> </td>
-                                <td> </td>
-                                <td>
-                                    
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr>
-                                
+                            <tr v-for="backup in backups" :key="backup.id">
+                            <td>{{ backup.Id }}</td>
+                            <td>{{ backup.filename }}</td>
+                            <td>{{ backup.size_mb }}</td>
+                            <td>
+                                <!-- Aquí puedes agregar cualquier acción relacionada con el respaldo, como descargar el archivo -->
+                                <button @click="downloadBackup(backup.filename)">Descargar</button>
+                            </td>
                             </tr>
                         </tbody>
                     </table>
@@ -61,23 +57,49 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            
+            backups: []
         };
     },
 
+    mounted() {
+        this.getBackups();
+    },
+
     methods: {
-        respaldofile() {
-            axios.get('/respaldofile', { responseType: 'blob' })
-                .then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/sql' }));
+        getBackups() {
+            axios.get('/getBackupList')
+                .then(response => {
+                    this.backups = response.data.backups;
+                })
+                .catch(error => {
+                    console.error('Error al obtener la lista de respaldos:', error);
+                });
+        },
+
+        downloadBackup(filename) {
+            axios.get('/downloadBackup/' + filename, { responseType: 'blob' })
+                .then(response => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'coepci_' + new Date().toISOString().slice(0, 19).replace(/[-:]/g, '') + '.sql');
+                    link.setAttribute('download', filename);
                     document.body.appendChild(link);
                     link.click();
                 })
-                .catch((error) => {
-                    console.error(error);
+                .catch(error => {
+                    console.error('Error al descargar el archivo de respaldo:', error);
+                });
+        },
+
+        respaldofile() {
+            axios.get('/respaldofile', { responseType: 'blob' })
+                .then(response => {
+                    console.log(response.data.message);
+                    // Luego, hacer una segunda solicitud para obtener la información del respaldo
+                    this.getBackups(); // Actualiza la lista de respaldos después de exportar los datos
+                })
+                .catch(error => {
+                    console.error('Error al exportar los datos:', error);
                 });
         },
     },

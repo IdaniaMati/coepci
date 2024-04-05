@@ -61,6 +61,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
     Route::get('/respaldo', [DashboardController::class, 'respaldo'])->name('respaldo');
     Route::get('/respaldofile', [DashboardController::class, 'exportAllData'])->name('respaldofile');
+    Route::get('/getBackupFileInfo', [DashboardController::class, 'getBackupFileInfo'])->name('getBackupFileInfo');
+    Route::get('/getBackupList', [DashboardController::class, 'getBackupList'])->name('getBackupList');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
