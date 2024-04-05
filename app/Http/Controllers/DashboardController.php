@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 
 class DashboardController extends Controller
@@ -89,9 +90,12 @@ class DashboardController extends Controller
         exit; */
         // Descargar el archivo SQL
         $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
-        return response($sql)
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
-            ->header('Content-Type', 'application/sql');
+        $filePath = Storage::disk('backups')->path($fileName);
+    File::put($filePath, $sql);
+
+    // Descargar el archivo SQL
+    return response()
+        ->download($filePath, $fileName, ['Content-Type' => 'application/sql']);
     }
     
     
