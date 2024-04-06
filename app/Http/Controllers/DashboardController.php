@@ -86,7 +86,6 @@ class DashboardController extends Controller
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
 ";
     
-        // Descargar el archivo SQL
         $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
         $filePath = Storage::disk('backups')->path($fileName);
         File::put($filePath, $sql);
@@ -103,26 +102,24 @@ class DashboardController extends Controller
     
         foreach ($files as $file) {
             $filePath = $backupDirectory . $file;
-            
-            // Obtener la fecha de creación del archivo
             $creationDate = date('Y-m-d H:i:s', filectime($filePath));
-    
-            // Obtener el tamaño del archivo en MB
             $fileSizeInBytes = filesize($filePath);
             $fileSizeInMB = round($fileSizeInBytes / 1024 / 1024, 2);
     
+            $existingFile = DB::table('respaldo')->where('filename', $file)->first();
+            if (!$existingFile) {
+                DB::table('respaldo')->insert([
+                    'filename' => $file,
+                    'creation_date' => $creationDate,
+                    'size_mb' => $fileSizeInMB
+                ]);
+            }
+
             $fileInfo[] = [
                 'filename' => $file,
                 'creation_date' => $creationDate,
                 'size_mb' => $fileSizeInMB
             ];
-    
-            // Insertar los datos en la tabla "respaldo"
-            DB::table('respaldo')->insert([
-                'filename' => $file,
-                'creation_date' => $creationDate,
-                'size_mb' => $fileSizeInMB
-            ]);
         }
     
         return response()->json(['message' => 'Backup info retrieved successfully']);

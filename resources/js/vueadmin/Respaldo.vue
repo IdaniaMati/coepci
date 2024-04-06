@@ -24,6 +24,7 @@
                             <tr>
                             <th style="width: 10%;">Id</th>
                             <th style="width: 20%;">Archivo</th>
+                            <th style="width: 15%;">Fecha</th>
                             <th style="width: 15%;">Tamaño (MB)</th>
                             <th style="width: 25%;">Acción</th>
                             </tr>
@@ -32,6 +33,7 @@
                             <tr v-for="backup in backups" :key="backup.id">
                             <td>{{ backup.Id }}</td>
                             <td>{{ backup.filename }}</td>
+                            <td>{{ backup.creation_date }}</td>
                             <td>{{ backup.size_mb }}</td>
                             <td>
                                 <!-- Aquí puedes agregar cualquier acción relacionada con el respaldo, como descargar el archivo -->
@@ -52,6 +54,8 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
 
 
 export default {
@@ -66,15 +70,6 @@ export default {
     },
 
     methods: {
-        getBackups() {
-            axios.get('/getBackupList')
-                .then(response => {
-                    this.backups = response.data.backups;
-                })
-                .catch(error => {
-                    console.error('Error al obtener la lista de respaldos:', error);
-                });
-        },
 
         downloadBackup(filename) {
             axios.get('/downloadBackup/' + filename, { responseType: 'blob' })
@@ -95,13 +90,39 @@ export default {
             axios.get('/respaldofile', { responseType: 'blob' })
                 .then(response => {
                     console.log(response.data.message);
-                    // Luego, hacer una segunda solicitud para obtener la información del respaldo
-                    this.getBackups(); // Actualiza la lista de respaldos después de exportar los datos
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Respaldo realizado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    this.getBackupFileInfo();
                 })
                 .catch(error => {
                     console.error('Error al exportar los datos:', error);
                 });
         },
+        
+        getBackupFileInfo() {
+            axios.get('/getBackupFileInfo')
+                .then(response => {
+                    this.backups = response.data.backups;
+                })
+                .catch(error => {
+                    console.error('Error al descargar los archivos en el sistema:', error);
+                });
+        },
+
+        getBackups() {
+            axios.get('/getBackupList')
+                .then(response => {
+                    this.backups = response.data.backups;
+                })
+                .catch(error => {
+                    console.error('Error al obtener la lista de respaldos:', error);
+                });
+        },
+
     },
 };
 </script>
