@@ -8,7 +8,6 @@
             <div class="card">
                 <div class="info-container">
                     <div class="info-container">
-                        <!-- Aquí puedes colocar el botón de exportación -->
                         <button class="btn btn-success" @click="respaldofile">Exportar Datos</button>
                     </div>
                 </div>
@@ -36,7 +35,6 @@
                             <td>{{ backup.creation_date }}</td>
                             <td>{{ backup.size_mb }}</td>
                             <td>
-                                <!-- Aquí puedes agregar cualquier acción relacionada con el respaldo, como descargar el archivo -->
                                 <button @click="downloadBackup(backup.filename)">Descargar</button>
                             </td>
                             </tr>
@@ -97,6 +95,7 @@ export default {
                         timer: 1500
                     });
                     this.getBackupFileInfo();
+                    this.getBackups();
                 })
                 .catch(error => {
                     console.error('Error al exportar los datos:', error);
@@ -122,6 +121,7 @@ export default {
                     console.error('Error al obtener la lista de respaldos:', error);
                 });
         },
+
 
     },
 };

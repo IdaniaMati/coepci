@@ -28,7 +28,6 @@ class DashboardController extends Controller
 
     public function exportAllData()
     {
-        // Obtener todas las tablas de la base de datos "coepci"
         $tables = DB::select('SHOW TABLES FROM coepci');
     
         $sql = "
@@ -46,34 +45,28 @@ class DashboardController extends Controller
 
         foreach ($tables as $table) {
             $tableName = reset($table);
-    
-            // Obtener la estructura de la tabla
+
             $tableStructure = DB::select("SHOW CREATE TABLE $tableName")[0]->{'Create Table'};
             $tableStructure = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $tableStructure);
             $sql .= "$tableStructure;\n\n";
-    
-            // Obtener los datos de cada tabla
+
             $rows = DB::table($tableName)->get();
     
             if ($rows->count() > 0) {
-                // Obtener los nombres de las columnas
                 $columns = collect($rows[0])->keys()->map(function ($columnName) {
                     return "`$columnName`";
                 })->implode(', ');
     
-                // Generar SQL INSERT con los nombres de las columnas
                 $sql .= "INSERT INTO `$tableName` ($columns) VALUES ";
     
                 $values = $rows->map(function ($row) {
                     $row = (array) $row;
                     return '(' . implode(', ', array_map(function ($value) {
-                        // Si el valor es numérico, no poner comillas
                         return is_numeric($value) ? $value : "'" . addslashes($value) . "'";
                     }, $row)) . ')';
                 })->implode(",\n");
     
-                $sql .= "$values;\n\n";
-                // Calcular el tamaño de los datos insertados en esta tabla y sumarlo al total
+            $sql .= "$values;\n\n";
             $totalSize += strlen($values);
             }
         }
@@ -85,22 +78,51 @@ class DashboardController extends Controller
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
 ";
-    
+
+        $this->cleanupOldBackups();
+
         $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
         $filePath = Storage::disk('backups')->path($fileName);
         File::put($filePath, $sql);
 
     }
 
+    private function cleanupOldBackups()
+    {
+        $backupDirectory = Storage::disk('backups')->path('/');
+        $files = Storage::disk('backups')->files();
+
+        if (count($files) >= 10) {
+            usort($files, function($a, $b) use ($backupDirectory) {
+                $fileA = $backupDirectory . $a;
+                $fileB = $backupDirectory . $b;
+                return filectime($fileA) - filectime($fileB);
+            });
+
+            $oldestFile = $backupDirectory . $files[0];
+            Storage::disk('backups')->delete($files[0]);
+            
+            DB::table('respaldo')->where('filename', $files[0])->delete();
+        }
+    }
+
     public function getBackupFileInfo()
     {
         $backupDirectory = Storage::disk('backups')->path('/');
-    
         $files = Storage::disk('backups')->files();
-        
         $fileInfo = [];
+
+        $existingFilesCount = DB::table('respaldo')->count();
+        if ($existingFilesCount >= 10) {
+            return response()->json(['message' => 'Cannot add more backups. Limit reached.'], 403);
+        }
     
         foreach ($files as $file) {
+
+            if (count($fileInfo) >= 10) {
+                break;
+            }
+
             $filePath = $backupDirectory . $file;
             $creationDate = date('Y-m-d H:i:s', filectime($filePath));
             $fileSizeInBytes = filesize($filePath);
@@ -113,6 +135,8 @@ class DashboardController extends Controller
                     'creation_date' => $creationDate,
                     'size_mb' => $fileSizeInMB
                 ]);
+
+                
             }
 
             $fileInfo[] = [
@@ -136,9 +160,7 @@ class DashboardController extends Controller
     {
         $filePath = Storage::disk('backups')->path($filename);
         
-        // Verificar si el archivo existe
         if (Storage::disk('backups')->exists($filename)) {
-            // Descargar el archivo
             return response()->download($filePath, $filename, ['Content-Type' => 'application/sql']);
         } else {
             // Si el archivo no existe, devolver una respuesta de error
