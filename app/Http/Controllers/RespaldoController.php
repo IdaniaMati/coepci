@@ -8,17 +8,13 @@ use App\Models\Registro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 
 
-class DashboardController extends Controller
+class RespaldoController extends Controller
 {
-
-    public function showDashboardForm()
-    {
-        return view('admin.dashboard');
-    }
 
     // ------> Respaldo de base de datos
     public function respaldo()
@@ -87,7 +83,7 @@ class DashboardController extends Controller
 
     }
 
-    private function cleanupOldBackups()
+    public function cleanupOldBackups()
     {
         $backupDirectory = Storage::disk('backups')->path('/');
         $files = Storage::disk('backups')->files();
@@ -154,6 +150,17 @@ class DashboardController extends Controller
         $backups = DB::table('respaldo')->get();
         
         return response()->json(['backups' => $backups]);
+    }
+
+    public function confirmpassword(Request $request)
+    {
+        $user = Auth::user();
+
+        if (Hash::check($request->password, $user->password)) {
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
     }
     
     public function downloadBackup($filename)

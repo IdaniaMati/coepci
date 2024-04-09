@@ -58,16 +58,20 @@ Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertoda
 
 
 /*----------------------- Dashboard ------------------------*/
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
-    Route::get('/respaldo', [DashboardController::class, 'respaldo'])->name('respaldo');
-    Route::get('/respaldofile', [DashboardController::class, 'exportAllData'])->name('respaldofile');
-    Route::get('/getBackupFileInfo', [DashboardController::class, 'getBackupFileInfo'])->name('getBackupFileInfo');
-    Route::get('/getBackupList', [DashboardController::class, 'getBackupList'])->name('getBackupList');
-    Route::get('/downloadBackup/{filename}', [DashboardController::class, 'downloadBackup'])->name('downloadBackup');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
+});
+
+Route::middleware(['auth', 'can:Modulo_Respaldo'])->group(function () {
+    Route::get('/respaldo', [RespaldoController::class, 'respaldo'])->name('respaldo');
+    Route::get('/respaldofile', [RespaldoController::class, 'exportAllData'])->name('respaldofile');
+    Route::get('/getBackupFileInfo', [RespaldoController::class, 'getBackupFileInfo'])->name('getBackupFileInfo');
+    Route::get('/getBackupList', [RespaldoController::class, 'getBackupList'])->name('getBackupList');
+    Route::get('/downloadBackup/{filename}', [RespaldoController::class, 'downloadBackup'])->name('downloadBackup');
+    Route::post('/confirmpassword', [RespaldoController::class, 'confirmpassword'])->name('confirmpassword');
 });
 
 

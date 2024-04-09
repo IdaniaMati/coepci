@@ -47,9 +47,11 @@
                         {{ __('Ajustes') }}
                     </x-nav-link>
                     @endcan
+                    @can('Modulo_Respaldo')
                     <x-nav-link :href="route('respaldo')" :active="request()->routeIs('respaldo')">
                         {{ __('Respaldo') }}
                     </x-nav-link>
+                    @endcan
                 </div>
             </div>
 

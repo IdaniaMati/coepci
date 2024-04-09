@@ -30,29 +30,56 @@
                         </thead>
                         <tbody>
                             <tr v-for="backup in backups" :key="backup.id">
-                            <td>{{ backup.Id }}</td>
-                            <td>{{ backup.filename }}</td>
-                            <td>{{ backup.creation_date }}</td>
-                            <td>{{ backup.size_mb }}</td>
-                            <td>
-                                <i @click="backup.filename" class="bi bi-arrow-bar-down"></i>
-                            </td>
+                                <td>{{ backup.Id }}</td>
+                                <td>{{ backup.filename }}</td>
+                                <td>{{ backup.creation_date }}</td>
+                                <td>{{ backup.size_mb }}</td>
+                                <td>
+                                    <button type="button" class="nav-link active" @click="mostrarModal(backup.filename)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
+                                        </svg>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
 
-
-
                 </div>
+                
+                    <!-- Modal agregar roles -->
+                    <div class="container">
+                        <div class="modal fade" id="confirmarpass" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><strong>Confirmar contraseña</strong></h5>
+                                        <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Ingrese contraseña para confirmar la descarga</label>
+                                                <input type="password" v-model="password"  class="block mt-1 w-full" placeholder="Ingrese contraseña" required/>
+                                                <div v-if="!password"  class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    <div class="modal-footer">
+                                        <button v-if="bandera === 1" class="btn btn-primary" @click="confirmarContrasena">Descargar</button>
+                                        <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo</button>
+                                        <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+ 
             </div>
+
         </div>
-        <div v-if="showModal" class="modal">
-      <div class="modal-content">
-        <input type="password" v-model="password" placeholder="Contraseña">
-        <button @click="validatePassword()">Confirmar</button>
-      </div>
-    </div>
+
     </div>
 </template>
 
@@ -61,14 +88,15 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 
-
 export default {
     data() {
         return {
-            showModal: false,
-            password: "",
-            backupFileName: "",
             backups: [],
+            backupFileName: "",
+            password: "",
+            bandera: "",
+            
+ 
         };
     },
 
@@ -78,20 +106,87 @@ export default {
 
     methods: {
 
-        showPasswordModal() {
-            this.showModal = true;
+        realizarRespaldo(){
+            axios.post('/confirmpassword', { password: this.password })
+                .then(response => {
+                    if (response.data.success) {
+                        this.cerrarModal();
+                        this.confirmExport();
+                    } else {
+                        this.cerrarModal();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'La contraseña es incorrecta. Inténtalo de nuevo.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    this.cerrarModal();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un error al procesar la solicitud. Inténtalo de nuevo.'
+                    });
+                });
         },
-        validatePassword() {
-            const correctPassword = "contraseña_correcta";
 
-            if (this.password === correctPassword) {
-                this.downloadBackup(this.backupFileName);
-                this.showModal = false;
-                this.password = "";
-            } else {
-                alert("Contraseña incorrecta. Por favor, inténtalo de nuevo.");
-            }
+        confirmarContrasena() {
+            axios.post('/confirmpassword', { password: this.password })
+                .then(response => {
+                    if (response.data.success) {
+                        this.cerrarModal();
+                        this.downloadBackup(this.backupFileName);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Correcto!',
+                            text: 'Archivo descargado correctamente.'
+                        });
+                    } else {
+                        this.cerrarModal();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'La contraseña es incorrecta. Inténtalo de nuevo.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    this.cerrarModal();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un error al procesar la solicitud. Inténtalo de nuevo.'
+                    });
+                });
         },
+        
+        mostrarModal(filename) {
+            this.backupFileName = filename;
+            this.bandera = 1;
+            this.abrirModal();
+            this.limpiarvar();
+        },
+
+        mostrarModalRespaldo() {
+            this.bandera = 2;
+            this.abrirModal();
+            this.limpiarvar();
+        },
+
+        limpiarvar() {
+            this.password = null;
+        },
+
+        abrirModal() {
+            $("#confirmarpass").modal({ backdrop: "static", keyboard: false });
+            $("#confirmarpass").modal("toggle");
+        },
+
+        cerrarModal() {
+            $("#confirmarpass").modal("hide");
+        },
+
 
         checkAndExport() {
             let today = new Date();
@@ -104,12 +199,11 @@ export default {
                 return backupDateString === todayDate;
             });
             if (existsToday) {
-                this.confirmExport();
+                this.mostrarModalRespaldo();
             } else {
                 this.respaldofile();
             }
         },
-
 
         downloadBackup(filename) {
         axios
