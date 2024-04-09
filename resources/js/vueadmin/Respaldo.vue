@@ -1,20 +1,19 @@
 <template>
     <div>
         <div class="text-center mb-4">
-            <h2><strong>Historial de respaldos de bases de datos</strong></h2>
+            <h2><strong>RESPALDO DE SISTEMA</strong></h2>
         </div>
 
         <div class="card-container">
             <div class="card">
                 <div class="info-container">
                     <div class="info-container">
-                        <button class="btn btn-success" @click="checkAndExport">Exportar Datos</button>
+                        <button v-if="hab_permisos('Crear_Respaldo')" class="btn btn-success" @click="checkAndExport">Exportar Datos</button>
                     </div>
                 </div>
 
                 <div class="nav-item d-flex align-items-center">
-                    <h5 class="card-header"><strong>Respaldos BD</strong></h5>
-                    <i class="bx bx-search fs-4 lh-0"></i>
+                    <h5 class="card-header"><strong>Respaldos Base de Datos</strong></h5>
                 </div>
 
                 <div class="table-container">
@@ -35,7 +34,7 @@
                                 <td>{{ backup.creation_date }}</td>
                                 <td>{{ backup.size_mb }}</td>
                                 <td>
-                                    <button type="button" class="nav-link active" @click="mostrarModal(backup.filename)">
+                                    <button v-if="hab_permisos('Descargar_Respaldo')" type="button" class="nav-link active" @click="mostrarModal(backup.filename)">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
                                         </svg>
@@ -69,6 +68,7 @@
                                     <div class="modal-footer">
                                         <button v-if="bandera === 1" class="btn btn-primary" @click="confirmarContrasena">Descargar</button>
                                         <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo</button>
+                                        <button v-if="bandera === 3" class="btn btn-primary" @click="realizarRespaldoNuevo">Realizar Respaldo</button>
                                         <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                     </div>
                                 </div>
@@ -86,25 +86,45 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import permisos from "../permisos/permisos.vue";
 
 
 export default {
+
+    components: {
+
+    },extends:permisos,
+
     data() {
         return {
             backups: [],
             backupFileName: "",
             password: "",
             bandera: "",
-            
- 
+            lista_permisos:[],
         };
     },
 
     mounted() {
         this.getBackups();
+        this.obtenerPermisos_user();
     },
 
     methods: {
+
+        obtenerPermisos_user(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+                    //console.error(error);
+
+                });
+
+        },
 
         realizarRespaldo(){
             axios.post('/confirmpassword', { password: this.password })
@@ -112,6 +132,31 @@ export default {
                     if (response.data.success) {
                         this.cerrarModal();
                         this.confirmExport();
+                    } else {
+                        this.cerrarModal();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'La contraseña es incorrecta. Inténtalo de nuevo.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    this.cerrarModal();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un error al procesar la solicitud. Inténtalo de nuevo.'
+                    });
+                });
+        },
+
+        realizarRespaldoNuevo(){
+            axios.post('/confirmpassword', { password: this.password })
+                .then(response => {
+                    if (response.data.success) {
+                        this.cerrarModal();
+                        this.respaldofile();
                     } else {
                         this.cerrarModal();
                         Swal.fire({
@@ -161,15 +206,27 @@ export default {
                 });
         },
         
-        mostrarModal(filename) {
-            this.backupFileName = filename;
+        mostrarModal(id) {
+            this.backupFileName = id;
             this.bandera = 1;
+            this.abrirModal();
+            this.limpiarvar();
+        },
+
+        mostrarModalRespaldoNuevo() {
+            this.bandera = 3;
             this.abrirModal();
             this.limpiarvar();
         },
 
         mostrarModalRespaldo() {
             this.bandera = 2;
+            this.abrirModal();
+            this.limpiarvar();
+        },
+
+        importarRespaldo() {
+            this.bandera = 3;
             this.abrirModal();
             this.limpiarvar();
         },
@@ -187,12 +244,9 @@ export default {
             $("#confirmarpass").modal("hide");
         },
 
-
         checkAndExport() {
             let today = new Date();
             let todayDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-
-            // Verifica si existe un registro con la fecha de hoy
             let existsToday = this.backups.some(backup => {
                 let backupDate = new Date(backup.creation_date);
                 let backupDateString = `${backupDate.getDate()}/${backupDate.getMonth() + 1}/${backupDate.getFullYear()}`;
@@ -201,7 +255,7 @@ export default {
             if (existsToday) {
                 this.mostrarModalRespaldo();
             } else {
-                this.respaldofile();
+                this.mostrarModalRespaldoNuevo();
             }
         },
 
@@ -209,15 +263,15 @@ export default {
         axios
             .get("/downloadBackup/" + filename, { responseType: "blob" })
             .then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", filename);
-            document.body.appendChild(link);
-            link.click();
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
             })
             .catch((error) => {
-            console.error("Error al descargar el archivo de respaldo:", error);
+                //console.error("Error al descargar el archivo de respaldo:", error);
             });
         },
 
@@ -262,11 +316,10 @@ export default {
             });
         },
 
-
         respaldofile() {
             axios.get('/respaldofile', { responseType: 'blob' })
                 .then(response => {
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                     Swal.fire({
                         icon: 'success',
                         title: 'Respaldo realizado',
@@ -277,7 +330,7 @@ export default {
                     this.getBackups();
                 })
                 .catch(error => {
-                    console.error('Error al exportar los datos:', error);
+                    //console.error('Error al exportar los datos:', error);
                 });
         },
         
@@ -287,7 +340,7 @@ export default {
                     this.backups = response.data.backups;
                 })
                 .catch(error => {
-                    console.error('Error al descargar los archivos en el sistema:', error);
+                    //console.error('Error al descargar los archivos en el sistema:', error);
                 });
         },
 
@@ -297,7 +350,7 @@ export default {
                     this.backups = response.data.backups;
                 })
                 .catch(error => {
-                    console.error('Error al obtener la lista de respaldos:', error);
+                    //console.error('Error al obtener la lista de respaldos:', error);
                 });
         },
 

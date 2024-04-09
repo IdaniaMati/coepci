@@ -10,9 +10,7 @@ use App\Http\Controllers\DependenciaController;
 use App\Http\Controllers\VedaController;
 use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
-use Spatie\DbDumper\Databases\MySql;
 
 
 /*------------------------ Resultados Públicos ------------------------*/
@@ -72,6 +70,7 @@ Route::middleware(['auth', 'can:Modulo_Respaldo'])->group(function () {
     Route::get('/getBackupList', [RespaldoController::class, 'getBackupList'])->name('getBackupList');
     Route::get('/downloadBackup/{filename}', [RespaldoController::class, 'downloadBackup'])->name('downloadBackup');
     Route::post('/confirmpassword', [RespaldoController::class, 'confirmpassword'])->name('confirmpassword');
+
 });
 
 

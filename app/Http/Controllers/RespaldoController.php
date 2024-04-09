@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Empleado;
-use App\Models\Concurso;
-use App\Models\Registro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -16,7 +13,6 @@ use Illuminate\Support\Facades\File;
 class RespaldoController extends Controller
 {
 
-    // ------> Respaldo de base de datos
     public function respaldo()
     {
         return view('admin.respaldo');

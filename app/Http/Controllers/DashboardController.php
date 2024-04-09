@@ -5,14 +5,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
 use App\Models\Concurso;
 use App\Models\Registro;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 
 
 class DashboardController extends Controller
@@ -22,8 +14,6 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard');
     }
-
-    // ------> Respaldo de base de datos
 
     public function obtenerEmpleados()
     {
