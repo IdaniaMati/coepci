@@ -185,7 +185,6 @@ export default {
         return {
             filtro: '',
             users: [],
-            user: [],
             dependencias: [],
             roles: [],
             selectedRoles: [],

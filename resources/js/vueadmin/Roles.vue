@@ -166,7 +166,6 @@ export default {
     data() {
         return {
             roles: [],
-            role: [],
             permisos: [],
             selectedPermisos: [],
             userPermissions: {},

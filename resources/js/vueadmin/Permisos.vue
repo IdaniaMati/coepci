@@ -123,7 +123,6 @@ export default {
     data() {
         return {
             permisos: [],
-            permiso: [],
             pagina: 1,
             totalPaginas: 0,
             registrosPorPagina: 7,

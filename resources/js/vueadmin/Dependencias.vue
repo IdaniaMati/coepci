@@ -129,7 +129,6 @@ export default {
         return {
             filtro: '',
             dependencias: [],
-            dependencia: [],
             pagina: 1,
             totalPaginas: 0,
             registrosPorPagina: 7,
@@ -215,7 +214,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    console.error(error);
+                    //console.error(error);
                     this.cerrarModal();
                     Swal.fire('Error', 'Se produjo un error al agregar la Dependencia.', 'error');
                 });
@@ -328,7 +327,7 @@ export default {
         },
 
         limpiarvar() {
-            this.name = null;
+            this.descripcion = null;
         },
 
         calcularTotalPaginas() {
