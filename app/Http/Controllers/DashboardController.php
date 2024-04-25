@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
 use App\Models\Concurso;
 use App\Models\Registro;
-use Illuminate\Http\Request;
 
 
 class DashboardController extends Controller
