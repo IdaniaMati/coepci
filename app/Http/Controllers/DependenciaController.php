@@ -33,6 +33,14 @@ class DependenciaController extends Controller
     {
         try {
             $descripcion = $request->input('descripcion');
+
+            //Validación
+            $existeDependencia = Dependencias::where('descripcion', $descripcion)->exists();
+
+            if($existeDependencia) {
+                return response()->json(['success' => false, 'message' => 'Ya existe una dependencia con esa descripción'], 400);
+            }
+
             Dependencias::create(['descripcion' => $descripcion]);
 
             return response()->json(['success' => true]);

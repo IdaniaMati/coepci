@@ -7,6 +7,9 @@
         <div class="card-container">
             <div class="card">
                 <div class="info-container">
+                <div class="nav-item d-flex align-items-center">
+                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Empleado</button>
+                </div>
                 <div class="info-item">
                     <strong>Total Empleados:</strong> {{ empleados.length }}
                 </div>
@@ -53,6 +56,10 @@
                                     <span v-if="empleado.votoRonda2" class="badge bg-label-primary me-1">Sí</span>
                                     <span v-else class="badge bg-label-info me-1">No</span>
                                 </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" @click="datalleEmpleado(empleado.id)">Editar</button>&nbsp;
+                                    <button class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
+                                </td>
                             </tr>
                         </tbody>
                         <tbody v-else>
@@ -61,6 +68,57 @@
                             </tr>
                         </tbody>
                     </table>
+
+                 <div class="container">
+                    <div class="modal fade" id="largeModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><strong>Empleado</strong></h5>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Nombres</label>
+                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
+                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Nombres</label>
+                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
+                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Apellido paterno</label>
+                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
+                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Apellido materno</label>
+                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
+                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button v-if="bandera === 0" class="btn btn-primary" @click="agregarEvento">Guardar</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarEvento">Editar</button>
+                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                  </div>
 
                     <br>
                     <nav aria-label="Page navigation">
@@ -190,6 +248,8 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
                     //console.error(error);
                 });
         },
+
+
 
         async obtenerRegistrosVotos() {
             try {

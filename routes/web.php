@@ -61,6 +61,10 @@ Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
+    Route::post('/agregarEmpleado', [DependenciaController::class, 'agregarEmpleado']);
+    Route::get('/detalleEmpleado/{id}', [DependenciaController::class, 'detalleEmpleado']);
+    Route::post('/editarEmpleado', [DependenciaController::class, 'editarEmpleado']);
+    Route::delete('/eliminarEmpleado/{id}', [DependenciaController::class, 'eliminarEmpleado']);
 });
 
 Route::middleware(['auth', 'can:Modulo_Respaldo'])->group(function () {

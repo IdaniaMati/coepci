@@ -187,12 +187,15 @@ export default {
                 });
 
         },
-
         obtenerDependencias() {
             axios.get('/obtenerDependencias')
                 .then((response) => {
                     if (response.data.user) {
                         this.dependencias = response.data.user;
+                        // Ordenar alfabéticamente
+                        this.dependencias.sort((a, b) => {
+                            return a.descripcion.localeCompare(b.descripcion);
+                        });
                         this.calcularTotalPaginas();
                     } else {
                         //console.log(response.data.message);
@@ -200,7 +203,7 @@ export default {
                 })
                 .catch((error) => {
                     //console.error(error);
-                });
+            });
         },
 
         agregarDependencia() {
@@ -215,9 +218,12 @@ export default {
                     }
                 })
                 .catch(error => {
-                    //console.error(error);
-                    this.cerrarModal();
-                    Swal.fire('Error', 'Se produjo un error al agregar la Dependencia.', 'error');
+                    console.error(error);
+                    if (error.response && error.response.data && error.response.data.message) {
+                        Swal.fire('Error', error.response.data.message, 'error');
+                    } else {
+                        Swal.fire('Error', 'Se produjo un error al agregar la Dependencia.', 'error');
+                    }
                 });
         },
 
