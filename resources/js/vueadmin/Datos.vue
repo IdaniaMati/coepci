@@ -80,12 +80,12 @@
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label>Fecha Segunda Ronda</label>
-                                                <input v-model="fechaIni2ronda" class="form-control" type="date" required/>
+                                                <input v-model="fechaIni2ronda" :disabled="!fechaIni1ronda" class="form-control" type="date" @input="validarSegundaFecha" required/>
                                                 <div v-if="!fechaIni2ronda" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label>Fecha Fin de Evento</label>
-                                                <input v-model="fechaFin" class="form-control" type="date" required/>
+                                                <input v-model="fechaFin" :disabled="!fechaIni2ronda" class="form-control" type="date" @input="validarTerceraFecha" required/>
                                                 <div v-if="!fechaFin" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
@@ -145,7 +145,11 @@
     height: 100px;
     resize: none;
     white-space: pre-line;
-}
+  }
+  .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+    z-index: 11000;
+  }
+
 </style>
 
 <script>
@@ -278,10 +282,44 @@ export default {
                 });
         },
 
-        async  agregarEvento() {
+
+        
+        validarSegundaFecha() {
+            if (this.fechaIni1ronda && this.fechaIni2ronda) {
+                const fechaIni1 = new Date(this.fechaIni1ronda);
+                const fechaIni2 = new Date(this.fechaIni2ronda);
+
+                if (fechaIni2 < fechaIni1) {
+                    Swal.fire('Error', 'La fecha de la segunda ronda no puede ser menor que la fecha de la primera ronda.', 'error');
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        validarTerceraFecha() {
+            if (this.fechaIni2ronda && this.fechaFin) {
+                const fechaIni2 = new Date(this.fechaIni2ronda);
+                const fechaFin = new Date(this.fechaFin);
+
+                if (fechaFin < fechaIni2) {
+                    Swal.fire('Error', 'La fecha Final no puede ser menor que la fecha de la segunda ronda.', 'error');
+                    return false;
+                }
+            }
+            return true;
+        },
+
+
+
+        async agregarEvento() {
 
             if (!this.descripcion || !this.fechaIni1ronda || !this.fechaIni2ronda || !this.fechaFin) {
                 Swal.fire('Error', 'Todos los campos son obligatorios.', 'error');
+                return;
+            }
+
+            if (!this.validarSegundaFecha() || !this.validarTerceraFecha()) {
                 return;
             }
 

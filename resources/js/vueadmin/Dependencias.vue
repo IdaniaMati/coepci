@@ -128,6 +128,7 @@ export default {
     data() {
         return {
             filtro: '',
+            /* dependencia: [], */
             dependencias: [],
             pagina: 1,
             totalPaginas: 0,
