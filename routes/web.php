@@ -11,7 +11,7 @@ use App\Http\Controllers\VedaController;
 use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
-
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*------------------------ Resultados Públicos ------------------------*/
 Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
@@ -61,10 +61,11 @@ Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
-    Route::post('/agregarEmpleado', [DependenciaController::class, 'agregarEmpleado']);
-    Route::get('/detalleEmpleado/{id}', [DependenciaController::class, 'detalleEmpleado']);
-    Route::post('/editarEmpleado', [DependenciaController::class, 'editarEmpleado']);
-    Route::delete('/eliminarEmpleado/{id}', [DependenciaController::class, 'eliminarEmpleado']);
+    Route::get('/obtenerGrupos', [DashboardController::class, 'obtenerGrupos']);
+    Route::post('/agregarEmpleado', [DashboardController::class, 'agregarEmpleado']);
+    Route::get('/detalleEmpleado/{id}', [DashboardController::class, 'detalleEmpleado']);
+    Route::post('/editarEmpleado', [DashboardController::class, 'editarEmpleado']);
+    Route::delete('/eliminarEmpleado/{id}', [DashboardController::class, 'eliminarEmpleado']);
 });
 
 Route::middleware(['auth', 'can:Modulo_Respaldo'])->group(function () {

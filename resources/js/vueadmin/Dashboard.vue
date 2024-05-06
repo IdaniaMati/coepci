@@ -57,7 +57,7 @@
                                     <span v-else class="badge bg-label-info me-1">No</span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datalleEmpleado(empleado.id)">Editar</button>&nbsp;
+                                    <button class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button>&nbsp;
                                     <button class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
                                 </td>
                             </tr>
@@ -81,38 +81,55 @@
                                     <form>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
-                                                <label>Nombres</label>
-                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
-                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                                <label>Grupo</label>
+                                                <!-- <input v-model="id_grup" class="form-control" placeholder="Grupo" required/> -->
+                                                    <select v-model="id_grup" class="form-control" id="grupo" required>
+                                                        <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
+                                                    </select>
+                                                <div v-if="!id_grup" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Curp</label>
+                                                <input v-model="curp" class="form-control" placeholder="CURP" required/>
+                                                <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Nombres</label>
-                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
-                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                                <input v-model="nombre" class="form-control" placeholder="Nombres" required/>
+                                                <div v-if="!nombre" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
-                                                <label>Apellido paterno</label>
-                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
-                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                                <label>Apellido Paterno</label>
+                                                <input v-model="apellido_paterno" class="form-control" placeholder="Apellido paterno" required/>
+                                                <div v-if="!apellido_paterno" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Apellido materno</label>
-                                                <input v-model="descripcion" class="form-control" placeholder="Descripción del evento" required/>
-                                                <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
+                                                <input v-model="apellido_materno" class="form-control" placeholder="Apellido materno" required/>
+                                                <div v-if="!apellido_materno" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Cargo</label>
+                                                <input v-model="cargo" class="form-control" placeholder="Cargo" required/>
+                                                <div v-if="!cargo" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                     </form>
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button v-if="bandera === 0" class="btn btn-primary" @click="agregarEvento">Guardar</button>
-                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarEvento">Editar</button>
+                                    <button v-if="bandera === 0" class="btn btn-primary" @click="agregarEmpleado">Guardar</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarEmpleado">Editar</button>
                                     <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
@@ -176,6 +193,17 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             votosRonda2: 0,
             currentPage: 1,
             perPage: 10,
+            idEmp: "",
+            idEmpleado: "",
+            bandera: "",
+            nombre: "",
+            apellido_paterno: "",
+            apellido_materno: "",
+            curp: "",
+            cargo: "",
+            id_grup: "",
+            id_depen: "",
+            grupos: []
             };
         },
 
@@ -210,6 +238,7 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
     mounted() {
         this.obtenerEmpleados();
         this.obtenerRegistrosVotos();
+        this.obtenerGrupos();
      },
 
     methods: {
@@ -249,7 +278,131 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
                 });
         },
 
+         async obtenerGrupos() {
+             try {
+                 const response = await axios.get('/obtenerGrupos');
+                 if (response.data.success) {
+                 this.grupos = response.data.grupos;
+                 } else {
+                 console.error('Error al obtener los grupos');
+                 }
+             } catch (error) {
+                 console.error('Error al obtener los grupos:', error);
+             }
+         },
 
+        async agregarEmpleado() {
+
+        const curp = this.curp.toUpperCase().substring(0, 18);
+
+        if (curp.length !== 18) {
+            Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
+            return;
+        }
+
+        const nuevoEmpleado = {
+            id_grup: this.id_grup,
+            curp: this.curp,
+            nombre: this.nombre,
+            apellido_paterno: this.apellido_paterno,
+            apellido_materno: this.apellido_materno,
+            cargo: this.cargo,
+        };
+        try {
+                const response = await axios.post('/agregarEmpleado', nuevoEmpleado);
+
+                if (response.data.success) {
+                    this.cerrarModal();
+                    this.obtenerEmpleados();
+
+                    Swal.fire('Éxito', response.data.message, 'success');
+                } else {
+                    Swal.fire('Error', response.data.error, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'La CURP ya se encuentra registrada.', 'error');
+            }
+         },
+
+         async editarEmpleado() {
+            const empleadoActualizado = {
+            id: this.idEmpleado,
+            nombre: this.nombre,
+            apellido_paterno: this.apellido_paterno,
+            apellido_materno: this.apellido_materno,
+            curp: this.curp,
+            cargo: this.cargo,
+            id_grup: this.id_grup
+            };
+
+            try {
+            const response = await axios.post('/editarEmpleado', empleadoActualizado);
+
+            if (response.data.success) {
+                this.cerrarModal();
+                this.obtenerEmpleados();
+                Swal.fire('Éxito', response.data.message, 'success');
+            } else {
+                Swal.fire('Error', response.data.message, 'error');
+            }
+            } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Hubo un error al actualizar el empleado.', 'error');
+            }
+        },
+
+        detalleEmpleado(idEmp) {
+
+            this.idEmpleado = idEmp;
+            this.bandera = 1;
+            this.abrirModal();
+
+            axios
+                .get("/detalleEmpleado/" + idEmp)
+                .then((response) => {
+                    const empleado = response.data[0];
+                    this.nombre = empleado.nombre;
+                    this.apellido_paterno = empleado.apellido_paterno;
+                    this.apellido_materno = empleado.apellido_materno;
+                    this.curp = empleado.curp;
+                    this.cargo = empleado.cargo;
+                    this.curp = empleado.curp;
+                    this.id_grup = empleado.id_grup;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+         async eliminarEmpleado(idEmpleado) {
+            try {
+
+                const confirmed = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esto eliminará al empleado seleccionado.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí'
+                });
+
+                if (confirmed.isConfirmed) {
+                    const response = await axios.delete(`/eliminarEmpleado/${idEmpleado}`);
+
+                    if (response.data.success) {
+                        Swal.fire('Éxito', response.data.message, 'success');
+                        this.obtenerEmpleados();
+                    } else {
+                        Swal.fire('Error', response.data.error, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al eliminar al empleado.', 'error');
+            }
+        },
 
         async obtenerRegistrosVotos() {
             try {
@@ -290,8 +443,28 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         },
+        nuevo() {
+            this.limpiarvar();
+            this.bandera = 0;
+            this.abrirModal();
+        },
 
+        abrirModal() {
+            $("#largeModal").modal({ backdrop: "static", keyboard: false });
+            $("#largeModal").modal("toggle");
+        },
+        cerrarModal() {
+            $("#largeModal").modal("hide");
+        },
 
+        limpiarvar() {
+            this.nombre = null;
+            this.apellido_paterno = null;
+            this.apellido_materno = null;
+            this.curp = null;
+            this.cargo = null;
+            this.id_grup = null;
+        },
         gotoPage(page) {
             if (page >= 1 && page <= this.totalPages) {
                 this.currentPage = page;

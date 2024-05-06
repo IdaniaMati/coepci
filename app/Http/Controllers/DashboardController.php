@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empleado;
 use App\Models\Concurso;
 use App\Models\Registro;
+use App\Models\Grupo;
+use Illuminate\Validation\Rule;
 
 
 class DashboardController extends Controller
@@ -34,6 +37,101 @@ class DashboardController extends Controller
             }
 
             return response()->json(['empleados' => $empleados]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerGrupos()
+    {
+        $grupos = Grupo::all();
+        return response()->json(['success' => true, 'grupos' => $grupos]);
+    }
+
+
+    public function agregarEmpleado(Request $request)
+    {
+        try {
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $request->validate([
+                'id_grup' => 'required',
+                'curp' => [
+                    'required',
+                    'max:18',
+                    Rule::unique('empleados')->where(function ($query) use ($request) {
+                        return $query->where('curp', strtoupper($request->curp));
+                    }),
+                ],
+                'nombre' => 'required',
+                'apellido_paterno' => 'required',
+                'apellido_materno' => 'required',
+                'cargo' => 'required',
+            ]);
+
+            $nuevoEmpleado = new Empleado;
+            $nuevoEmpleado->id_grup = $request->id_grup;
+            $nuevoEmpleado->curp = strtoupper ($request->curp);
+            $nuevoEmpleado->nombre = $request->nombre;
+            $nuevoEmpleado->apellido_paterno = $request->apellido_paterno;
+            $nuevoEmpleado->apellido_materno = $request->apellido_materno;
+            $nuevoEmpleado->cargo = $request->cargo;
+
+            $nuevoEmpleado->id_depen = $user->id_depen;
+
+            $nuevoEmpleado->save();
+
+            return response()->json(['success' => true, 'message' => ' Empleado guardado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function detalleEmpleado($id)
+    {
+
+        $empleado = Empleado::where('id',$id)->get();
+        return response()->json($empleado);
+
+    }
+
+    public function editarEmpleado(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|exists:empleados,id',
+                'id_grup' => 'required|exists:grupos,id',
+
+            ]);
+
+            $empleado = Empleado::findOrFail($request->input('id'));
+
+            $empleado->nombre = $request->input('nombre');
+            $empleado->apellido_paterno = $request->input('apellido_paterno');
+            $empleado->apellido_materno = $request->input('apellido_materno');
+            $empleado->curp = $request->input('curp');
+            $empleado->cargo = $request->input('cargo');
+            $empleado->id_grup = $request->input('id_grup');
+
+            $empleado->save();
+
+            return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function eliminarEmpleado($id)
+    {
+        try {
+            Empleado::findOrFail($id)->delete();
+
+            return response()->json(['success' => true, 'message' => 'Empleado eliminado correctamente']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

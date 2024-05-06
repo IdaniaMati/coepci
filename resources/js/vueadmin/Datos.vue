@@ -173,7 +173,7 @@ export default {
             fechaIni2ronda: "",
             fechaFin: "",
             numeroDependencia: null,
-
+            
         };
     },
 
@@ -283,7 +283,7 @@ export default {
         },
 
 
-        
+
         validarSegundaFecha() {
             if (this.fechaIni1ronda && this.fechaIni2ronda) {
                 const fechaIni1 = new Date(this.fechaIni1ronda);
