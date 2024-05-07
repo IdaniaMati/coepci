@@ -58,4 +58,7 @@ app.component('roles-vue', Roles);
 import Permisos from './vueadmin/Permisos.vue';
 app.component('permisos-vue', Permisos);
 
+import Bitacora from './vueadmin/Bitacora.vue';
+app.component('bitacora-vue', Bitacora);
+
 app.mount('#app');

@@ -57,7 +57,7 @@
                                     <span v-else class="badge bg-label-info me-1">No</span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button>&nbsp;
+                                    <button class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button>
                                     <button class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
                                 </td>
                             </tr>
@@ -92,7 +92,7 @@
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Curp</label>
-                                                <input v-model="curp" class="form-control" placeholder="CURP" required/>
+                                                <input v-model="curp" class="form-control" placeholder="CURP" maxlength="18" required/>
                                                 <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
@@ -136,7 +136,6 @@
                         </div>
                      </div>
                   </div>
-
                     <br>
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
@@ -152,7 +151,6 @@
                         </ul>
                     </nav>
                     <br>
-
                 </div>
 
             </div>

@@ -10,6 +10,8 @@ use App\Http\Controllers\DependenciaController;
 use App\Http\Controllers\VedaController;
 use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BitacoraController;
+use App\Models\Bitacora;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
@@ -139,6 +141,10 @@ Route::middleware(['auth', 'can:Modulo_Roles'])->group(function () {
     Route::get('/obtenerPermisosRol/{idRol}', [RoleController::class, 'obtenerPermisosRol']);
 });
 
+/*----------------------- Bitacora ------------------------*/
+Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
+    Route::get('/bitacora', [BitacoraController::class, 'showBitacoraForm'])->name('bitacora');
+});
 
 /*----------------------- Permisos ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Permisos'])->group(function () {
@@ -162,5 +168,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
 
 require __DIR__.'/auth.php';

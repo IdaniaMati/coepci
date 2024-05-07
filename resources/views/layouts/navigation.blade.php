@@ -47,6 +47,11 @@
                         {{ __('Ajustes') }}
                     </x-nav-link>
                     @endcan
+                    @can('Modulo_Bitacora')
+                    <x-nav-link :href="route('bitacora')" :active="request()->routeIs('bitacora')">
+                        {{ __('Bitacora') }}
+                    </x-nav-link>
+                    @endcan
                     @can('Modulo_Respaldo')
                     <x-nav-link :href="route('respaldo')" :active="request()->routeIs('respaldo')">
                         {{ __('Respaldo') }}
