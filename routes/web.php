@@ -144,6 +144,7 @@ Route::middleware(['auth', 'can:Modulo_Roles'])->group(function () {
 /*----------------------- Bitacora ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
     Route::get('/bitacora', [BitacoraController::class, 'showBitacoraForm'])->name('bitacora');
+    Route::get('/obtenerBitacora', [BitacoraController::class, 'obtenerBitacora']);
 });
 
 /*----------------------- Permisos ------------------------*/

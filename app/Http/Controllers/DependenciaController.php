@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Dependencias;
+use App\Helpers\MyHelper;
+
 
 class DependenciaController extends Controller
 {
@@ -86,7 +88,11 @@ class DependenciaController extends Controller
     public function eliminarDependencia($id)
     {
         try {
-            Dependencias::findOrFail($id)->delete();
+            $dependencia = Dependencias::findOrFail($id);
+            $nombreDependencia = $dependencia->descripcion;
+            $dependencia->delete();
+
+            MyHelper::registrarAccion('Se elimino la dependencia: ' . $nombreDependencia, auth()->id());
 
             return response()->json(['success' => true, 'message' => 'Dependencia eliminada correctamente']);
         } catch (\Exception $e) {

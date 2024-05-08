@@ -9,6 +9,14 @@
                         <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
 
                 </div>
+
+                <div>
+                    <ul>
+                        <li v-for="bitacora in bitacoras" :key="bitacora.id">
+                        {{ bitacora.action }} - {{ bitacora.created_at }}
+                        </li>
+                    </ul>
+                </div>
 </template>
 
 <style scoped>
@@ -30,4 +38,27 @@
 
 </style>
 
+<script>
+  import axios from 'axios';
 
+  export default {
+    data() {
+      return {
+        bitacoras: []
+      };
+    },
+    mounted() {
+      this.obtenerActividades();
+    },
+    methods: {
+      async obtenerActividades() {
+        try {
+          const response = await axios.get('/obtenerBitacora');
+          this.bitacoras = response.data;
+        } catch (error) {
+          console.error('Error al obtener las actividades:', error);
+        }
+      }
+    }
+  };
+</script>

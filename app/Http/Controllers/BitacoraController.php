@@ -13,4 +13,10 @@ class BitacoraController extends Controller
         return view('admin.bitacora');
     }
 
+    public function obtenerBitacora()
+    {
+        $bitacoras = Bitacora::latest()->get();
+        return response()->json($bitacoras);
+    }
+
 }
