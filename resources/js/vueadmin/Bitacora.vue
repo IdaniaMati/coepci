@@ -10,13 +10,29 @@
 
                 </div>
 
-                <div>
-                    <ul>
-                        <li v-for="bitacora in bitacoras" :key="bitacora.id">
-                        {{ bitacora.action }} - {{ bitacora.created_at }}
-                        </li>
-                    </ul>
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Dependencia</th>
+                                <th>Fecha y hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="bitacora in bitacoras" :key="bitacora.id">
+                            <td>{{ bitacora.id }}</td>
+                            <td>{{ bitacora.id_user}}</td>
+                            <td>{{ bitacora.action }}</td>
+                            <td>{{ descripcionDepen(bitacora.id_depen) }}</td>
+                            <td>{{ obtenerFechaFormateada(bitacora.created_at) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
+            
 </template>
 
 <style scoped>
@@ -41,24 +57,60 @@
 <script>
   import axios from 'axios';
 
+
   export default {
+
     data() {
       return {
-        bitacoras: []
+        bitacoras: [],
+        dependencias: [],
+
       };
     },
+
     mounted() {
-      this.obtenerActividades();
+        this.obtenerActividades();
+        this.obtenerDependencias();
     },
+
     methods: {
-      async obtenerActividades() {
-        try {
-          const response = await axios.get('/obtenerBitacora');
-          this.bitacoras = response.data;
-        } catch (error) {
-          console.error('Error al obtener las actividades:', error);
-        }
-      }
+
+         async obtenerActividades() {
+             try {
+             const response = await axios.get('/obtenerBitacora');
+             this.bitacoras = response.data;
+             } catch (error) {
+             console.error('Error al obtener las actividades:', error);
+             }
+         },
+
+
+         obtenerDependencias(){
+            axios.get('/obtenerDependencias')
+                .then((response) => {
+                    this.dependencias = response.data.user;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+
+        descripcionDepen(idDepen) {
+            const dependencia = this.dependencias.find(dep => dep.id === idDepen);
+            return dependencia ? dependencia.descripcion : 'Sin descripción';
+        },
+
+        obtenerFechaFormateada(fechaOriginal) {
+            // Crear un objeto de fecha con la fecha original
+            const fecha = new Date(fechaOriginal);
+            // Formatear la fecha y hora en un string legible
+            const fechaFormateada = fecha.toLocaleString();
+
+            return fechaFormateada;
+        },
     }
   };
 </script>
+
+

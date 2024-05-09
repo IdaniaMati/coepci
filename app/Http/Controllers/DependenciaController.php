@@ -44,6 +44,7 @@ class DependenciaController extends Controller
             }
 
             Dependencias::create(['descripcion' => $descripcion]);
+            MyHelper::registrarAccion('Se agrego la dependencia: ' . $descripcion);
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -88,11 +89,11 @@ class DependenciaController extends Controller
     public function eliminarDependencia($id)
     {
         try {
-            $dependencia = Dependencias::findOrFail($id);
-            $nombreDependencia = $dependencia->descripcion;
-            $dependencia->delete();
 
-            MyHelper::registrarAccion('Se elimino la dependencia: ' . $nombreDependencia, auth()->id());
+            $dependencia = Dependencias::findOrFail($id);
+            MyHelper::registrarAccion('Se elimino la dependencia: ' . $dependencia->descripcion);
+
+            $dependencia->delete();
 
             return response()->json(['success' => true, 'message' => 'Dependencia eliminada correctamente']);
         } catch (\Exception $e) {

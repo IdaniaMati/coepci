@@ -10,4 +10,8 @@ class Bitacora extends Model
     use HasFactory;
     protected $table = 'bitacora';
 
+    public function dependencia()
+    {
+        return $this->belongsTo(Dependencias::class, 'id_depen');
+    }
 }

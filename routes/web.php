@@ -70,6 +70,8 @@ Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::delete('/eliminarEmpleado/{id}', [DashboardController::class, 'eliminarEmpleado']);
 });
 
+
+/*----------------------- Respaldo ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Respaldo'])->group(function () {
     Route::get('/respaldo', [RespaldoController::class, 'respaldo'])->name('respaldo');
     Route::get('/respaldofile', [RespaldoController::class, 'exportAllData'])->name('respaldofile');
@@ -145,6 +147,8 @@ Route::middleware(['auth', 'can:Modulo_Roles'])->group(function () {
 Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
     Route::get('/bitacora', [BitacoraController::class, 'showBitacoraForm'])->name('bitacora');
     Route::get('/obtenerBitacora', [BitacoraController::class, 'obtenerBitacora']);
+    Route::get('/obtenerUsuarioBitacora/{id}', [BitacoraController::class, 'obtenerUsuarioBitacora']);
+    Route::get('/obtenerDependenciaBitacora/{id}', [BitacoraController::class, 'obtenerDependenciaBitacora']);
 });
 
 /*----------------------- Permisos ------------------------*/
