@@ -32,7 +32,7 @@
                         </tbody>
                     </table>
                 </div>
-            
+
 </template>
 
 <style scoped>
@@ -56,6 +56,8 @@
 
 <script>
   import axios from 'axios';
+  import { utils as XLSXUtils, writeFile } from 'xlsx';
+
 
 
   export default {
@@ -64,7 +66,11 @@
       return {
         bitacoras: [],
         dependencias: [],
-
+        id: "",
+        id_user: "",
+        id_depen: "",
+        action: "",
+        created_at: ""
       };
     },
 
@@ -102,13 +108,40 @@
         },
 
         obtenerFechaFormateada(fechaOriginal) {
-            // Crear un objeto de fecha con la fecha original
+
             const fecha = new Date(fechaOriginal);
-            // Formatear la fecha y hora en un string legible
             const fechaFormateada = fecha.toLocaleString();
 
             return fechaFormateada;
         },
+
+        exportarExcel() {
+      const bitacorasParaExportar = this.bitacoras.map(bitacora => {
+        return {
+          ID: bitacora.id,
+          Usuario: bitacora.id_user,
+          Acción: bitacora.action,
+          Dependencia: this.descripcionDepen(bitacora.id_depen),
+          'Fecha y hora': this.obtenerFechaFormateada(bitacora.created_at),
+        };
+      });
+
+        const workbook = XLSXUtils.book_new();
+        const worksheet = XLSXUtils.json_to_sheet(bitacorasParaExportar);
+        XLSXUtils.book_append_sheet(workbook, worksheet, 'Bitacoras');
+
+        const blob = writeFile(workbook, 'Bitacoras.xlsx', { bookType: 'xlsx', type: 'blob' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+
+        a.href = url;
+        a.download = 'Bitacoras.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        },
+
     }
   };
 </script>

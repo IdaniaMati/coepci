@@ -9,6 +9,11 @@ class Bitacora extends Model
 {
     use HasFactory;
     protected $table = 'bitacora';
+    protected $fillable = [
+        'id_user',
+        'id_depen',
+        'action',
+    ];
 
     public function dependencia()
     {
