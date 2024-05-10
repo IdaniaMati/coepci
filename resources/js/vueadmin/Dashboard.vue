@@ -82,7 +82,6 @@
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Grupo</label>
-                                                <!-- <input v-model="id_grup" class="form-control" placeholder="Grupo" required/> -->
                                                     <select v-model="id_grup" class="form-control" id="grupo" required>
                                                         <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
                                                     </select>

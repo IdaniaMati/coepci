@@ -22,7 +22,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="bitacora in bitacoras" :key="bitacora.id">
+                            <tr v-for="bitacora in paginatedBitacoras" :key="bitacora.id">
                             <td>{{ bitacora.id }}</td>
                             <td>{{ bitacora.id_user}}</td>
                             <td>{{ bitacora.action }}</td>
@@ -32,6 +32,28 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Agregamos el paginador -->
+                <div class="row justify-content-center">
+                    <div class="col-md-auto">
+                        <button @click="paginaAnterior" :disabled="pagina === 1" class="btn btn-primary mr-2">
+                        Anterior
+                        </button>
+                    </div>
+                    <div class="col-md-auto">
+                        <ul class="pagination">
+                        <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
+                            <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
+                        </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-auto">
+                        <button @click="paginaSiguiente" :disabled="pagina === totalPaginas" class="btn btn-primary ml-2">
+                        Siguiente
+                        </button>
+                    </div>
+                </div>
+                <!-- Fin del paginador -->
 
 </template>
 
@@ -66,17 +88,52 @@
       return {
         bitacoras: [],
         dependencias: [],
+        filtro: '',
+        pagina: 1,
+        totalPaginas: 0,
+        registrosPorPagina: 7,
         id: "",
         id_user: "",
         id_depen: "",
         action: "",
-        created_at: ""
+        created_at: "",
       };
     },
+
+    computed: {
+
+        bitacoraFiltrados() {
+            const filtroMinusculas = this.filtro.toLowerCase();
+            return this.bitacoras.filter((bitacora) => {
+                const nombreCompleto = `${bitacora.id_user}`;
+                const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+                return (
+                    nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
+                    nombreSinAcentos.includes(filtroMinusculas)||
+                    bitacora.action.toLowerCase().includes(filtroMinusculas)||
+                    bitacora.id_depen.toString().includes(filtroMinusculas)||
+                    bitacora.created_at.toString().includes(filtroMinusculas)
+                );
+            });
+        },
+
+        totalPages() {
+            return Math.ceil(this.bitacoraFiltrados.length / this.perPage);
+        },
+
+        paginatedBitacoras() {
+            const startIndex = (this.pagina - 1) * this.registrosPorPagina;
+            const endIndex = startIndex + this.registrosPorPagina;
+            return this.bitacoraFiltrados.slice(startIndex, endIndex);
+        },
+    },
+
 
     mounted() {
         this.obtenerActividades();
         this.obtenerDependencias();
+        this.calcularTotalPaginas();
     },
 
     methods: {
@@ -85,6 +142,7 @@
              try {
              const response = await axios.get('/obtenerBitacora');
              this.bitacoras = response.data;
+             this.calcularTotalPaginas();
              } catch (error) {
              console.error('Error al obtener las actividades:', error);
              }
@@ -116,34 +174,54 @@
         },
 
         exportarExcel() {
-      const bitacorasParaExportar = this.bitacoras.map(bitacora => {
-        return {
-          ID: bitacora.id,
-          Usuario: bitacora.id_user,
-          Acción: bitacora.action,
-          Dependencia: this.descripcionDepen(bitacora.id_depen),
-          'Fecha y hora': this.obtenerFechaFormateada(bitacora.created_at),
-        };
-      });
+            const bitacorasParaExportar = this.bitacoras.map(bitacora => {
+                return {
+                ID: bitacora.id,
+                Usuario: bitacora.id_user,
+                Acción: bitacora.action,
+                Dependencia: this.descripcionDepen(bitacora.id_depen),
+                'Fecha y hora': this.obtenerFechaFormateada(bitacora.created_at),
+                };
 
-        const workbook = XLSXUtils.book_new();
-        const worksheet = XLSXUtils.json_to_sheet(bitacorasParaExportar);
-        XLSXUtils.book_append_sheet(workbook, worksheet, 'Bitacoras');
+            });
 
-        const blob = writeFile(workbook, 'Bitacoras.xlsx', { bookType: 'xlsx', type: 'blob' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+            const workbook = XLSXUtils.book_new();
+            const worksheet = XLSXUtils.json_to_sheet(bitacorasParaExportar);
+            XLSXUtils.book_append_sheet(workbook, worksheet, 'Bitacoras');
 
-        a.href = url;
-        a.download = 'Bitacoras.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+            const blob = writeFile(workbook, 'Bitacoras.xlsx', { bookType: 'xlsx', type: 'blob' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            a.href = url;
+            a.download = 'Bitacoras.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
         },
 
-    }
-  };
+        calcularTotalPaginas() {
+            this.totalPaginas = Math.ceil(this.bitacoras.length / this.registrosPorPagina);
+        },
+
+        paginaAnterior() {
+            if (this.pagina > 1) {
+                this.pagina--;
+            }
+        },
+
+        paginaSiguiente() {
+            if (this.pagina < this.totalPaginas) {
+                this.pagina++;
+            }
+        },
+
+        cambiarPagina(numero) {
+            this.pagina = numero;
+        },
+
+    }};
 </script>
 
 
