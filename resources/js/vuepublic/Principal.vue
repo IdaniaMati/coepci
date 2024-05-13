@@ -38,7 +38,7 @@
         <div class="row mb-5">
           <br>
           <div class="col-sm-12 d-flex justify-content-center" adaptive-text>
-            <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarprimera">Primera Ronda</button>
+            <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarprimera" :disabled="yaVotoPrimera">Primera Ronda</button>
             <button type="button" class="btn btn-primary mx-auto fs-5" @click="votarsegunda" :disabled="isVotacionDesactivada">Segunda Ronda</button>
           </div>
         </div>
@@ -56,6 +56,7 @@
     data() {
         return {
             isVotacionDesactivada: false,
+            yaVotoPrimera: false,
         };
     },
 
@@ -102,13 +103,34 @@
             });
       },
 
+        obtenerUltimoConcursoId() {
+            axios.get("/obtenerConcursoId")
+                .then((response) => {
+                    if (response.data.ultimoConcursoId) {
+                        const ultimoConcursoId = response.data.ultimoConcursoId;
+                        if (ultimoConcursoId === 1) {
+                            this.yaVotoPrimera = true;
+                        } else if (ultimoConcursoId === 2) {
+                            this.isVotacionDesactivada = true;
+                        }
+                    } else {
+                        console.error('No se pudo obtener el ID del último concurso.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
 
       verificarFechaVotacion() {
             axios.get("/obtenerSegundaFechaConcurso")
                 .then((response) => {
                     if (response.data.fechaSegundo) {
                         const fechaSegundoConcurso = new Date(response.data.fechaSegundo);
+                        const fechaActual = new Date()
                         this.isVotacionDesactivada = new Date() < fechaSegundoConcurso;
+                        this.yaVotoPrimera = fechaActual >= fechaSegundoConcurso;
+                        // NO this.isVotacionDesactivada = !this.yaVotoPrimera;
                     } else {
                         console.error('No se pudo obtener la fecha de inicio del concurso.');
                     }
@@ -120,7 +142,6 @@
 
     },
   };
-
 
   </script>
 

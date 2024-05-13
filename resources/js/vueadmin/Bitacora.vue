@@ -107,12 +107,13 @@
             return this.bitacoras.filter((bitacora) => {
                 const nombreCompleto = `${bitacora.id_user}`;
                 const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                const descripcionDependencia = this.descripcionDepen(bitacora.id_depen).toLowerCase();
 
                 return (
                     nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
                     nombreSinAcentos.includes(filtroMinusculas)||
                     bitacora.action.toLowerCase().includes(filtroMinusculas)||
-                    bitacora.id_depen.toString().includes(filtroMinusculas)||
+                    descripcionDependencia.includes(filtroMinusculas) ||
                     bitacora.created_at.toString().includes(filtroMinusculas)
                 );
             });
@@ -174,7 +175,7 @@
         },
 
         exportarExcel() {
-            const bitacorasParaExportar = this.bitacoras.map(bitacora => {
+            const bitacorasParaExportar = this.bitacoraFiltrados.map(bitacora => {
                 return {
                 ID: bitacora.id,
                 Usuario: bitacora.id_user,
