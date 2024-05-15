@@ -6,6 +6,9 @@
                         <h5 class="card-header"><strong>Buscar</strong></h5>
                         <i class="bx bx-search fs-4 lh-0"></i>
                         <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                        <h5 class="card-header"><strong>Filtrar Fecha</strong></h5>
+                        <input v-model="filtroFecha1" class="form-control" type="date" @input="" required/>&nbsp;&nbsp;
+                        <input v-model="filtroFecha2" class="form-control" type="date" @input="" required/>
                         <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
 
                 </div>
@@ -89,6 +92,8 @@
         bitacoras: [],
         dependencias: [],
         filtro: '',
+        filtroFecha1: '',
+        filtroFecha2: '',
         pagina: 1,
         totalPaginas: 0,
         registrosPorPagina: 7,
@@ -149,6 +154,13 @@
              }
          },
 
+         async filtradoFechas() {
+             try {
+          
+             } catch (error) {
+
+             }
+         },
 
          obtenerDependencias(){
             axios.get('/obtenerDependencias')

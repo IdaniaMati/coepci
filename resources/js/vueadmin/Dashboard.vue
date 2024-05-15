@@ -25,6 +25,15 @@
                     <h5 class="card-header"><strong>Empleados</strong></h5>
                     <i class="bx bx-search fs-4 lh-0"></i>
                     <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                    <h5 class="card-header"><strong>Grupo</strong></h5>
+                    <select v-model="id_grup" class="form-control" id="grupo" required>
+                        <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
+                    </select>
+                    <h5 class="card-header"><strong>Votos</strong></h5>
+                    <select v-model="ronda" class="form-control" id="votos" required>
+                        <option v-for="ronda in rondas" :key="ronda.id" :value="ronda.id">{{ ronda.nombre }}</option>
+                        <option v-for="ronda in rondas" :key="ronda.id" :value="ronda.id">{{ ronda.nombre }}</option>
+                    </select>
                     <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
                 </div>
 
@@ -186,6 +195,7 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             return {
             empleados: [],
             filtro: '',
+            ronda: '',
             votosRonda1: 0,
             votosRonda2: 0,
             currentPage: 1,

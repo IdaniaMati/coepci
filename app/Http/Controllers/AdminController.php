@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Helpers\MyHelper;
 
 class AdminController extends Controller
 {
@@ -162,6 +163,8 @@ class AdminController extends Controller
             $nuevoEvento->id_depen = $depen_user;
             $nuevoEvento->save();
 
+            MyHelper::registrarAccion('Se agrego el evento: ' . $nuevoEvento -> descripcion);
+
             return response()->json(['success' => true, 'message' => 'Evento guardado exitosamente']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()]);
@@ -277,6 +280,7 @@ class AdminController extends Controller
     {
         try {
             Concurso::findOrFail($idEvento)->delete();
+            // MyHelper::registrarAccion('Se elimino el evento: ' . $idEvento -> descripcion);
 
             return response()->json(['success' => true, 'message' => 'Evento eliminado correctamente']);
         } catch (\Exception $e) {

@@ -8,6 +8,7 @@ use App\Models\Concurso;
 use App\Models\Registro;
 use App\Models\Grupo;
 use Illuminate\Validation\Rule;
+use App\Helpers\MyHelper;
 
 
 class DashboardController extends Controller
@@ -85,6 +86,7 @@ class DashboardController extends Controller
             $nuevoEmpleado->id_depen = $user->id_depen;
 
             $nuevoEmpleado->save();
+            MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado ->nombre);
 
             return response()->json(['success' => true, 'message' => ' Empleado guardado exitosamente']);
         } catch (\Exception $e) {
@@ -125,7 +127,7 @@ class DashboardController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
-    
+
     public function eliminarEmpleado($id)
     {
         try {

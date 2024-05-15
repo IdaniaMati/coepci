@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Dependencias;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\MyHelper;
 
 
 class UserController extends Controller
@@ -69,6 +70,7 @@ class UserController extends Controller
             $nuevoUsuario->password = Hash::make($request->input('password'));
             $nuevoUsuario->save();
 
+            MyHelper::registrarAccion('Se agrego al usuario: ' . $nuevoUsuario -> name);
             return response()->json(['success' => true, 'message' => 'Usuario agregado exitosamente']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -134,7 +136,7 @@ class UserController extends Controller
                     return response()->json(['error' => 'No se puede eliminar el único administrador']);
                 }
             }
-
+            MyHelper::registrarAccion('Se elimino al usuario: ' . $user -> name);
             $user->delete();
 
             return response()->json(['message' => 'Usuario eliminado correctamente']);
@@ -169,7 +171,7 @@ class UserController extends Controller
             }
 
             $roles = Role::find($selectedRoles);
-
+            
             $user->syncRoles($roles);
 
             return response()->json(['success' => true, 'message' => 'Permisos asignados correctamente.']);
