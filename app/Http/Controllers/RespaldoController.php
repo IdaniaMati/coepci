@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-
+use App\Helpers\MyHelper;
+use Illuminate\Support\Facades\Log;
 
 class RespaldoController extends Controller
 {
@@ -21,7 +22,7 @@ class RespaldoController extends Controller
     public function exportAllData()
     {
         $tables = DB::select('SHOW TABLES FROM coepci');
-    
+
         $sql = "
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
@@ -32,7 +33,7 @@ class RespaldoController extends Controller
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 ";
-        
+
         $totalSize = 0;
 
         foreach ($tables as $table) {
@@ -43,21 +44,21 @@ class RespaldoController extends Controller
             $sql .= "$tableStructure;\n\n";
 
             $rows = DB::table($tableName)->get();
-    
+
             if ($rows->count() > 0) {
                 $columns = collect($rows[0])->keys()->map(function ($columnName) {
                     return "`$columnName`";
                 })->implode(', ');
-    
+
                 $sql .= "INSERT INTO `$tableName` ($columns) VALUES ";
-    
+
                 $values = $rows->map(function ($row) {
                     $row = (array) $row;
                     return '(' . implode(', ', array_map(function ($value) {
                         return is_numeric($value) ? $value : "'" . addslashes($value) . "'";
                     }, $row)) . ')';
                 })->implode(",\n");
-    
+
             $sql .= "$values;\n\n";
             $totalSize += strlen($values);
             }
@@ -76,6 +77,7 @@ class RespaldoController extends Controller
         $fileName = 'coepci_' . date('Y-m-d_H-i-s') . '.sql';
         $filePath = Storage::disk('backups')->path($fileName);
         File::put($filePath, $sql);
+        MyHelper::registrarAccion('Genero el respaldo: ' . $fileName);
 
     }
 
@@ -93,7 +95,7 @@ class RespaldoController extends Controller
 
             $oldestFile = $backupDirectory . $files[0];
             Storage::disk('backups')->delete($files[0]);
-            
+
             DB::table('respaldo')->where('filename', $files[0])->delete();
         }
     }
@@ -108,7 +110,7 @@ class RespaldoController extends Controller
         if ($existingFilesCount >= 10) {
             return response()->json(['message' => 'Cannot add more backups. Limit reached.'], 403);
         }
-    
+
         foreach ($files as $file) {
 
             if (count($fileInfo) >= 10) {
@@ -119,7 +121,7 @@ class RespaldoController extends Controller
             $creationDate = date('Y-m-d H:i:s', filectime($filePath));
             $fileSizeInBytes = filesize($filePath);
             $fileSizeInMB = round($fileSizeInBytes / 1024 / 1024, 2);
-    
+
             $existingFile = DB::table('respaldo')->where('filename', $file)->first();
             if (!$existingFile) {
                 DB::table('respaldo')->insert([
@@ -128,7 +130,7 @@ class RespaldoController extends Controller
                     'size_mb' => $fileSizeInMB
                 ]);
 
-                
+
             }
 
             $fileInfo[] = [
@@ -137,14 +139,14 @@ class RespaldoController extends Controller
                 'size_mb' => $fileSizeInMB
             ];
         }
-    
+
         return response()->json(['message' => 'Backup info retrieved successfully']);
     }
-    
+
     public function getBackupList()
     {
         $backups = DB::table('respaldo')->get();
-        
+
         return response()->json(['backups' => $backups]);
     }
 
@@ -158,17 +160,18 @@ class RespaldoController extends Controller
 
         return response()->json(['success' => false]);
     }
-    
+
     public function downloadBackup($filename)
     {
         $filePath = Storage::disk('backups')->path($filename);
-        
+
         if (Storage::disk('backups')->exists($filename)) {
+            MyHelper::registrarAccion('Descargo el respaldo: '. $filename);
             return response()->download($filePath, $filename, ['Content-Type' => 'application/sql']);
         } else {
             // Si el archivo no existe, devolver una respuesta de error
             return response()->json(['error' => 'El archivo de respaldo no existe'], 404);
         }
     }
-    
+
 }

@@ -83,6 +83,7 @@ class AdminController extends Controller
             //dd($user->id_depen);
             Excel::import(new EmpleadosImport($user->id_depen), $archivo);
 
+            MyHelper::registrarAccion('Importo un excel con empleados a Dashboard');
             return response()->json(['success' => true, 'message' => 'Empleados importados correctamente']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -129,6 +130,7 @@ class AdminController extends Controller
             }
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            MyHelper::registrarAccion('Elimino todos los empleados de Dashboard ');
 
             return response()->json(['success' => true, 'message' => 'Empleados y registros eliminados']);
         } catch (\Exception $e) {
@@ -256,6 +258,8 @@ class AdminController extends Controller
 
             DB::commit();
 
+            MyHelper::registrarAccion('Se edito el evento: ' . $data ['descripcion']);
+
             return response()->json(['success' => true, 'message' => 'Evento Editado Exitosamente']);
         } catch (Exception $e) {
             $errors = $e->getMessage();
@@ -279,8 +283,14 @@ class AdminController extends Controller
     public function eliminarEvento($idEvento)
     {
         try {
-            Concurso::findOrFail($idEvento)->delete();
-            // MyHelper::registrarAccion('Se elimino el evento: ' . $idEvento -> descripcion);
+
+            // Concurso::findOrFail($idEvento)->delete();
+            // MyHelper::registrarAccion('Se elimino el evento: ' . $idEvento);
+            $evento = Concurso::findOrFail($idEvento);
+            $descripcion = $evento->descripcion;
+            $evento->delete();
+
+            MyHelper::registrarAccion('Se elimino el evento: ' . $descripcion);
 
             return response()->json(['success' => true, 'message' => 'Evento eliminado correctamente']);
         } catch (\Exception $e) {

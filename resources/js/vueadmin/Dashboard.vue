@@ -26,13 +26,15 @@
                     <i class="bx bx-search fs-4 lh-0"></i>
                     <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                     <h5 class="card-header"><strong>Grupo</strong></h5>
-                    <select v-model="id_grup" class="form-control" id="grupo" required>
+                    <select v-model="filtroGrupo" class="form-control" id="grupo" required>
+                        <option value="">Seleccionar Grupo</option>
                         <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
                     </select>
                     <h5 class="card-header"><strong>Votos</strong></h5>
                     <select v-model="ronda" class="form-control" id="votos" required>
-                        <option v-for="ronda in rondas" :key="ronda.id" :value="ronda.id">{{ ronda.nombre }}</option>
-                        <option v-for="ronda in rondas" :key="ronda.id" :value="ronda.id">{{ ronda.nombre }}</option>
+                        <option value="">Seleccionar Ronda</option>
+                        <option value="1">Ronda 1</option>
+                        <option value="2">Ronda 2</option>
                     </select>
                     <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
                 </div>
@@ -195,6 +197,7 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             return {
             empleados: [],
             filtro: '',
+            filtroGrupo: '',
             ronda: '',
             votosRonda1: 0,
             votosRonda2: 0,
@@ -215,20 +218,42 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
         },
 
     computed: {
+
         empleadosFiltrados() {
             const filtroMinusculas = this.filtro.toLowerCase();
-            return this.empleados.filter((empleado) => {
+            let empleados = this.empleados.filter((empleado) => {
                 const nombreCompleto = `${empleado.nombre} ${empleado.apellido_paterno} ${empleado.apellido_materno}`;
+                const cargoCompleto = `${empleado.cargo}`;
                 const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                const cargoSinAcentos = cargoCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
                 return (
                     nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
                     nombreSinAcentos.includes(filtroMinusculas) ||
-                    empleado.curp.toLowerCase().includes(filtroMinusculas) ||
-                    empleado.cargo.toLowerCase().includes(filtroMinusculas) ||
-                    empleado.id_grup.toString().includes(filtroMinusculas)
+                    (empleado.curp && empleado.curp.toLowerCase().includes(filtroMinusculas)) ||
+                    cargoCompleto.toLowerCase().includes(filtroMinusculas) ||
+                    cargoSinAcentos.includes(filtroMinusculas) ||
+                    (empleado.id_grup && empleado.id_grup.toString().includes(filtroMinusculas))
                 );
             });
+
+            if (this.filtroGrupo) {
+                empleados = empleados.filter(empleado => empleado.id_grup == this.filtroGrupo);
+            }
+
+            if (this.ronda) {
+                empleados = empleados.filter(empleado => {
+                    if (this.ronda === '1') {
+                        return empleado.votoRonda1;
+                    } else if (this.ronda === '2') {
+                        return empleado.votoRonda2;
+                    } else {
+                        return true;
+                    }
+                });
+            }
+
+            return empleados;
         },
 
         totalPages() {
@@ -333,6 +358,14 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
          },
 
          async editarEmpleado() {
+
+            const curp = this.curp.toUpperCase().substring(0, 18);
+
+            if (curp.length !== 18) {
+                Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
+                return;
+            }
+
             const empleadoActualizado = {
             id: this.idEmpleado,
             nombre: this.nombre,
@@ -346,17 +379,17 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             try {
             const response = await axios.post('/editarEmpleado', empleadoActualizado);
 
-            if (response.data.success) {
-                this.cerrarModal();
-                this.obtenerEmpleados();
-                Swal.fire('Éxito', response.data.message, 'success');
-            } else {
-                Swal.fire('Error', response.data.message, 'error');
-            }
-            } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'Hubo un error al actualizar el empleado.', 'error');
-            }
+                if (response.data.success) {
+                    this.cerrarModal();
+                    this.obtenerEmpleados();
+                    Swal.fire('Éxito', response.data.message, 'success');
+                } else {
+                    Swal.fire('Error', response.data.message, 'error');
+                }
+                } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al actualizar el empleado.', 'error');
+                }
         },
 
         detalleEmpleado(idEmp) {

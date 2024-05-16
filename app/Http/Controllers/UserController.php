@@ -113,6 +113,8 @@ class UserController extends Controller
 
             DB::commit();
 
+            MyHelper::registrarAccion('Se editó al usuario: ' . $data ['name']);
+
             return response()->json(['success' => true, 'message' => 'Usuario Editado Exitosamente']);
         } catch (Exception $e) {
             $errors = $e->getMessage();
@@ -171,7 +173,7 @@ class UserController extends Controller
             }
 
             $roles = Role::find($selectedRoles);
-            
+
             $user->syncRoles($roles);
 
             return response()->json(['success' => true, 'message' => 'Permisos asignados correctamente.']);

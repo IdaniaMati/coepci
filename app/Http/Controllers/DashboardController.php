@@ -113,6 +113,7 @@ class DashboardController extends Controller
 
             $empleado = Empleado::findOrFail($request->input('id'));
 
+
             $empleado->nombre = $request->input('nombre');
             $empleado->apellido_paterno = $request->input('apellido_paterno');
             $empleado->apellido_materno = $request->input('apellido_materno');
@@ -121,6 +122,8 @@ class DashboardController extends Controller
             $empleado->id_grup = $request->input('id_grup');
 
             $empleado->save();
+
+            MyHelper::registrarAccion('Se editó al empleado: ' . $empleado -> curp);
 
             return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
         } catch (\Exception $e) {
@@ -131,7 +134,13 @@ class DashboardController extends Controller
     public function eliminarEmpleado($id)
     {
         try {
-            Empleado::findOrFail($id)->delete();
+            // Empleado::findOrFail($id)->delete();
+            // MyHelper::registrarAccion('Se elimino al empleado con CURP: ' . $id -> curp);
+            $empleado = Empleado::findOrFail($id);
+            $nombre = $empleado->nombre;
+            $empleado->delete();
+
+            MyHelper::registrarAccion('Se eliminó al empleado: ' . $nombre);
 
             return response()->json(['success' => true, 'message' => 'Empleado eliminado correctamente']);
         } catch (\Exception $e) {

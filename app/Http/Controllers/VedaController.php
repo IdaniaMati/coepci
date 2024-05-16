@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Imagenes;
 use App\Models\Configuracion;
 use Illuminate\Http\Request;
+use App\Helpers\MyHelper;
 
 class VedaController extends Controller
 {
@@ -57,8 +58,18 @@ class VedaController extends Controller
             return response()->json(['error' => 'No se encontró la configuración'], 404);
         }
 
+        $nuevoEstado = $request->estado;
         $configuracion->veda = $request->estado;
         $configuracion->save();
+
+        if ($nuevoEstado == 1) {
+            $mensaje = 'Se activó la veda electoral';
+        } else {
+            $mensaje = 'Se desactivó la veda electoral';
+        }
+
+        MyHelper::registrarAccion($mensaje);
+
 
         return response()->json(['message' => 'Estado de la veda actualizado correctamente']);
     }
@@ -75,6 +86,7 @@ class VedaController extends Controller
             }
 
             $imagen->save();
+
         }
 
         return response()->json(['message' => 'Estados de las imágenes actualizados correctamente']);

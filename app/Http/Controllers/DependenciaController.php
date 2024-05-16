@@ -78,6 +78,8 @@ class DependenciaController extends Controller
 
             DB::commit();
 
+            MyHelper::registrarAccion('Se editó la dependencia: ' . $data ['descripcion']);
+
             return response()->json(['success' => true, 'message' => 'Dependencia Editada Exitosamente']);
         } catch (Exception $e) {
             $errors = $e->getMessage();
