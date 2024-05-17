@@ -22,7 +22,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>NDescripción</th>
+                                <th>Descripción</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>

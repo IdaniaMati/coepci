@@ -75,7 +75,7 @@
                                         <div class="row">
                                             <div class="col-md-4 mb-3">
                                                 <label>Fecha Primera Ronda</label>
-                                                <input v-model="fechaIni1ronda" class="form-control" type="date" required/>
+                                                <input v-model="fechaIni1ronda" class="form-control" type="date" @input="validarFechaInicial" required/>
                                                 <div v-if="!fechaIni1ronda" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                             <div class="col-md-4 mb-3">
@@ -173,7 +173,7 @@ export default {
             fechaIni2ronda: "",
             fechaFin: "",
             numeroDependencia: null,
-            
+
         };
     },
 
@@ -282,8 +282,16 @@ export default {
                 });
         },
 
+        validarFechaInicial() {
+        const fechaActual = new Date();
+        const fechaIni1 = new Date(this.fechaIni1ronda);
 
-
+        if (fechaIni1 < fechaActual) {
+            Swal.fire('Error', 'La fecha de inicio de la primera ronda no puede ser anterior a la fecha actual.', 'error');
+            return false;
+        }
+        return true;
+    },
         validarSegundaFecha() {
             if (this.fechaIni1ronda && this.fechaIni2ronda) {
                 const fechaIni1 = new Date(this.fechaIni1ronda);
@@ -310,8 +318,6 @@ export default {
             return true;
         },
 
-
-
         async agregarEvento() {
 
             if (!this.descripcion || !this.fechaIni1ronda || !this.fechaIni2ronda || !this.fechaFin) {
@@ -319,7 +325,7 @@ export default {
                 return;
             }
 
-            if (!this.validarSegundaFecha() || !this.validarTerceraFecha()) {
+            if (!this.validarFechaInicial() || !this.validarSegundaFecha() || !this.validarTerceraFecha()) {
                 return;
             }
 
@@ -349,7 +355,18 @@ export default {
         },
 
         editarEvento() {
+
             var idEvento = this.ideve;
+
+            if (!this.descripcion || !this.fechaIni1ronda || !this.fechaIni2ronda || !this.fechaFin) {
+                Swal.fire('Error', 'Todos los campos son obligatorios.', 'error');
+                return;
+            }
+
+            if (!this.validarFechaInicial() || !this.validarSegundaFecha() || !this.validarTerceraFecha()) {
+                return;
+            }
+
             this.cerrarModal();
 
             Swal.fire({

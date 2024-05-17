@@ -60,6 +60,7 @@ class DependenciaController extends Controller
 
     }
 
+
     public function editarDependencia(Request $request)
     {
         $validaciones = $request->validate([
@@ -68,6 +69,16 @@ class DependenciaController extends Controller
         ]);
 
         try {
+
+            $dependenciaExistente = DB::table("dependencias")
+                ->where("descripcion", $validaciones['descripcion'])
+                ->where("id", '!=', $validaciones['id'])
+                ->first();
+
+            if ($dependenciaExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe una dependencia con esa descripción.']);
+            }
+
             DB::beginTransaction();
 
             $data = [
@@ -78,7 +89,7 @@ class DependenciaController extends Controller
 
             DB::commit();
 
-            MyHelper::registrarAccion('Se editó la dependencia: ' . $data ['descripcion']);
+            MyHelper::registrarAccion('Se editó la dependencia: ' . $data['descripcion']);
 
             return response()->json(['success' => true, 'message' => 'Dependencia Editada Exitosamente']);
         } catch (Exception $e) {

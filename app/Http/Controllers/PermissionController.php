@@ -58,6 +58,14 @@ class PermissionController extends Controller
         ]);
 
         try {
+                $PermisoExistente = DB::table("permissions")
+                ->where("name", $validaciones['name'])
+                ->where("id", '!=', $validaciones['id'])
+                ->first();
+
+            if ($PermisoExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe un permiso con esa descripción.']);
+            }
             DB::beginTransaction();
 
             $data = [

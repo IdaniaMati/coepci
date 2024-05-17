@@ -9,7 +9,7 @@ use App\Models\Registro;
 use App\Models\Grupo;
 use Illuminate\Validation\Rule;
 use App\Helpers\MyHelper;
-
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -104,12 +104,22 @@ class DashboardController extends Controller
 
     public function editarEmpleado(Request $request)
     {
+
         try {
             $request->validate([
                 'id' => 'required|exists:empleados,id',
                 'id_grup' => 'required|exists:grupos,id',
 
             ]);
+
+            $empleadoExistente = DB::table("empleados")
+                ->where("curp", $request['curp'])
+                ->where("id", '!=', $request['id'])
+                ->first();
+
+            if ($empleadoExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe una empleado con esa CURP.']);
+            }
 
             $empleado = Empleado::findOrFail($request->input('id'));
 

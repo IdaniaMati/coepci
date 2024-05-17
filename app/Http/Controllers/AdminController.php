@@ -157,6 +157,15 @@ class AdminController extends Controller
                 'fechaFin' => 'required|date',
             ]);
 
+            $EventoExistente = DB::table("concursos")
+                ->where("descricion", $request['descripcion'])
+                ->where("id", '!=', $request['id'])
+                ->first();
+
+            if ($EventoExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe un evento con esa descripción.']);
+            }
+
             $nuevoEvento = new Concurso;
             $nuevoEvento->descripcion = $request->descripcion;
             $nuevoEvento->fechaIni1ronda = $request->fechaIni1ronda;
@@ -244,6 +253,16 @@ class AdminController extends Controller
         ]);
 
         try {
+
+            $EventoExistente = DB::table("concursos")
+                ->where("descricion", $validaciones['descripcion'])
+                ->where("id", '!=', $validaciones['id'])
+                ->first();
+
+            if ($EventoExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe un evento con esa descripción.']);
+            }
+
             DB::beginTransaction();
 
             $data = [

@@ -60,6 +60,15 @@ class RoleController extends Controller
         ]);
 
         try {
+                $RoleExistente = DB::table("roles")
+                ->where("name", $validaciones['name'])
+                ->where("id", '!=', $validaciones['id'])
+                ->first();
+
+            if ($RoleExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe un role con esa descripción.']);
+            }
+
             DB::beginTransaction();
 
             $data = [
