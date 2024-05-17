@@ -227,6 +227,7 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
                 const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 const cargoSinAcentos = cargoCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
+                this.currentPage = 1;
                 return (
                     nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
                     nombreSinAcentos.includes(filtroMinusculas) ||

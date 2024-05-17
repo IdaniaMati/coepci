@@ -99,7 +99,7 @@
                   <script>
                     document.write(new Date().getFullYear());
                   </script>
-                  , hecho con ❤️ por la SECOES
+                  Derechos reservados por la Secretaria de Contraloría del Estado de Quintana Roo
                 </div>
               </div>
             </footer>

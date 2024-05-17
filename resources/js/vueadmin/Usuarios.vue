@@ -113,7 +113,7 @@
                                 <div class="modal-body">
                                     <label>Selecciona los roles:</label>
                                     <div v-for="role in roles" :key="role.id" class="form-check">
-                                        <input 
+                                        <input
                                         name="default-radio-1" class="form-check-input" type="radio" :id="'role-' + role.id" v-model="selectedRoles" :value="role.id"/>
                                         <label class="form-check-label" :for="'role-' + role.id">{{ role.name }}</label>
                                     </div>
@@ -220,12 +220,15 @@ export default {
                 const nombreCompleto = `${usuarios.name}`;
                 const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 const nombreDependencia = this.dependencias.find(dep => dep.id === usuarios.id_depen)?.descripcion || '';
+                const dependenciaSinAcentos = nombreDependencia.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+                this.pagina = 1;
 
                 return (
                     nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
                     nombreSinAcentos.includes(filtroMinusculas) ||
                     usuarios.email.toLowerCase().includes(filtroMinusculas) ||
-                    nombreDependencia.toLowerCase().includes(filtroMinusculas)
+                    dependenciaSinAcentos.toLowerCase().includes(filtroMinusculas)
                 );
             });
         },

@@ -153,6 +153,7 @@ export default {
             return this.dependencias.filter((depen) => {
                 const nombreCompleto = `${depen.descripcion}`;
                 const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                this.pagina = 1;
 
                 return (
                     nombreCompleto.toLowerCase().includes(filtroMinusculas) ||

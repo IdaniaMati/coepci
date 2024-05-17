@@ -283,15 +283,15 @@ export default {
         },
 
         validarFechaInicial() {
-        const fechaActual = new Date();
-        const fechaIni1 = new Date(this.fechaIni1ronda);
+            const fechaActual = new Date();
+            const fechaIni1 = new Date(this.fechaIni1ronda);
 
-        if (fechaIni1 < fechaActual) {
-            Swal.fire('Error', 'La fecha de inicio de la primera ronda no puede ser anterior a la fecha actual.', 'error');
-            return false;
-        }
-        return true;
-    },
+            if (fechaIni1 < fechaActual) {
+                Swal.fire('Error', 'La fecha de inicio de la primera ronda no puede ser anterior a la fecha actual.', 'error');
+                return false;
+            }
+            return true;
+        },
         validarSegundaFecha() {
             if (this.fechaIni1ronda && this.fechaIni2ronda) {
                 const fechaIni1 = new Date(this.fechaIni1ronda);

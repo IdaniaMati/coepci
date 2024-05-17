@@ -108,6 +108,8 @@ export default {
           (!filtroFechaInicio || fechaBitacora >= filtroFechaInicio) &&
           (!filtroFechaFin || fechaBitacora <= filtroFechaFin);
 
+        this.pagina = 1;
+
         return (
           cumpleConFecha &&
           (nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
@@ -220,5 +222,7 @@ export default {
     },
 };
 </script>
+
+
 
 
