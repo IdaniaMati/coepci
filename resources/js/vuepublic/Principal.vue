@@ -55,8 +55,8 @@
   export default {
     data() {
         return {
-            isVotacionDesactivada: false,
             yaVotoPrimera: false,
+            isVotacionDesactivada: false,
         };
     },
 
@@ -122,17 +122,12 @@
                 });
         },
 
-      verificarFechaVotacion() {
+      /* verificarFechaVotacion() {
             axios.get("/obtenerSegundaFechaConcurso")
                 .then((response) => {
                     if (response.data.fechaSegundo) {
                         const fechaSegundoConcurso = new Date(response.data.fechaSegundo);
-                        const fechaActual = new Date()
-                        // this.isVotacionDesactivada = new Date() < fechaSegundoConcurso;
-                        // this.yaVotoPrimera = fechaActual >= fechaSegundoConcurso;
-                        // NO this.isVotacionDesactivada = !this.yaVotoPrimera;
-                        this.isVotacionDesactivada = response.data.bloquearPrimeraRonda;
-                        this.yaVotoPrimera = fechaActual >= fechaSegundoConcurso;
+                        this.isVotacionDesactivada = new Date() < fechaSegundoConcurso;
                     } else {
                         console.error('No se pudo obtener la fecha de inicio del concurso.');
                     }
@@ -140,7 +135,25 @@
                 .catch((error) => {
                     console.error(error);
                 });
+        }, */
+
+
+        verificarFechaVotacion() {
+            axios.get("/obtenerSegundaFechaConcurso")
+                .then((response) => {
+                    const { fechaActual, fechaSegundo} = response.data;
+
+                        this.yaVotoPrimera = fechaActual >= fechaSegundo;
+
+                        const fechaSegundoConcurso = fechaSegundo;
+                        this.isVotacionDesactivada = fechaActual < fechaSegundoConcurso;
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         },
+
 
     },
   };

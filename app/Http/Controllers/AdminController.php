@@ -57,8 +57,12 @@ class AdminController extends Controller
 
             $depen_user = $user->id_depen;
 
-            $eventos = Concurso::where('id_depen', $depen_user)
+            if ($depen_user == 1) {
+                $eventos = Concurso::all();
+            } else{
+                $eventos = Concurso::where('id_depen', $depen_user)
                 ->get();
+            }
 
             return response()->json(['eventos' => $eventos]);
         } catch (\Exception $e) {
@@ -160,6 +164,7 @@ class AdminController extends Controller
             $eventoExistente = DB::table("concursos")
             ->where("descripcion", $request['descripcion'])
             ->where("id", '!=', $request['id'])
+            ->where("id_depen", $depen_user)
             ->first();
 
             if ($eventoExistente) {

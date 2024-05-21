@@ -37,16 +37,6 @@
                         {{ __('Permisos') }}
                     </x-nav-link>
                     @endcan
-                    @can('Modulo_Dashboard')
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Ajustes')
-                    <x-nav-link :href="route('datos')" :active="request()->routeIs('datos')">
-                        {{ __('Ajustes') }}
-                    </x-nav-link>
-                    @endcan
                     @can('Modulo_Bitacora')
                     <x-nav-link :href="route('bitacora')" :active="request()->routeIs('bitacora')">
                         {{ __('Bitacora') }}
@@ -55,6 +45,16 @@
                     @can('Modulo_Respaldo')
                     <x-nav-link :href="route('respaldo')" :active="request()->routeIs('respaldo')">
                         {{ __('Respaldo') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Dashboard')
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Ajustes')
+                    <x-nav-link :href="route('datos')" :active="request()->routeIs('datos')">
+                        {{ __('Ajustes') }}
                     </x-nav-link>
                     @endcan
                 </div>

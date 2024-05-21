@@ -21,6 +21,7 @@
     "dependencies": {
         "@oruga-ui/oruga-next": "^0.8.2",
         "bootstrap": "^5.3.3",
+        "bootstrap-icons": "^1.11.3",
         "bootstrap-vue": "^2.23.1",
         "jquery": "^3.7.1",
         "popper.js": "^1.16.1",

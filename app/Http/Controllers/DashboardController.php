@@ -30,8 +30,13 @@ class DashboardController extends Controller
             }
 
             $depen_user = $user->id_depen;
-            $empleados = Empleado::where('id_depen', $depen_user)
+
+            if ($depen_user == 1) {
+                $empleados = Empleado::all();
+            } else{
+                $empleados = Empleado::where('id_depen', $depen_user)
                 ->get();
+            }
 
             if ($empleados->isEmpty()) {
                 return response()->json(['message' => 'No hay empleados en el sistema.']);

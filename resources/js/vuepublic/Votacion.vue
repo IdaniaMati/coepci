@@ -74,7 +74,32 @@
             const urlParams = new URLSearchParams(window.location.search);
             const ronda = urlParams.get('ronda');
 
-            if (ronda === '2') {
+            if (ronda === '1') {
+                axios.get('/obtenerSegundaFechaConcurso')
+                    .then((response) => {
+
+                        const fechaSegunda = response.data.fechaSegundo;
+                        const fechaActual = response.data.fechaActual;
+
+                        if (fechaActual < fechaSegunda) {
+                            this.verificarVotoUsuarioEnRonda('1');
+                            this.obtenerOpcionesVotacion();
+                            this.obtenerIdUsuarioAutenticado();
+                        } else {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Ronda Finalizada',
+                                text: 'La votación de la primera ronda ya concluyó.',
+                            }).then(() => {
+                                window.location.href = '/Principal';
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+
+            } else if (ronda === '2') {
                 axios.get('/obtenerSegundaFechaConcurso')
                     .then((response) => {
                         const fechaSegunda = response.data.fechaSegundo;
@@ -102,6 +127,7 @@
                 this.obtenerOpcionesVotacion();
                 this.obtenerIdUsuarioAutenticado();
             }
+
         },
 
         methods: {

@@ -7,18 +7,23 @@
         <div class="card-container">
             <div class="card">
                 <div class="info-container">
-                <div class="nav-item d-flex align-items-center">
-                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Empleado</button>
-                </div>
-                <div class="info-item">
-                    <strong>Total Empleados:</strong> {{ empleados.length }}
-                </div>
-                <div class="info-item">
-                    <strong>Ronda 1 - Votaron:</strong> {{ votosRonda1 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda1 }}
-                </div>
-                <div class="info-item">
-                    <strong>Ronda 2 - Votaron:</strong> {{ votosRonda2 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda2 }}
-                </div>
+                    <div class="nav-item d-flex align-items-center">
+                        <button v-if="hab_permisos('Crear_empleados')" class="btn btn-primary d-grid w-100" @click="nuevo" title="Agregar">
+                            <svg width="18" height="18" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                                <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="info-item">
+                        <strong>Total Empleados:</strong> {{ empleados.length }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Ronda 1 - Votaron:</strong> {{ votosRonda1 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda1 }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Ronda 2 - Votaron:</strong> {{ votosRonda2 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda2 }}
+                    </div>
                 </div>
 
                 <div class="nav-item d-flex align-items-center">
@@ -68,8 +73,8 @@
                                     <span v-else class="badge bg-label-info me-1">No</span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button>
-                                    <button class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
+                                    <button v-if="hab_permisos('Editar_empleados')" class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button> &nbsp;
+                                    <button v-if="hab_permisos('Eliminar_empleados')" class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -79,8 +84,9 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
 
-                 <div class="container">
+                <div class="container">
                     <div class="modal fade" id="largeModal" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -144,25 +150,26 @@
                                 </div>
                             </div>
                         </div>
-                     </div>
-                  </div>
-                    <br>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
-                                <a class="page-link" href="#" @click="prevPage">Anterior</a>
-                            </li>
-                            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': currentPage === page }">
-                                <a class="page-link" href="#" @click="gotoPage(page)">{{ page }}</a>
-                            </li>
-                            <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
-                                <a class="page-link" href="#" @click="nextPage">Siguiente</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <br>
+                    </div>
                 </div>
 
+                <br>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+                            <a class="page-link" href="#" @click="prevPage">Anterior</a>
+                        </li>
+                        <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': currentPage === page }">
+                            <a class="page-link" href="#" @click="gotoPage(page)">{{ page }}</a>
+                        </li>
+                        <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+                            <a class="page-link" href="#" @click="nextPage">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <br>
             </div>
         </div>
     </div>
@@ -191,8 +198,14 @@
 
 <script>
 import { utils as XLSXUtils, writeFile } from 'xlsx';
+import permisos from "../permisos/permisos.vue";
 
-    export default {
+export default {
+
+        components: {
+
+        },extends:permisos,
+
         data() {
             return {
             empleados: [],
@@ -213,9 +226,11 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
             cargo: "",
             id_grup: "",
             id_depen: "",
-            grupos: []
-            };
-        },
+            grupos: [],
+            lista_permisos:[],
+
+        };
+    },
 
     computed: {
 
@@ -272,9 +287,24 @@ import { utils as XLSXUtils, writeFile } from 'xlsx';
         this.obtenerEmpleados();
         this.obtenerRegistrosVotos();
         this.obtenerGrupos();
+        this.obtenerPermisos();
      },
 
     methods: {
+
+        obtenerPermisos(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+                    console.error(error);
+
+                });
+
+        },
 
         obtenerEmpleados() {
             axios.get('/obtenerEmpleados')
