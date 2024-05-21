@@ -331,7 +331,6 @@ class EmpleadoLoginController extends Controller
         return redirect()->route('empleado.login');
     }
 
-
     /* ============login de usuario============ */
     public function loginForm()
     {
