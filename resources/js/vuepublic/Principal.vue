@@ -128,9 +128,11 @@
                     if (response.data.fechaSegundo) {
                         const fechaSegundoConcurso = new Date(response.data.fechaSegundo);
                         const fechaActual = new Date()
-                        this.isVotacionDesactivada = new Date() < fechaSegundoConcurso;
+                        // this.isVotacionDesactivada = new Date() < fechaSegundoConcurso;
                         // this.yaVotoPrimera = fechaActual >= fechaSegundoConcurso;
                         // NO this.isVotacionDesactivada = !this.yaVotoPrimera;
+                        this.isVotacionDesactivada = response.data.bloquearPrimeraRonda;
+                        this.yaVotoPrimera = fechaActual >= fechaSegundoConcurso;
                     } else {
                         console.error('No se pudo obtener la fecha de inicio del concurso.');
                     }

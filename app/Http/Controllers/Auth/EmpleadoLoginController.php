@@ -142,35 +142,10 @@ class EmpleadoLoginController extends Controller
     }
 
 
-    public function obtenerSegundaFechaConcurso()
-    {
-        try {
-
-            $user = Auth::user();
-
-            if (!$user) {
-                return response()->json(['message' => 'Usuario no autenticado'], 401);
-            }
-
-            $idDependenciaUsuario = $user->id_depen;
-
-            $concurso = Concurso::where('id_depen', $idDependenciaUsuario)
-                ->orderBy('fechaIni1ronda', 'desc')
-                ->first();
-
-            if ($concurso) {
-                $fechaSegunda = Carbon::parse($concurso->fechaIni2ronda);
-
-                return response()->json(['fechaSegundo' => $fechaSegunda]);
-            } else {
-                return response()->json(['error' => 'No se encontró información del concurso para la dependencia del usuario'], 404);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-    // public function obtenerSegundaFechaConcurso(){
+    // public function obtenerSegundaFechaConcurso()
+    // {
     //     try {
+
     //         $user = Auth::user();
 
     //         if (!$user) {
@@ -185,11 +160,8 @@ class EmpleadoLoginController extends Controller
 
     //         if ($concurso) {
     //             $fechaSegunda = Carbon::parse($concurso->fechaIni2ronda);
-    //             $fechaActual = now();
 
-    //             return $fechaSegunda >= $fechaActual ?
-    //                 response()->json(['fechaSegundo' => $fechaSegunda, 'bloquearPrimeraRonda' => true]) :
-    //                 response()->json(['fechaSegundo' => $fechaSegunda, 'bloquearPrimeraRonda' => false]);
+    //             return response()->json(['fechaSegundo' => $fechaSegunda]);
     //         } else {
     //             return response()->json(['error' => 'No se encontró información del concurso para la dependencia del usuario'], 404);
     //         }
@@ -197,6 +169,39 @@ class EmpleadoLoginController extends Controller
     //         return response()->json(['error' => $e->getMessage()], 500);
     //     }
     // }
+
+    public function obtenerSegundaFechaConcurso(){
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $idDependenciaUsuario = $user->id_depen;
+
+            $concurso = Concurso::where('id_depen', $idDependenciaUsuario)
+                ->orderBy('fechaIni1ronda', 'desc')
+                ->first();
+
+            if ($concurso) {
+                $fechaSegunda = Carbon::parse($concurso->fechaIni2ronda);
+                $fechaActual = now();
+
+                // return $fechaSegunda >= $fechaActual ?
+                //     response()->json(['fechaSegundo' => $fechaSegunda, 'bloquearPrimeraRonda' => true]) :
+                //     response()->json(['fechaSegundo' => $fechaSegunda, 'bloquearPrimeraRonda' => false]);
+                return response()->json([
+                    'fechaSegundo' => $fechaSegunda->toDateTimeString(),
+                    'bloquearPrimeraRonda' => $fechaSegunda >= $fechaActual
+                ]);
+            } else {
+                return response()->json(['error' => 'No se encontró información del concurso para la dependencia del usuario'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function obtenerFechaFinConcurso()
     {
@@ -270,6 +275,7 @@ class EmpleadoLoginController extends Controller
             return response()->json(['error' => 'Error al obtener las opciones de votación']);
         }
     }
+
 
     public function obtenerConcursoId()
     {
