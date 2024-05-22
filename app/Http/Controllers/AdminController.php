@@ -322,4 +322,10 @@ class AdminController extends Controller
         }
     }
 
+    public function obtenerDependenciaEvento($id_depen)
+    {
+        $dependencia = Concurso::find($id_depen);
+        return response()->json($dependencia);
+    }
+
 }

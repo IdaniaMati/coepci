@@ -24,7 +24,7 @@
 
                 <div class="nav-item d-flex align-items-center">
                     <h5 class="card-header"><strong>Configuración de Evento</strong></h5>
-                    <button class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Evento</button>
+                    <button v-if="hab_permisos('Crear_eventos')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Evento</button>
                 </div>
 
                 <div class="table-container">
@@ -36,6 +36,7 @@
                                 <th>Fecha Primera Ronda</th>
                                 <th>Fecha Segunda Ronda</th>
                                 <th>Fecha Fin Evento</th>
+                                <th>Dependencia</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>
@@ -46,9 +47,10 @@
                                 <td>{{ evento.fechaIni1ronda }}</td>
                                 <td>{{ evento.fechaIni2ronda }}</td>
                                 <td>{{ evento.fechaFin }}</td>
+                                <td>{{ descripcionDepen(evento.id_depen) }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" @click="datalleEvento(evento.id)">Editar</button>&nbsp;
-                                    <button class="btn btn-danger btn-sm" @click="eliminarEvento(evento.id)">Eliminar</button>
+                                    <button v-if="hab_permisos('Editar_eventos')" class="btn btn-primary btn-sm" @click="datalleEvento(evento.id)">Editar</button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_eventos')" class="btn btn-danger btn-sm" @click="eliminarEvento(evento.id)">Eliminar</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -155,9 +157,12 @@
 <script>
 import { utils as XLSXUtils } from 'xlsx';
 import { writeFile } from 'xlsx';
-
+import permisos from "../permisos/permisos.vue";
 
 export default {
+    components: {
+
+    },extends:permisos,
 
     data() {
         return {
@@ -167,12 +172,14 @@ export default {
             totalPaginas: 0,
             registrosPorPagina: 7,
             bandera: "",
+            id_depen: "",
             ideve: "",
             descripcion: "",
             fechaIni1ronda: "",
             fechaIni2ronda: "",
             fechaFin: "",
             numeroDependencia: null,
+            lista_permisos:[],
 
         };
     },
@@ -180,6 +187,8 @@ export default {
     mounted() {
         this.obtenerEvento();
         this.calcularTotalPaginas();
+        this.obtenerPermisos();
+        this.obtenerDependencias();
     },
 
     computed: {
@@ -191,6 +200,20 @@ export default {
     },
 
     methods: {
+
+        obtenerPermisos(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+                    console.error(error);
+
+                });
+
+        },
 
         handleFileUpload(event) {
             this.archivo = event.target.files[0];
@@ -317,6 +340,22 @@ export default {
             }
             return true;
         },
+
+        obtenerDependencias(){
+        axios.get('/obtenerDependencias')
+            .then((response) => {
+                this.dependencias = response.data.user;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        },
+
+        descripcionDepen(id_depen) {
+        const dependencia = this.dependencias.find(dep => dep.id === id_depen);
+        return dependencia ? dependencia.descripcion : 'Sin descripción';
+        },
+
 
         async agregarEvento() {
 

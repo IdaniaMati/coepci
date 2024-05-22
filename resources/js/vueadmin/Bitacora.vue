@@ -8,7 +8,8 @@
                         <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                         <h5 class="card-header"><strong>Filtrar Fecha</strong></h5>
                         <input v-model="filtroFecha1" class="form-control" type="date" @input="filtrarPorFechas" required />&nbsp;&nbsp;
-                        <input v-model="filtroFecha2" class="form-control" type="date" @input="filtrarPorFechas" required />
+                        <input v-model="filtroFecha2" class="form-control" type="date" @input="filtrarPorFechas" required />&nbsp;&nbsp;
+                        <button class="btn btn-info mb-3" @click="limpiarFiltro">Limpiar</button>
                         <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
                 </div>
                 <div class="table-container">
@@ -33,6 +34,7 @@
                     </tbody>
                 </table>
                 </div>
+
                 <div class="row justify-content-center">
                     <div class="col-md-auto">
                         <button @click="paginaAnterior" :disabled="pagina === 1" class="btn btn-primary mr-2">
@@ -168,6 +170,7 @@ export default {
         return fechaFormateada;
         },
 
+
         exportarExcel() {
         const bitacorasParaExportar = this.bitacoraFiltrados.map(bitacora => {
             return {
@@ -219,6 +222,13 @@ export default {
         cambiarPagina(numero) {
         this.pagina = numero;
         },
+
+        limpiarFiltro() {
+        this.filtroFecha1 = '';
+        this.filtroFecha2 = '';
+        this.calcularTotalPaginas();
+        this.pagina = 1;
+    },
     },
 };
 </script>

@@ -7,7 +7,9 @@
 
         <div class="card-container">
             <div class="card">
-
+                <h5 class="card-header"><strong>Buscar</strong></h5>
+                <i class="bx bx-search fs-4 lh-0"></i>
+                <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                 <div class="nav-item d-flex align-items-center">
                     <button v-if="hab_permisos('Crear_permisos')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Permiso</button>
                 </div>
@@ -123,6 +125,7 @@ export default {
     data() {
         return {
             permisos: [],
+            filtro: '',
             pagina: 1,
             totalPaginas: 0,
             registrosPorPagina: 7,
@@ -140,10 +143,29 @@ export default {
     },
 
     computed: {
-        paginatedPermisos() {
+
+    permisosFiltrados() {
+            const filtroMinusculas = this.filtro.toLowerCase();
+            return this.permisos.filter((permissions) => {
+                const nameCompleto = `${permissions.name}`;
+                const nameSinAcentos = nameCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                this.pagina = 1;
+
+                return (
+                    nameCompleto.toLowerCase().includes(filtroMinusculas) ||
+                    nameSinAcentos.includes(filtroMinusculas)
+                );
+            });
+        },
+
+    totalPages() {
+            return Math.ceil(this.permisosFiltrados.length / this.perPage);
+        },
+
+    paginatedPermisos() {
             const startIndex = (this.pagina - 1) * this.registrosPorPagina;
             const endIndex = startIndex + this.registrosPorPagina;
-            return this.permisos.slice(startIndex, endIndex);
+            return this.permisosFiltrados.slice(startIndex, endIndex);
         },
     },
 

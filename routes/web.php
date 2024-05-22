@@ -89,6 +89,7 @@ Route::middleware(['auth', 'can:Modulo_Ajustes'])->group(function () {
     Route::post('/importar-empleados', [AdminController::class, 'importarEmpleados']);
     Route::post('/vaciarBaseDatos', [AdminController::class, 'vaciarBaseDatos']);
     Route::get('/obtenerEvento', [AdminController::class, 'obtenerEvento']);
+    Route::get('/obtenerDependenciaEventi/{id}', [BitacoraController::class, 'obtenerDependenciaEvento']);
     Route::get('/verificarEventos', [AdminController::class, 'verificarEventos']);
     Route::get('/verificarDatosEnTablas', [AdminController::class, 'verificarDatosEnTablas']);
     Route::post('/agregarEvento', [AdminController::class, 'agregarEvento']);

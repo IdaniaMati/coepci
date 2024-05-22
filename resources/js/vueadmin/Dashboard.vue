@@ -41,6 +41,7 @@
                         <option value="1">Ronda 1</option>
                         <option value="2">Ronda 2</option>
                     </select>
+                    <button class="btn btn-success ms-2" @click="limpiarFiltro">Limpiar</button>
                     <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
                 </div>
 
@@ -550,6 +551,11 @@ export default {
             this.gotoPage(this.currentPage + 1);
         },
 
+        limpiarFiltro() {
+            this.filtroGrupo = '';
+            this.ronda = '';
+            this.currentPage = 1;
+        },
     },
 };
 
