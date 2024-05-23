@@ -17,33 +17,64 @@ class DashboardController extends Controller
     public function showDashboardForm()
     {
         return view('admin.dashboard');
+
     }
 
-    public function obtenerEmpleados()
+    // public function obtenerEmpleados()
+    // {
+    //     try {
+
+    //         $user = Auth::user();
+
+    //         if (!$user) {
+    //             return response()->json(['message' => 'Usuario no autenticado'], 401);
+    //         }
+
+    //         $depen_user = $user->id_depen;
+
+    //         if ($depen_user == 1) {
+    //             $empleados = Empleado::all();
+    //         } else{
+    //             $empleados = Empleado::where('id_depen', $depen_user)
+    //             ->get();
+    //         }
+
+    //         if ($empleados->isEmpty()) {
+    //             return response()->json(['message' => 'No hay empleados en el sistema.']);
+    //         }
+
+    //         return response()->json(['empleados' => $empleados]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
+
+    public function obtenerEmpleados(Request $request)
     {
         try {
-
+            // Obtener el usuario autenticado
             $user = Auth::user();
 
             if (!$user) {
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
-            $depen_user = $user->id_depen;
+            $depen_user = $request->input('dependencia', $user->id_depen);
 
             if ($depen_user == 1) {
                 $empleados = Empleado::all();
-            } else{
-                $empleados = Empleado::where('id_depen', $depen_user)
-                ->get();
+            } else {
+                $empleados = Empleado::where('id_depen', $depen_user)->get();
             }
 
             if ($empleados->isEmpty()) {
                 return response()->json(['message' => 'No hay empleados en el sistema.']);
             }
 
+            // Retornar los empleados en formato JSON
             return response()->json(['empleados' => $empleados]);
         } catch (\Exception $e) {
+            // Si ocurre una excepción, retornar un mensaje de error con el código 500 (error interno del servidor)
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -233,5 +264,30 @@ class DashboardController extends Controller
             return response()->json(['message' => 'Error al obtener los resultados de votos en las rondas.'], 500);
         }
     }
+
+    public function obtenerDependenciaDashboard($id_depen)
+    {
+        $dependencia = Empleado::find($id_depen);
+        return response()->json($dependencia);
+    }
+
+    public function showDashboardDependencia()
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Verificar si el usuario tiene el ID de la dependencia igual a 1
+        $showDependenciaSelect = ($user->id_depen === 1);
+
+        // Obtener las dependencias si se debe mostrar el select
+        $dependencias = $showDependenciaSelect ? Empleado::all() : [];
+
+        // Retornar la vista 'admin.dashboard' con los datos necesarios
+        return view('admin.dashboard', [
+            'showDependenciaSelect' => $showDependenciaSelect,
+            'dependencias' => $dependencias
+        ]);
+    }
+
 
 }

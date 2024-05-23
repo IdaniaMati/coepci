@@ -1,5 +1,13 @@
 <template>
     <div>
+        <div class="mb-3" v-if="showDependenciaSelect">
+            <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
+            <select id="showDependenciaSelect" v-model="dependenciaSeleccionada">
+                <option disabled selected>Seleccionar</option>
+                <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
+            </select>
+        </div>
+
         <div class="text-center mb-4">
             <h2><strong>PANEL PRINCIPAL EMPLEADOS</strong></h2>
         </div>
@@ -9,6 +17,7 @@
                 <div class="info-container">
                     <div class="nav-item d-flex align-items-center">
                         <button v-if="hab_permisos('Crear_empleados')" class="btn btn-primary d-grid w-100" @click="nuevo" title="Agregar">
+                            Agregar
                             <svg width="18" height="18" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
                                 <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
                                 <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
@@ -56,6 +65,7 @@
                             <th style="width: 1%;">Grupo</th>
                             <th style="width: 5%;">Voto 1</th>
                             <th style="width: 5%;">Voto 2</th>
+                            <th style="width: 15%;">Dependencia</th>
                         </tr>
                         </thead>
                         <tbody v-if="paginatedEmpleados.length > 0">
@@ -74,6 +84,7 @@
                                     <span v-else class="badge bg-label-info me-1">No</span>
                                 </td>
                                 <td>
+                                <td>{{ descripcionDepen (empleado.id_depen) }}</td>
                                     <button v-if="hab_permisos('Editar_empleados')" class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button> &nbsp;
                                     <button v-if="hab_permisos('Eliminar_empleados')" class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
                                 </td>
@@ -210,6 +221,9 @@ export default {
         data() {
             return {
             empleados: [],
+            dependencias: [],
+            dependenciaSeleccionada: null,
+            showDependenciaSelect: false,
             filtro: '',
             filtroGrupo: '',
             ronda: '',
@@ -273,6 +287,7 @@ export default {
             return empleados;
         },
 
+
         totalPages() {
             return Math.ceil(this.empleadosFiltrados.length / this.perPage);
         },
@@ -289,9 +304,33 @@ export default {
         this.obtenerRegistrosVotos();
         this.obtenerGrupos();
         this.obtenerPermisos();
+        this.obtenerDependencias();
+        this.cargarDependencias();
      },
 
     methods: {
+
+        filtrarPorDependencia() {
+            if (this.dependenciaSeleccionada === '') {
+                this.empleadosFiltrados = this.empleados;
+            } else {
+                this.obtenerEmpleados(this.dependenciaSeleccionada);
+            }
+        },
+
+        //     cargarDependencias() {
+
+        //     axios.get('/api/obtenerDependencias')
+        //         .then(response => {
+
+        //         this.dependencias = response.data.dependencias;
+        //         this.showDependenciaSelect = response.data.showDependenciaSelect;
+        //         })
+        //         .catch(error => {
+        //         console.error('Error al cargar las dependencias:', error);
+        //         });
+        //     }
+        // },
 
         obtenerPermisos(){
             axios
@@ -354,6 +393,20 @@ export default {
                  console.error('Error al obtener los grupos:', error);
              }
          },
+
+         async obtenerDependencias() {
+        try {
+            const response = await axios.get('/obtenerDependencias');
+            this.dependencias = response.data.user;
+        } catch (error) {
+            console.error(error);
+        }
+        },
+
+        descripcionDepen(idDepen) {
+        const dependencia = this.dependencias.find(dep => dep.id === idDepen);
+        return dependencia ? dependencia.descripcion : 'Sin descripción';
+        },
 
         async agregarEmpleado() {
 

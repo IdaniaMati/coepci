@@ -7,6 +7,7 @@ use App\Models\Empleado;
 use App\Models\Concurso;
 use App\Models\Ganadores;
 use App\Models\Registro;
+use App\Models\Dependencias;
 use App\Http\Controllers\Controller;
 use App\Imports\EmpleadosImport;
 use Maatwebsite\Excel\Facades\Excel;

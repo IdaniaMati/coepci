@@ -227,12 +227,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-
-
-
-
-
-
     public function obtenerOpcionesVotacion($ronda)
     {
         try {

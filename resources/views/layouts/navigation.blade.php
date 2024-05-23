@@ -80,6 +80,10 @@
                             {{ __('Perfil') }}
                         </x-dropdown-link>
 
+                        <x-dropdown-link :href="route('profile.edit')">
+                            {{ __('Manuales') }}
+                        </x-dropdown-link>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -89,6 +93,7 @@
                                                 this.closest('form').submit();">
                                 {{ __('Cerrar sesión') }}
                             </x-dropdown-link>
+
                         </form>
                     </x-slot>
                 </x-dropdown>
@@ -125,6 +130,11 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('profile.edit')">
+                    {{ __('Manuales') }}
+                </x-responsive-nav-link>
+
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

@@ -167,6 +167,7 @@ export default {
     data() {
         return {
             eventos: [],
+            dependencias: [],
             evento: {},
             pagina: 1,
             totalPaginas: 0,

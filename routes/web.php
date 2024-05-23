@@ -60,10 +60,12 @@ Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertoda
 /*----------------------- Dashboard ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'showDashboardDependencia'])->name('obtenerDashboardDependencia');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
     Route::get('/obtenerGrupos', [DashboardController::class, 'obtenerGrupos']);
+    Route::get('/obtenerDependenciaDashboard/{id}', [DashboardController::class, 'obtenerDependenciaDashboard']);
     Route::post('/agregarEmpleado', [DashboardController::class, 'agregarEmpleado']);
     Route::get('/detalleEmpleado/{id}', [DashboardController::class, 'detalleEmpleado']);
     Route::post('/editarEmpleado', [DashboardController::class, 'editarEmpleado']);
@@ -89,7 +91,7 @@ Route::middleware(['auth', 'can:Modulo_Ajustes'])->group(function () {
     Route::post('/importar-empleados', [AdminController::class, 'importarEmpleados']);
     Route::post('/vaciarBaseDatos', [AdminController::class, 'vaciarBaseDatos']);
     Route::get('/obtenerEvento', [AdminController::class, 'obtenerEvento']);
-    Route::get('/obtenerDependenciaEventi/{id}', [BitacoraController::class, 'obtenerDependenciaEvento']);
+    Route::get('/obtenerDependenciaEvento/{id}', [AdminController::class, 'obtenerDependenciaEvento']);
     Route::get('/verificarEventos', [AdminController::class, 'verificarEventos']);
     Route::get('/verificarDatosEnTablas', [AdminController::class, 'verificarDatosEnTablas']);
     Route::post('/agregarEvento', [AdminController::class, 'agregarEvento']);
@@ -171,6 +173,7 @@ Route::middleware(['auth', 'can:Modulo_Log'])->group(function () {
 /*---------------------- Acciones Perfil ------------------------*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'manuales'])->name('profile.manuales');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

@@ -21,8 +21,13 @@ class Empleado extends Authenticatable
         'id_depen',
     ];
 
-    public function empleados()
-{
-    return $this->hasMany(Empleado::class, 'id_grup');
-}
+        public function empleados()
+    {
+        return $this->hasMany(Empleado::class, 'id_grup');
+    }
+    
+    public function dependencia()
+    {
+        return $this->belongsTo(Dependencias::class, 'id_depen');
+    }
 }
