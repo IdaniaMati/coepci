@@ -16,12 +16,8 @@
             <div class="card">
                 <div class="info-container">
                     <div class="nav-item d-flex align-items-center">
-                        <button v-if="hab_permisos('Crear_empleados')" class="btn btn-primary d-grid w-100" @click="nuevo" title="Agregar">
-                            Agregar
-                            <svg width="18" height="18" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
-                                <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
-                            </svg>
+                        <button v-if="hab_permisos('Crear_empleados')" class="btn btn-add" @click="nuevo" title="Agregar">
+                            <i class="bi bi-person-fill-add" style="font-size: 20px;"></i> Agregar
                         </button>
                     </div>
                     <div class="info-item">
@@ -50,8 +46,12 @@
                         <option value="1">Ronda 1</option>
                         <option value="2">Ronda 2</option>
                     </select>
-                    <button class="btn btn-success ms-2" @click="limpiarFiltro">Limpiar</button>
-                    <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
+                    <button class="btn btn-refresh ms-2" title="Limpiar filtros" @click="limpiarFiltro">
+                        <i class="bi bi-arrow-clockwise"  style="font-size: 20px;"></i>
+                    </button>
+                    <button class="btn btn-download ms-2" title="Exportar Excel" @click="exportarExcel">
+                        <i class="bi bi-cloud-download"  style="font-size: 20px;"></i>
+                    </button>
                 </div>
 
                 <div class="table-container">
@@ -59,13 +59,14 @@
                         <thead>
                         <tr>
                             <th style="width: 1%;">ID</th>
-                            <th style="width: 20%;">Nombre</th>
+                            <th style="width: 15%;">Nombre</th>
                             <th style="width: 15%;">Curp</th>
-                            <th style="width: 25%;">Cargo</th>
+                            <th style="width: 20%;">Cargo</th>
                             <th style="width: 1%;">Grupo</th>
-                            <th style="width: 5%;">Voto 1</th>
-                            <th style="width: 5%;">Voto 2</th>
+                            <th style="width: 3%;">Voto 1</th>
+                            <th style="width: 3%;">Voto 2</th>
                             <th style="width: 15%;">Dependencia</th>
+                            <th style="width: 10%;">Opciones</th>
                         </tr>
                         </thead>
                         <tbody v-if="paginatedEmpleados.length > 0">
@@ -83,10 +84,14 @@
                                     <span v-if="empleado.votoRonda2" class="badge bg-label-primary me-1">Sí</span>
                                     <span v-else class="badge bg-label-info me-1">No</span>
                                 </td>
-                                <td>
                                 <td>{{ descripcionDepen (empleado.id_depen) }}</td>
-                                    <button v-if="hab_permisos('Editar_empleados')" class="btn btn-primary btn-sm" @click="detalleEmpleado(empleado.id)">Editar</button> &nbsp;
-                                    <button v-if="hab_permisos('Eliminar_empleados')" class="btn btn-danger btn-sm" @click="eliminarEmpleado(empleado.id)">Eliminar</button>
+                                <td>
+                                    <button v-if="hab_permisos('Editar_empleados')" class="btn btn-edit btn-sm" title="Editar" @click="detalleEmpleado(empleado.id)">
+                                        <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                    </button>
+                                    <button v-if="hab_permisos('Eliminar_empleados')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarEmpleado(empleado.id)">
+                                        <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -158,7 +163,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarEmpleado">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarEmpleado">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

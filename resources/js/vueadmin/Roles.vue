@@ -9,7 +9,9 @@
             <div class="card">
 
                 <div class="nav-item d-flex align-items-center">
-                    <button v-if="hab_permisos('Crear_roles')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Rol</button>
+                    <button v-if="hab_permisos('Crear_roles')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                        <i class="bi bi-folder-plus" style="font-size: 20px;"></i> Agregar
+                    </button>
                 </div>
 
                 <div class="table-container">
@@ -26,9 +28,15 @@
                                 <td>{{ role.id }}</td>
                                 <td>{{ role.name }}</td>
                                 <td>
-                                    <button v-if="hab_permisos('Editar_roles')" class="btn btn-primary btn-sm" @click="datalleRol(role.id)">Editar</button>&nbsp;
-                                    <button v-if="hab_permisos('Eliminar_roles')" class="btn btn-danger btn-sm" @click="eliminarRol(role.id)">Eliminar</button>&nbsp;
-                                    <button v-if="hab_permisos('Asignar_roles_permisos')" class="btn btn-secondary btn-sm" @click="detallePermiso(role.id)">Asignar Permisos</button>
+                                    <button v-if="hab_permisos('Editar_roles')" class="btn btn-edit btn-sm" title="Editar" @click="datalleRol(role.id)">
+                                        <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                    </button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_roles')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarRol(role.id)">
+                                        <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
+                                    </button>&nbsp;
+                                    <button v-if="hab_permisos('Asignar_roles_permisos')" class="btn btn-roles btn-sm" title="Asignar permisos" @click="detallePermiso(role.id)">
+                                        <i class="bi bi-card-checklist" style="font-size: 15px;"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -59,7 +67,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarRol">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarRol">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModalRol" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModalRol" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

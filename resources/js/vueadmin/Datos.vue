@@ -7,10 +7,14 @@
         <div class="card-container">
             <div class="card">
                 <div class="nav-item d-flex align-items-center">
-                    <button class="btn btn-primary" @click="descargarFormato">Descargar Formato</button>
+                    <button class="btn btn-download" title="Descargar Formato" @click="descargarFormato">
+                        <i class="bi bi-file-earmark-arrow-down" style="font-size: 20px;"></i>
+                    </button>
                     <h5 class="card-header"><strong>Importar Empleados</strong></h5>
                     <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                    <button class="btn btn-success" @click="importarEmpleados">Importar Empleados</button>
+                    <button class="btn btn-upload" title="Subir Formato" @click="importarEmpleados">
+                        <i class="bi bi-file-arrow-up" style="font-size: 20px;"></i>
+                    </button>
                 </div>
 
                 <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Empleados</button>
@@ -24,7 +28,10 @@
 
                 <div class="nav-item d-flex align-items-center">
                     <h5 class="card-header"><strong>Configuración de Evento</strong></h5>
-                    <button v-if="hab_permisos('Crear_eventos')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Evento</button>
+                    <button v-if="hab_permisos('Crear_eventos')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                        <i class="bi bi-calendar-check" style="font-size: 20px;" ></i>
+                        Agregar
+                    </button>
                 </div>
 
                 <div class="table-container">
@@ -49,8 +56,12 @@
                                 <td>{{ evento.fechaFin }}</td>
                                 <td>{{ descripcionDepen(evento.id_depen) }}</td>
                                 <td>
-                                    <button v-if="hab_permisos('Editar_eventos')" class="btn btn-primary btn-sm" @click="datalleEvento(evento.id)">Editar</button>&nbsp;
-                                    <button v-if="hab_permisos('Eliminar_eventos')" class="btn btn-danger btn-sm" @click="eliminarEvento(evento.id)">Eliminar</button>
+                                    <button v-if="hab_permisos('Editar_eventos')" class="btn btn-edit btn-sm" title="Editar" @click="datalleEvento(evento.id)">
+                                        <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                    </button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_eventos')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarEvento(evento.id)">
+                                        <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -97,7 +108,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarEvento">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarEvento">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

@@ -19,6 +19,9 @@
         "vue": "^3.4.15"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.5.2",
+        "@fortawesome/free-solid-svg-icons": "^6.5.2",
+        "@fortawesome/vue-fontawesome": "^3.0.8",
         "@oruga-ui/oruga-next": "^0.8.2",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",

@@ -14,7 +14,9 @@
             <div class="card">
 
                 <div class="nav-item d-flex align-items-center">
-                    <button v-if="hab_permisos('Crear_dependencias')" class="btn btn-info mb-3" @click="nuevo">Agregar Nueva Dependencia</button>
+                    <button v-if="hab_permisos('Crear_dependencias')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                        <i class="bi bi-building-add" ></i>
+                       Agregar</button>
                 </div>
 
                 <div class="table-container">
@@ -31,8 +33,12 @@
                                 <td>{{ dependencia.id }}</td>
                                 <td>{{ dependencia.descripcion }}</td>
                                 <td>
-                                    <button v-if="hab_permisos('Editar_dependencias')" class="btn btn-primary btn-sm" @click="datalleDependencia(dependencia.id)">Editar</button>&nbsp;
-                                    <button v-if="hab_permisos('Eliminar_dependencias')" class="btn btn-danger btn-sm" @click="eliminarDependencia(dependencia.id)">Eliminar</button>
+                                    <button v-if="hab_permisos('Editar_dependencias')" class="btn btn-edit btn-sm" title="Editar" @click="datalleDependencia(dependencia.id)">
+                                        <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                        </button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_dependencias')" class="btn btn-delete btn-sm"  title="Eliminar" @click="eliminarDependencia(dependencia.id)">
+                                        <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -62,7 +68,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarDependencia">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarDependencia">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +118,9 @@
     height: 100px;
     resize: none;
     white-space: pre-line;
-}
+    }
+
+
 </style>
 
 <script>

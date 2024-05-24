@@ -9,8 +9,12 @@
                         <h5 class="card-header"><strong>Filtrar Fecha</strong></h5>
                         <input v-model="filtroFecha1" class="form-control" type="date" @input="filtrarPorFechas" required />&nbsp;&nbsp;
                         <input v-model="filtroFecha2" class="form-control" type="date" @input="filtrarPorFechas" required />&nbsp;&nbsp;
-                        <button class="btn btn-info mb-3" @click="limpiarFiltro">Limpiar</button>
-                        <button class="btn btn-success ms-2" @click="exportarExcel">Exportar Excel</button>
+                        <button class="btn btn-refresh ms-2"  title="Limpiar fechas" @click="limpiarFiltro">
+                            <i class="bi bi-arrow-clockwise"  style="font-size: 20px;"></i>
+                        </button>
+                        <button class="btn btn-download ms-3" title="Exportar Excel" @click="exportarExcel">
+                           <i class="bi bi-cloud-download"  style="font-size: 20px;"></i>
+                        </button>
                 </div>
                 <div class="table-container">
                 <table class="table table-striped">

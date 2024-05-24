@@ -11,7 +11,9 @@
                 <i class="bx bx-search fs-4 lh-0"></i>
                 <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                 <div class="nav-item d-flex align-items-center">
-                    <button v-if="hab_permisos('Crear_permisos')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Permiso</button>
+                    <button v-if="hab_permisos('Crear_permisos')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                        <i class="bi bi-file-earmark-plus"></i>
+                    Agregar</button>
                 </div>
 
                 <div class="table-container">
@@ -28,8 +30,12 @@
                                 <td>{{ permiso.id }}</td>
                                 <td>{{ permiso.name }}</td>
                                 <td>
-                                    <button v-if="hab_permisos('Editar_permisos')" class="btn btn-primary btn-sm" @click="datallePermiso(permiso.id)">Editar</button>&nbsp;
-                                    <button v-if="hab_permisos('Eliminar_permisos')" class="btn btn-danger btn-sm" @click="eliminarPermiso(permiso.id)">Eliminar</button>
+                                    <button v-if="hab_permisos('Editar_permisos')" class="btn btn-edit btn-sm" title="Editar" @click="datallePermiso(permiso.id)">
+                                        <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                    </button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_permisos')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarPermiso(permiso.id)">
+                                        <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -59,7 +65,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarPermiso">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarPermiso">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

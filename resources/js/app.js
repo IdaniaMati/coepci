@@ -1,6 +1,7 @@
 import './bootstrap';
 import { createApp } from 'vue';
 import Alpine from 'alpinejs';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
 

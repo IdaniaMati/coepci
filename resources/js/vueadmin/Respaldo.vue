@@ -8,7 +8,9 @@
             <div class="card">
                 <div class="info-container">
                     <div class="info-container">
-                        <button v-if="hab_permisos('Crear_Respaldo')" class="btn btn-success" @click="checkAndExport">Exportar Datos</button>
+                        <button v-if="hab_permisos('Crear_Respaldo')" class="btn btn-download" title="Generar respaldo" @click="checkAndExport">
+                           <i class="bi bi-floppy" style="font-size: 20px;"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -45,7 +47,7 @@
                     </table>
 
                 </div>
-                
+
                     <!-- Modal agregar roles -->
                     <div class="container">
                         <div class="modal fade" id="confirmarpass" tabindex="-1">
@@ -69,13 +71,13 @@
                                         <button v-if="bandera === 1" class="btn btn-primary" @click="confirmarContrasena">Descargar</button>
                                         <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo</button>
                                         <button v-if="bandera === 3" class="btn btn-primary" @click="realizarRespaldoNuevo">Realizar Respaldo</button>
-                                        <button class="btn btn-secondary" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                        <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
- 
+
             </div>
 
         </div>
@@ -205,7 +207,7 @@ export default {
                     });
                 });
         },
-        
+
         mostrarModal(id) {
             this.backupFileName = id;
             this.bandera = 1;
@@ -333,7 +335,7 @@ export default {
                     //console.error('Error al exportar los datos:', error);
                 });
         },
-        
+
         getBackupFileInfo() {
             axios.get('/getBackupFileInfo')
                 .then(response => {

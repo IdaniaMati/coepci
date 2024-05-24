@@ -14,7 +14,9 @@
                 </div>
 
                 <div class="nav-item d-flex align-items-center">
-                    <button v-if="hab_permisos('Crear_usuarios')" class="btn btn-info mb-3" @click="nuevo">Agregar Nuevo Usuario</button>
+                    <button v-if="hab_permisos('Crear_usuarios')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                        <i class="bi bi-person-fill-add" style="font-size: 20px;"></i> Agregar
+                    </button>
                 </div>
                 <!-- Tabla de lista de Usuarios -->
                 <div class="table-container">
@@ -36,9 +38,15 @@
                                 <td>{{ user.email }}</td>
                                 <td>{{ descripcionDepen(user.id_depen) }}</td>
                                 <td>
-                                    <button v-if="hab_permisos('Editar_usuarios')" class="btn btn-primary btn-sm" @click="datalleUsuario(user.id)">Editar</button>&nbsp;
-                                    <button v-if="hab_permisos('Eliminar_usuarios')" class="btn btn-danger btn-sm" @click="eliminarUsuario(user.id)">Eliminar</button>&nbsp;
-                                    <button v-if="hab_permisos('Asignar_roles_usuarios')" class="btn btn-secondary btn-sm" @click="detalleRol(user.id)">Asignar Roles</button>
+                                    <button v-if="hab_permisos('Editar_usuarios')" class="btn btn-edit btn-sm" title="Editar" @click="datalleUsuario(user.id)">
+                                        <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                    </button>&nbsp;
+                                    <button v-if="hab_permisos('Eliminar_usuarios')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarUsuario(user.id)">
+                                        <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
+                                    </button>&nbsp;
+                                    <button v-if="hab_permisos('Asignar_roles_usuarios')" class="btn btn-roles btn-sm" title="Asignar roles" @click="detalleRol(user.id)">
+                                        <i class="bi bi-person-rolodex" style="font-size: 15px;"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -93,7 +101,7 @@
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarUsuario">Guardar</button>
                                     <button v-if="bandera === 1" class="btn btn-primary" @click="editarUsuario">Editar</button>
-                                    <button class="btn btn-secondary" @click="cerrarModalUsuario" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModalUsuario" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
