@@ -57,6 +57,11 @@
                         {{ __('Ajustes') }}
                     </x-nav-link>
                     @endcan
+                    @can('Modulo_Faq')
+                    <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')">
+                        {{ __('Faq') }}
+                    </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -78,10 +83,6 @@
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Perfil') }}
-                        </x-dropdown-link>
-
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Manuales') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->

@@ -271,23 +271,22 @@ class DashboardController extends Controller
         return response()->json($dependencia);
     }
 
-    public function showDashboardDependencia()
-    {
-        // Obtener el usuario autenticado
-        $user = Auth::user();
+    // public function showDashboardDependencia()
+    // {
 
-        // Verificar si el usuario tiene el ID de la dependencia igual a 1
-        $showDependenciaSelect = ($user->id_depen === 1);
+    //     $user = Auth::user();
 
-        // Obtener las dependencias si se debe mostrar el select
-        $dependencias = $showDependenciaSelect ? Empleado::all() : [];
 
-        // Retornar la vista 'admin.dashboard' con los datos necesarios
-        return view('admin.dashboard', [
-            'showDependenciaSelect' => $showDependenciaSelect,
-            'dependencias' => $dependencias
-        ]);
-    }
+    //     $showDependenciaSelect = ($user->id_depen === 1);
+
+
+    //     $dependencias = $showDependenciaSelect ? Empleado::all() : [];
+
+    //     return view('admin.dashboard', [
+    //         'showDependenciaSelect' => $showDependenciaSelect,
+    //         'dependencias' => $dependencias
+    //     ]);
+    // }
 
 
 }

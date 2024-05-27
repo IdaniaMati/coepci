@@ -62,4 +62,7 @@ app.component('permisos-vue', Permisos);
 import Bitacora from './vueadmin/Bitacora.vue';
 app.component('bitacora-vue', Bitacora);
 
+import Faq from './vueadmin/Faq.vue';
+app.component('faq-vue', Faq);
+
 app.mount('#app');

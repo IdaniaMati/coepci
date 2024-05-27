@@ -11,6 +11,8 @@ use App\Http\Controllers\VedaController;
 use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BitacoraController;
+use App\Http\Controllers\FaqController;
+
 use App\Models\Bitacora;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
@@ -60,7 +62,7 @@ Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertoda
 /*----------------------- Dashboard ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'showDashboardDependencia'])->name('obtenerDashboardDependencia');
+    // Route::get('/dashboard', [DashboardController::class, 'showDashboardDependencia'])->name('obtenerDashboardDependencia');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);
@@ -154,6 +156,11 @@ Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
     Route::get('/obtenerDependenciaBitacora/{id}', [BitacoraController::class, 'obtenerDependenciaBitacora']);
 });
 
+/*----------------------- FAQ ------------------------*/
+Route::middleware(['auth', 'can:Modulo_Faq'])->group(function () {
+    Route::get('/faq', [FaqController::class, 'showFaqForm'])->name('faq');
+});
+
 /*----------------------- Permisos ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Permisos'])->group(function () {
     Route::get('/permisos', [PermissionController::class, 'showPermissionForm'])->name('permisos');
@@ -173,10 +180,11 @@ Route::middleware(['auth', 'can:Modulo_Log'])->group(function () {
 /*---------------------- Acciones Perfil ------------------------*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'manuales'])->name('profile.manuales');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
 
 
 
