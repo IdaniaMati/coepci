@@ -14,6 +14,7 @@ use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\FaqController;
 
 use App\Models\Bitacora;
+use App\Models\Faq;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
@@ -159,6 +160,11 @@ Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
 /*----------------------- FAQ ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Faq'])->group(function () {
     Route::get('/faq', [FaqController::class, 'showFaqForm'])->name('faq');
+    Route::get('/obtenerFaq', [FaqController::class, 'obtenerFaq']);
+    Route::post('/agregarFaq', [FaqController::class, 'agregarFaq']);
+    Route::get('/detalleFaq/{id}', [FaqController::class, 'detalleFaq']);
+    Route::post('/editarFaq', [FaqController::class, 'editarFaq']);
+    Route::delete('/eliminarFaq/{id}', [FaqController::class, 'eliminarFaq']);
 });
 
 /*----------------------- Permisos ------------------------*/
