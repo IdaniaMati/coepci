@@ -160,6 +160,8 @@ Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
 /*----------------------- FAQ ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Faq'])->group(function () {
     Route::get('/faq', [FaqController::class, 'showFaqForm'])->name('faq');
+    Route::post('/importar-manual', [FaqController::class, 'importarManual']);
+    Route::post('/upload-pdf', [FaqController::class, 'upload']);
 });
 
 /*----------------------- Permisos ------------------------*/

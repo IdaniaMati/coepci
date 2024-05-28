@@ -380,29 +380,6 @@ export default {
                 });
         },
 
-
-        // crearNuevoRespaldo() {//antes crearNuevoRespaldo
-        //     // Realizar una solicitud al servidor para crear un nuevo respaldo
-        //     axios.get('/respaldofile')
-        //         .then(response => {
-        //             // Manejar la respuesta del servidor
-        //             Swal.fire({
-        //                 title: 'Nuevo respaldo creado',
-        //                 text: 'Se ha creado un nuevo respaldo correctamente.',
-        //                 icon: 'success'
-        //             });
-        //         })
-        //         .catch(error => {
-        //             // Manejar errores en caso de que la creación del respaldo falle
-        //             console.error('Error al crear un nuevo respaldo:', error);
-        //             Swal.fire({
-        //                 title: 'Error',
-        //                 text: 'Hubo un problema al crear un nuevo respaldo. Por favor, inténtalo de nuevo más tarde.',
-        //                 icon: 'error'
-        //             });
-        //         });
-        // },
-
         respaldofile() {
             axios.get('/respaldofile', { responseType: 'blob' })
                 .then(response => {
