@@ -276,17 +276,17 @@ class DashboardController extends Controller
     {
         // Obtener el usuario autenticado
         $user = Auth::user();
-    
+
         // Verificar si el usuario tiene el ID de la dependencia igual a 1
         $showDependenciaSelect = ($user && $user->id_depen === 1);
-    
+
         // Obtener las dependencias si se debe mostrar el select
         $dependencias = $showDependenciaSelect ? Empleado::all() : [];
-    
+
         // Retornar los datos en formato JSON
         return response()->json([
             'showDependenciaSelect' => $showDependenciaSelect        ]);
     }
-    
+
 
 }

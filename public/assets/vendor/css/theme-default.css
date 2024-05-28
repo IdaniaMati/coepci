@@ -211,9 +211,18 @@ button.list-group-item-primary.active {
 }
 
 .btn-add {
-    background-color: #3D3935;
-    /* background-color: #B0ABA1; */
-    color: white;
+    /* background-color: #3D3935;
+    color: white; */
+        background-color: #3D3935;
+        color: white;
+        width: 100px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        font-size: 16px;
+        text-align: center;
 }
 
 .btn-edit {
@@ -237,7 +246,7 @@ button.list-group-item-primary.active {
 }
 
 .btn-upload {
-    background-color: #FF0079;
+    background-color:  #B0ABA1;
     color: white;
 }
 

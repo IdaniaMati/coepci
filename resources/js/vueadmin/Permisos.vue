@@ -4,17 +4,19 @@
             <h2><strong>GESTIÓN DE PERMISOS</strong></h2>
         </div>
 
+        <div class="nav-item d-flex align-items-center">
+                    <h5 class="card-header"><strong>Permiso</strong></h5>
+                    <i class="bx bx-search fs-4 lh-0"></i>
+                    <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+        </div>
 
         <div class="card-container">
             <div class="card">
-                <h5 class="card-header"><strong>Buscar</strong></h5>
-                <i class="bx bx-search fs-4 lh-0"></i>
-                <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
-                <div class="nav-item d-flex align-items-center">
-                    <button v-if="hab_permisos('Crear_permisos')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
-                        <i class="bi bi-file-earmark-plus"></i>
-                    Agregar</button>
-                </div>
+                    <div class="nav-item d-flex align-items-center">
+                        <button v-if="hab_permisos('Crear_permisos')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                            <i class="bi bi-file-earmark-plus"></i>
+                        Agregar</button>
+                    </div>
 
                 <div class="table-container">
                     <table class="table table-striped">

@@ -6,6 +6,8 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@iconify/json": "^2.2.214",
+        "@iconify/tailwind": "^1.1.1",
         "@tailwindcss/forms": "^0.5.2",
         "@vitejs/plugin-vue": "^5.0.3",
         "alpinejs": "^3.4.2",

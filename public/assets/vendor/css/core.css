@@ -2828,6 +2828,7 @@ textarea.form-control-lg {
 
 .collapse:not(.show) {
   display: none;
+  
 }
 
 .collapsing {

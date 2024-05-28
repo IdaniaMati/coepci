@@ -115,7 +115,7 @@
             <h2><strong>MANUALES Y FAQ</strong></h2>
         </div>
 
-        <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex justify-content-between mb-3 mx-auto">
             <div class="d-flex align-items-center">
                 <h5 class="card-header"><strong>Preguntas</strong></h5>
                 <i class="bx bx-search fs-4 lh-0 ml-2"></i>
@@ -126,7 +126,7 @@
             </button>
         </div>
 
-        <div class="accordion" id="faqAccordion">
+        <!-- <div class="accordion" id="faqAccordion">
             <div class="card mb-3" v-for="faq in paginatedFaqs" :key="faq.id">
                 <div class="card-header" :id="'heading' + faq.id">
                     <h2 class="mb-0">
@@ -135,7 +135,7 @@
                         </button>
                     </h2>
                 </div>
-                <div :id="'collapse' + faq.id" class="collapse" :aria-labelledby="'heading' + faq.id" data-bs-parent="#faqAccordion">
+                <div :id="'collapse' + faq.id" class="collapse"  :aria-labelledby="'heading' + faq.id" data-bs-parent="#faqAccordion">
                     <div class="card-body">
                         {{ faq.respuesta }}
                         <div class="mt-3 d-flex justify-content-end">
@@ -149,35 +149,28 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
-        <div class="modal fade" id="largeModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><strong>FAQ</strong></h5>
-                        <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form @submit.prevent>
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    <label>Pregunta</label>
-                                    <input v-model="pregunta" class="form-control" placeholder="Pregunta" required />
-                                    <div v-if="!pregunta" class="text-danger">Este campo es obligatorio.</div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <label>Respuesta</label>
-                                    <input v-model="respuesta" class="form-control" placeholder="Respuesta" required />
-                                    <div v-if="!respuesta" class="text-danger">Este campo es obligatorio.</div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button v-if="bandera === 0" class="btn btn-primary" @click="agregarFaq">Guardar</button>
-                        <button v-if="bandera === 1" class="btn btn-primary" @click="editarFaq">Editar</button>
-                        <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+        <div class="accordion" id="faqAccordion">
+            <div class="card mb-3" v-for="faq in paginatedFaqs" :key="faq.id">
+                <div class="card-header" :id="'heading' + faq.id">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link w-100 text-center" type="button" @click="toggleCollapse(faq.id)" :aria-expanded="isExpanded(faq.id)" :aria-controls="'collapse' + faq.id">
+                            {{ faq.pregunta }}
+                        </button>
+                    </h2>
+                </div>
+                <div :id="'collapse' + faq.id" class="collapse" :class="{ 'show': isExpanded(faq.id) }" :aria-labelledby="'heading' + faq.id" data-bs-parent="#faqAccordion">
+                    <div class="card-body">
+                        {{ faq.respuesta }}
+                        <div class="mt-3 d-flex justify-content-end">
+                            <button v-if="hab_permisos('Editar_faq')" class="btn btn-edit btn-sm mr-2" title="Editar" @click="datalleFaq(faq.id)">
+                                <i class="bi bi-pencil-fill"></i> Editar
+                            </button>
+                            <button v-if="hab_permisos('Eliminar_faq')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarFaq(faq.id)">
+                                <i class="bi bi-trash3-fill"></i> Eliminar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,6 +239,7 @@ export default {
             pregunta: "",
             respuesta: "",
             lista_permisos:[],
+            expandedId: null
         };
     },
 
@@ -288,6 +282,18 @@ export default {
         },
 
     methods: {
+
+        toggleCollapse(id) {
+        if (this.expandedId === id) {
+            this.expandedId = null;
+        } else {
+            this.expandedId = id;
+        }
+        },
+
+        isExpanded(id) {
+            return this.expandedId === id;
+        },
 
         obtenerPermisos_user(){
             axios

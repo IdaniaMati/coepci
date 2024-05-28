@@ -20,18 +20,19 @@
                 <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Empleados</button>
             </div>
         </div>
-
-        <br>
-
         <div class="card-container">
             <div class="card">
-
+                <h5 class="card-header" style="text-align: center;"><strong>Configuración de Evento</strong></h5>
                 <div class="nav-item d-flex align-items-center">
-                    <h5 class="card-header"><strong>Configuración de Evento</strong></h5>
-                    <button v-if="hab_permisos('Crear_eventos')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
-                        <i class="bi bi-calendar-check" style="font-size: 20px;" ></i>
-                        Agregar
-                    </button>
+                        <div class="nav-item d-flex align-items-center">
+                            <h5 class="card-header"><strong>Buscar</strong></h5>
+                                <i class="bx bx-search fs-4 lh-0"></i>
+                            <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                        </div>
+                        <button v-if="hab_permisos('Crear_eventos')" class="btn btn-add mb-3" style="margin-left:700px;" title="Agregar" @click="nuevo">
+                            <i class="bi bi-calendar-check" style="font-size: 20px;" ></i>
+                            Agregar
+                        </button>
                 </div>
 
                 <div class="table-container">
@@ -138,15 +139,9 @@
                 </div>
                 <!-- Fin del paginador -->
                 <br>
-
             </div>
         </div>
-
-
-
     </div>
-
-
 </template>
 
 <style>
@@ -180,6 +175,7 @@ export default {
             eventos: [],
             dependencias: [],
             evento: {},
+            filtro: '',
             pagina: 1,
             totalPaginas: 0,
             registrosPorPagina: 7,
@@ -196,19 +192,42 @@ export default {
         };
     },
 
+    computed: {
+        eventosFiltrados() {
+            const filtroMinusculas = this.filtro.toLowerCase();
+            let eventos = this.eventos.filter((evento) => {
+                const descripcionCompleto = `${evento.descripcion}`;
+                const descripcionSinAcentos = descripcionCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                const descripcionDependencia = this.descripcionDepen(evento.id_depen).toLowerCase();
+                const dependenciaSinAcentos = descripcionDependencia.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+                this.pagina = 1;
+                return (
+                    descripcionCompleto.toLowerCase().includes(filtroMinusculas) ||
+                    descripcionSinAcentos.includes(filtroMinusculas) ||
+                    dependenciaSinAcentos.includes(filtroMinusculas)
+                );
+            });
+            return eventos;
+        },
+
+
+        totalPages() {
+            return Math.ceil(this.eventosFiltrados.length / this.perPage);
+        },
+
+        paginatedEventos() {
+            const startIndex = (this.pagina - 1) * this.registrosPorPagina;
+            const endIndex = startIndex + this.registrosPorPagina;
+            return this.eventosFiltrados.slice(startIndex, endIndex);
+        },
+    },
+
     mounted() {
         this.obtenerEvento();
         this.calcularTotalPaginas();
         this.obtenerPermisos();
         this.obtenerDependencias();
-    },
-
-    computed: {
-        paginatedEventos() {
-        const startIndex = (this.pagina - 1) * this.registrosPorPagina;
-        const endIndex = startIndex + this.registrosPorPagina;
-        return this.eventos.slice(startIndex, endIndex);
-    },
     },
 
     methods: {
@@ -613,7 +632,7 @@ export default {
         },
 
         calcularTotalPaginas() {
-        this.totalPaginas = Math.ceil(this.eventos.length / this.registrosPorPagina);
+        this.totalPaginas = Math.ceil(this.eventosFiltrados.length / this.registrosPorPagina);
         },
 
         paginaAnterior() {

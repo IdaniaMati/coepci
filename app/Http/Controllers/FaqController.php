@@ -67,7 +67,7 @@ class FaqController extends Controller
             MyHelper::registrarAccion('Se editó la pregunta: ' . $data ['pregunta']);
 
             return response()->json(['success' => true, 'message' => 'La pregunta se ha editado Exitosamente']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $errors = $e->getMessage();
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $errors]);
