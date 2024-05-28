@@ -24,15 +24,15 @@ class RespaldoController extends Controller
         $tables = DB::select('SHOW TABLES FROM coepci');
 
         $sql = "
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-";
+        /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+        /*!40101 SET NAMES utf8 */;
+        /*!50503 SET NAMES utf8mb4 */;
+        /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+        /*!40103 SET TIME_ZONE='+00:00' */;
+        /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+        /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+        /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+        ";
 
         $totalSize = 0;
 
@@ -65,12 +65,12 @@ class RespaldoController extends Controller
         }
 
         $sql.="
-/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
-";
+        /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+        /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+        /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+        /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+        /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+        ";
 
         $this->cleanupOldBackups();
 
@@ -79,6 +79,22 @@ class RespaldoController extends Controller
         File::put($filePath, $sql);
         MyHelper::registrarAccion('Genero el respaldo: ' . $fileName);
 
+    }
+
+    public function getBackupCount()
+    {
+        $existingFilesCount = DB::table('respaldo')->count();
+
+        return response()->json(['count' => $existingFilesCount]);
+    }
+
+    public function deleteBackup($filename)
+    {
+        Storage::disk('backups')->delete($filename);
+        DB::table('respaldo')->where('filename', $filename)->delete();
+
+        $this->exportAllData();
+        return response()->json(['message' => 'El respaldo ha sido eliminado correctamente']);
     }
 
     public function cleanupOldBackups()
@@ -129,7 +145,6 @@ class RespaldoController extends Controller
                     'creation_date' => $creationDate,
                     'size_mb' => $fileSizeInMB
                 ]);
-
 
             }
 
