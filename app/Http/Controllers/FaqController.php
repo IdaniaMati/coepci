@@ -51,18 +51,16 @@ class FaqController extends Controller
         $validaciones = $request->validate([
             'id' => 'required|integer',
             'pregunta' => 'required',
-            'respuesta' => 'required',
+            'respuesta' => 'required'
         ]);
 
         try {
             DB::beginTransaction();
 
-            $data = [
-                'pregunta' => $validaciones['pregunta'],
-                'respuesta' => $validaciones['respuesta']
-            ];
+            $data['pregunta'] = $validaciones['pregunta'];
+            $data['respuesta'] = $validaciones['respuesta'];
 
-            $editaFaq = DB::table("Faq")->where("id", $validaciones['id'])->update($data);
+            $editaFaq = DB::table("faq")->where("id", $validaciones['id'])->update($data);
 
             DB::commit();
 
