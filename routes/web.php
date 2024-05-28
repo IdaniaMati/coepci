@@ -63,7 +63,7 @@ Route::get('/Obtenertodasimagenes/{tipo?}', [VedaController::class, 'Obtenertoda
 /*----------------------- Dashboard ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Dashboard'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDashboardForm'])->name('dashboard');
-    // Route::get('/dashboard', [DashboardController::class, 'showDashboardDependencia'])->name('obtenerDashboardDependencia');
+    Route::get('/dashboardWithDependencia', [DashboardController::class, 'showDashboardDependencia'])->name('obtenerDashboardDependencia');
     Route::get('/obtenerEmpleados', [DashboardController::class, 'obtenerEmpleados'])->name('obtenerEmpleados');
     Route::get('/obtenerRegistrosVotos', [DashboardController::class, 'obtenerRegistrosVotos']);
     Route::get('/obtenerVotosRondas', [DashboardController::class, 'obtenerVotosRondas']);

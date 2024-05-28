@@ -1,8 +1,8 @@
-<template>
-    <div>
-        <div class="mb-3" v-if="showDependenciaSelect">
+    <template>
+        <div>
+            <div class="mb-3" v-if="showDependenciaSelect === true">
             <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
-            <select id="showDependenciaSelect" v-model="dependenciaSeleccionada">
+            <select id="showDependenciaSelect">
                 <option disabled selected>Seleccionar</option>
                 <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
             </select>
@@ -19,7 +19,7 @@
                         <button v-if="hab_permisos('Crear_empleados')" class="btn btn-add" @click="nuevo" title="Agregar">
                             <i class="bi bi-person-fill-add" style="font-size: 20px;"></i> Agregar
                         </button>
-                    </div>
+                    </div>  
                     <div class="info-item">
                         <strong>Total Empleados:</strong> {{ empleados.length }}
                     </div>
@@ -248,6 +248,7 @@ export default {
             id_depen: "",
             grupos: [],
             lista_permisos:[],
+            showDependenciaSelect: false,
 
         };
     },
@@ -311,9 +312,27 @@ export default {
         this.obtenerPermisos();
         this.obtenerDependencias();
         this.cargarDependencias();
+
+       
      },
 
     methods: {
+
+        cargarDependencias() {
+        axios.get('/dashboardWithDependencia')
+            .then(response => {
+                this.showDependenciaSelect = response.data.showDependenciaSelect;
+
+                // Imprimir el valor de showDependenciaSelect en la consola
+                console.log("Valor de showDependenciaSelect:", this.showDependenciaSelect);
+                
+                // Imprimir el valor de las dependencias en la consola
+                console.log("Dependencias obtenidas:", this.dependencias);
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos:', error);
+            }); 
+        },
 
         filtrarPorDependencia() {
             if (this.dependenciaSeleccionada === '') {
