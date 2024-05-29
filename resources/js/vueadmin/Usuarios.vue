@@ -15,7 +15,8 @@
 
                 <div class="nav-item d-flex align-items-center">
                     <button v-if="hab_permisos('Crear_usuarios')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
-                        <i class="bi bi-person-fill-add" style="font-size: 20px;"></i> Agregar
+                        <i class="bi bi-person-fill-add" style="font-size: 20px;"></i>
+                        &nbsp;<p> Agregar</p>
                     </button>
                 </div>
                 <!-- Tabla de lista de Usuarios -->

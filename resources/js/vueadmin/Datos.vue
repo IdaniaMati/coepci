@@ -30,8 +30,8 @@
                             <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                         </div>
                         <button v-if="hab_permisos('Crear_eventos')" class="btn btn-add mb-3" style="margin-left:700px;" title="Agregar" @click="nuevo">
-                            <i class="bi bi-calendar-check" style="font-size: 20px;" ></i>
-                            Agregar
+                            <i class="bi bi-calendar-check" style="font-size: 17px;" ></i>
+                            &nbsp;<p> Agregar</p>
                         </button>
                 </div>
 

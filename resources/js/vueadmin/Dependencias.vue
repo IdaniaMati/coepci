@@ -16,7 +16,8 @@
                 <div class="nav-item d-flex align-items-center">
                     <button v-if="hab_permisos('Crear_dependencias')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
                         <i class="bi bi-building-add" ></i>
-                       Agregar</button>
+                        &nbsp;<p> Agregar</p>
+                    </button>
                 </div>
 
                 <div class="table-container">

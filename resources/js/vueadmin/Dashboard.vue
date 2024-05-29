@@ -2,8 +2,8 @@
         <div>
             <div class="mb-3" v-if="showDependenciaSelect === true">
             <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
-            <select id="showDependenciaSelect">
-                <option disabled selected>Seleccionar</option>
+            <select id="showDependenciaSelect"  v-model="dependenciaSeleccionada">
+                <option disabled selected>Seleccionar dependencia</option>
                 <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
             </select>
         </div>
@@ -17,7 +17,8 @@
                 <div class="info-container">
                     <div class="nav-item d-flex align-items-center">
                         <button v-if="hab_permisos('Crear_empleados')" class="btn btn-add" @click="nuevo" title="Agregar">
-                            <i class="bi bi-person-fill-add" style="font-size: 20px;"></i> Agregar
+                            <i class="bi bi-person-fill-add" style="font-size: 20px;"></i>
+                            &nbsp;<p> Agregar</p>
                         </button>
                     </div>
                     <div class="info-item">
@@ -227,6 +228,7 @@ export default {
             return {
             empleados: [],
             dependencias: [],
+            empleadosFiltrados: [],
             dependenciaSeleccionada: null,
             showDependenciaSelect: false,
             filtro: '',
@@ -305,6 +307,12 @@ export default {
         },
     },
 
+    watch: {
+        dependenciaSeleccionada() {
+        this.filtrarEmpleados();
+        }
+    },
+
     mounted() {
         this.obtenerEmpleados();
         this.obtenerRegistrosVotos();
@@ -322,11 +330,7 @@ export default {
         axios.get('/dashboardWithDependencia')
             .then(response => {
                 this.showDependenciaSelect = response.data.showDependenciaSelect;
-
-                // Imprimir el valor de showDependenciaSelect en la consola
                 console.log("Valor de showDependenciaSelect:", this.showDependenciaSelect);
-
-                // Imprimir el valor de las dependencias en la consola
                 console.log("Dependencias obtenidas:", this.dependencias);
             })
             .catch(error => {
@@ -334,12 +338,11 @@ export default {
             });
         },
 
-
-        filtrarPorDependencia() {
-            if (this.dependenciaSeleccionada === '') {
-                this.empleadosFiltrados = this.empleados;
+        filtrarEmpleados() {
+            if (this.dependenciaSeleccionada) {
+                this.empleadosFiltrados = this.empleados.filter(empleado => empleado.id_depen === this.dependenciaSeleccionada);
             } else {
-                this.obtenerEmpleados(this.dependenciaSeleccionada);
+                this.empleadosFiltrados = this.empleados;
             }
         },
 
@@ -379,6 +382,7 @@ export default {
                                         empleado.votoRonda2 = false;
                                     }
                                 });
+                                this.filtrarEmpleados();
                             })
                             .catch((errorVotos) => {
                                 //console.error("Error al obtener los votos en ambas rondas", errorVotos);

@@ -10,7 +10,8 @@
 
                 <div class="nav-item d-flex align-items-center">
                     <button v-if="hab_permisos('Crear_roles')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
-                        <i class="bi bi-folder-plus" style="font-size: 20px;"></i> Agregar
+                        <i class="bi bi-folder-plus" style="font-size: 17px;"></i>
+                        &nbsp;<p> Agregar</p>
                     </button>
                 </div>
 

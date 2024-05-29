@@ -211,8 +211,6 @@ button.list-group-item-primary.active {
 }
 
 .btn-add {
-    /* background-color: #3D3935;
-    color: white; */
         background-color: #3D3935;
         color: white;
         width: 100px;
@@ -223,6 +221,13 @@ button.list-group-item-primary.active {
         border: none;
         font-size: 16px;
         text-align: center;
+}
+
+.btn-add:hover {
+    color: #fff;
+    background-color: #B0ABA1;
+    border-color:#B0ABA1;
+    transform: translateY(-1px);
 }
 
 .btn-edit {
@@ -253,6 +258,13 @@ button.list-group-item-primary.active {
 .btn-cerrar {
     background-color:  #B68400;
     color: white;
+}
+
+.btn-cerrar:hover {
+    color: #fff;
+    background-color: #91650e;
+    border-color:#91650e;
+    transform: translateY(-1px);
 }
 
 .btn-primary {
