@@ -4,7 +4,7 @@
         <h2><strong>Lista de Manuales</strong></h2>
       </div>
       <div class="card-container">
-        <div class="card">
+        <div class="card" v-if="hab_permisos('importar_manual')">
           <div class="nav-item d-flex align-items-center">
             <h5 class="card-header"><strong>Importar Manual</strong></h5>
             <input type="file" @change="handleFileUpload" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
@@ -25,18 +25,18 @@
                 <tr>
                   <th>Nombre de manual</th>
                   <th>Fecha de actualización</th>
-                  <th>Opciones</th>
+                  <th v-if="hab_permisos('ver_opciones')">Opciones</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="manual in manuales" :key="manual.id">
                   <td>{{ manual.nombre }}</td>
-                  <td>{{ manual.updated_at }}</td>
-                  <td>
-                    <button class="btn btn-edit btn-sm" title="Editar" @click="openEditModal(manual)">
+                  <td>{{ formatFecha(manual.updated_at) }}</td>
+                  <td v-if="hab_permisos('ver_opciones')">
+                    <button v-if="hab_permisos('editar_manual')" class="btn btn-edit btn-sm" title="Editar" @click="openEditModal(manual)">
                       <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
                     </button>
-                    <button class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarManual(manual.id)">
+                    <button v-if="hab_permisos('eliminar_manual')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarManual(manual.id)">
                       <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
                     </button>
                   </td>
@@ -112,6 +112,14 @@ export default {
     },
 
     methods: {
+        formatFecha(fecha) {
+            const fechaObj = new Date(fecha);
+            const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const fechaFormateada = fechaObj.toLocaleDateString('es-ES', opcionesFecha) + ' ' + fechaObj.toLocaleTimeString('es-ES', opcionesHora);
+            return fechaFormateada;
+        },
+
         async importarManuales() {
             this.$refs.fileInput.value = '';
             if (this.manuales.length >= 3) {
