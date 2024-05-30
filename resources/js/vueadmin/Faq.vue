@@ -7,7 +7,7 @@
         <div class="card">
           <div class="nav-item d-flex align-items-center">
             <h5 class="card-header"><strong>Importar Manual</strong></h5>
-            <input type="file" @change="handleFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+            <input type="file" @change="handleFileUpload" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
             <button class="btn btn-upload" title="Subir Formato" @click="importarManuales">
               <i class="bi bi-file-arrow-up" style="font-size: 20px;"></i>
             </button>
@@ -113,6 +113,16 @@ export default {
 
     methods: {
         async importarManuales() {
+            this.$refs.fileInput.value = '';
+            if (this.manuales.length >= 3) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Alerta',
+                    text: 'Ya existen 3 archivos. Antes de agregar uno nuevo, elimine uno de la lista si es necesario.',
+                });
+                return;
+            }
+
             const formData = new FormData();
             formData.append('file', this.archivo);
 
