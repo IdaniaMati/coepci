@@ -157,11 +157,12 @@ Route::middleware(['auth', 'can:Modulo_Bitacora'])->group(function () {
     Route::get('/obtenerDependenciaBitacora/{id}', [BitacoraController::class, 'obtenerDependenciaBitacora']);
 });
 
-/*----------------------- FAQ ------------------------*/
 Route::middleware(['auth', 'can:Modulo_Faq'])->group(function () {
     Route::get('/faq', [FaqController::class, 'showFaqForm'])->name('faq');
-    Route::post('/importar-manual', [FaqController::class, 'importarManual']);
-    Route::post('/upload-pdf', [FaqController::class, 'upload']);
+    Route::post('/importar-manual', [FaqController::class, 'importarManual'])->name('importar-manual');
+    Route::get('/lista-manuales', [FaqController::class, 'listaManuales'])->name('lista-manuales');
+    Route::delete('/eliminar-manual/{id}', [FaqController::class, 'eliminarManual'])->name('eliminar-manual');
+    Route::post('/editar-manual/{id}', [FaqController::class, 'editarManual'])->name('editar-manual');
 });
 
 /*----------------------- Permisos ------------------------*/

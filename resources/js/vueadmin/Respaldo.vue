@@ -69,8 +69,8 @@
 
                                     <div class="modal-footer">
                                         <button v-if="bandera === 1" class="btn btn-primary" @click="confirmarContrasena">Descargar</button>
-                                        <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo2</button>
-                                        <button v-if="bandera === 3" class="btn btn-primary" @click="realizarRespaldoNuevo">Realizar Respaldo3</button>
+                                        <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo</button>
+                                        <button v-if="bandera === 3" class="btn btn-primary" @click="realizarRespaldoNuevo">Realizar Respaldo</button>
                                         <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                     </div>
                                 </div>
@@ -417,8 +417,6 @@ export default {
                     console.error('Error al obtener la lista de respaldos:', error);
                 });
         },
-
-
     },
 };
 </script>
