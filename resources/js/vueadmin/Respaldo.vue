@@ -45,43 +45,39 @@
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
 
-                    <!-- Modal confirmación de contraseña -->
-                    <div class="container">
-                        <div class="modal fade" id="confirmarpass" tabindex="-1">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title"><strong>Confirmar contraseña</strong></h5>
-                                        <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>Ingrese contraseña para confirmar la descarga</label>
-                                                <input type="password" v-model="password"  class="block mt-1 w-full" placeholder="Ingrese contraseña" required/>
-                                                <div v-if="!password"  class="text-danger">Este campo es obligatorio.</div>
-                                            </div>
+                <!-- Modal confirmación de contraseña -->
+                <div class="container">
+                    <div class="modal fade" id="confirmarpass" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><strong>Confirmar contraseña</strong></h5>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label>Ingrese contraseña para confirmar la descarga</label>
+                                            <input type="password" v-model="password"  class="block mt-1 w-full" placeholder="Ingrese contraseña" required/>
+                                            <div v-if="!password"  class="text-danger">Este campo es obligatorio.</div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div class="modal-footer">
-                                        <button v-if="bandera === 1" class="btn btn-primary" @click="confirmarContrasena">Descargar</button>
-                                        <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo</button>
-                                        <button v-if="bandera === 3" class="btn btn-primary" @click="realizarRespaldoNuevo">Realizar Respaldo</button>
-                                        <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
-                                    </div>
+                                <div class="modal-footer">
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="confirmarContrasena">Descargar</button>
+                                    <button v-if="bandera === 2" class="btn btn-primary" @click="realizarRespaldo">Realizar Respaldo</button>
+                                    <button v-if="bandera === 3" class="btn btn-primary" @click="realizarRespaldoNuevo">Realizar Respaldo</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
+                </div>
             </div>
-
         </div>
-
     </div>
 </template>
 
@@ -90,45 +86,34 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import permisos from "../permisos/permisos.vue";
 
-
 export default {
-
-    components: {
-
-    },extends:permisos,
-
+    components: {},
+    extends: permisos,
     data() {
         return {
             backups: [],
             backupFileName: "",
             password: "",
             bandera: "",
-            lista_permisos:[],
+            lista_permisos: [],
         };
     },
-
     mounted() {
         this.getBackups();
         this.obtenerPermisos_user();
     },
-
     methods: {
-
-        obtenerPermisos_user(){
+        obtenerPermisos_user() {
             axios
                 .get("/Obtenerpermisos")
                 .then((response) => {
-                    this.lista_permisos  = response.data;
-
+                    this.lista_permisos = response.data;
                 })
                 .catch((error) => {
                     //console.error(error);
-
                 });
-
         },
-
-        realizarRespaldo(){
+        realizarRespaldo() {
             axios.post('/confirmpassword', { password: this.password })
                 .then(response => {
                     if (response.data.success) {
@@ -152,8 +137,7 @@ export default {
                     });
                 });
         },
-
-        realizarRespaldoNuevo(){
+        realizarRespaldoNuevo() {
             axios.post('/confirmpassword', { password: this.password })
                 .then(response => {
                     if (response.data.success) {
@@ -177,7 +161,6 @@ export default {
                     });
                 });
         },
-
         confirmarContrasena() {
             axios.post('/confirmpassword', { password: this.password })
                 .then(response => {
@@ -207,87 +190,65 @@ export default {
                     });
                 });
         },
-
         mostrarModal(id) {
             this.backupFileName = id;
             this.bandera = 1;
             this.abrirModal();
             this.limpiarvar();
         },
-
         mostrarModalRespaldoNuevo() {
             this.bandera = 3;
             this.abrirModal();
             this.limpiarvar();
         },
-
         mostrarModalRespaldo() {
             this.bandera = 2;
             this.abrirModal();
             this.limpiarvar();
         },
-
         importarRespaldo() {
             this.bandera = 3;
             this.abrirModal();
             this.limpiarvar();
         },
-
         limpiarvar() {
             this.password = null;
         },
-
         abrirModal() {
             $("#confirmarpass").modal({ backdrop: "static", keyboard: false });
             $("#confirmarpass").modal("toggle");
         },
-
         cerrarModal() {
             $("#confirmarpass").modal("hide");
         },
-
         checkAndExport() {
-            let today = new Date();
-            let todayDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-
-            let existsToday = this.backups.some(backup => {
-                let backupDate = new Date(backup.creation_date);
-                let backupDateString = `${backupDate.getDate()}/${backupDate.getMonth() + 1}/${backupDate.getFullYear()}`;
-                return backupDateString === todayDate;
-            });
-
-            if (existsToday) {
-                console.log("Si existe respaldo");
-                this.mostrarModalRespaldo();
+            if (this.backups.length >= 10) {
+                this.confirmExport();
             } else {
-                console.log("No existe respaldo");
                 this.mostrarModalRespaldoNuevo();
             }
         },
-
         downloadBackup(filename) {
-        axios
-            .get("/downloadBackup/" + filename, { responseType: "blob" })
-            .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch((error) => {
-                //console.error("Error al descargar el archivo de respaldo:", error);
-            });
+            axios
+                .get("/downloadBackup/" + filename, { responseType: "blob" })
+                .then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", filename);
+                    document.body.appendChild(link);
+                    link.click();
+                })
+                .catch((error) => {
+                    //console.error("Error al descargar el archivo de respaldo:", error);
+                });
         },
 
         confirmExport() {
-            if (this.backups.length > 0) {
+            if (this.backups.length >= 10) {
                 this.backups.sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
-
                 let oldestBackup = this.backups[0];
                 let latestBackup = this.backups[this.backups.length - 1];
-
                 let oldestBackupDateObj = new Date(oldestBackup.creation_date);
                 let latestBackupDateObj = new Date(latestBackup.creation_date);
 
@@ -319,11 +280,6 @@ export default {
                             confirmButton: 'swal2-confirm',
                             cancelButton: 'swal2-cancel'
                         },
-                        showLoaderOnConfirm: true,
-                        preConfirm: () => {
-                            const choice = document.querySelector('input[name="swal2-radio"]:checked');
-                            return choice ? choice.value : null;
-                        },
                         input: 'radio',
                         inputOptions: {
                             '1': 'Eliminar el respaldo más antiguo',
@@ -337,36 +293,37 @@ export default {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             if (result.value === '1') {
-                                this.eliminarRespaldo(oldestBackup);
+                                this.eliminarRespaldo(oldestBackup, 'old');
                             } else if (result.value === '2') {
-                                this.eliminarRespaldo(latestBackup);
+                                this.eliminarRespaldo(latestBackup, 'new');
                             }
-                            this.respaldofile();
                         } else {
                             Swal.close();
                         }
                     });
                 } else {
-                    // Lógica para cuando solo hay un respaldo disponible
+                    this.respaldofile();
                 }
             } else {
-                // Lógica para cuando no hay respaldos disponibles
+                this.respaldofile();
             }
         },
 
-        eliminarRespaldo(respaldo) {
+
+        eliminarRespaldo(respaldo, type) {
             const filename = respaldo.filename;
 
             axios.delete(`/deleteBackup/${filename}`)
                 .then(response => {
-                    Swal.fire({
-                        title: '¡Éxito!',
-                        text: 'El respaldo ha sido eliminado correctamente.',
-                        icon: 'success',
-                        onClose: () => {
-                            this.crearNuevoRespaldo();
-                        }
-                    });
+                    if (response.data.message === 'El respaldo ha sido eliminado correctamente') {
+                        this.respaldofile(); // Crear un nuevo respaldo después de eliminar el seleccionado
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Hubo un problema al eliminar el respaldo. Por favor, inténtalo de nuevo más tarde.',
+                            icon: 'error'
+                        });
+                    }
                 })
                 .catch(error => {
                     console.error('Error al eliminar el respaldo:', error);
@@ -378,10 +335,10 @@ export default {
                 });
         },
 
+
         respaldofile() {
             axios.get('/respaldofile', { responseType: 'blob' })
                 .then(response => {
-                    //console.log(response.data.message);
                     Swal.fire({
                         icon: 'success',
                         title: 'Respaldo realizado',
@@ -392,10 +349,9 @@ export default {
                     this.getBackups();
                 })
                 .catch(error => {
-                    //console.error('Error al exportar los datos:', error);
+                    console.error('Error al exportar los datos:', error);
                 });
         },
-
         getBackupFileInfo() {
             axios.get('/getBackupFileInfo')
                 .then(response => {
@@ -405,7 +361,6 @@ export default {
                     console.error('Error al descargar los archivos en el sistema:', error);
                 });
         },
-
         getBackups() {
             axios.get('/getBackupList')
                 .then(response => {

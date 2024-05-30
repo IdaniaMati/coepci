@@ -93,9 +93,9 @@ class RespaldoController extends Controller
         Storage::disk('backups')->delete($filename);
         DB::table('respaldo')->where('filename', $filename)->delete();
 
-        $this->exportAllData();
         return response()->json(['message' => 'El respaldo ha sido eliminado correctamente']);
     }
+
 
     public function cleanupOldBackups()
     {
