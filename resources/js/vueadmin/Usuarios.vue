@@ -123,14 +123,14 @@
                                     <label>Selecciona los roles:</label>
                                     <div v-for="role in roles" :key="role.id" class="form-check">
                                         <input
-                                        name="default-radio-1" class="form-check-input" type="radio" :id="'role-' + role.id" v-model="selectedRoles" :value="role.id"/>
+                                        name="default-radio-1" class="form-check-input" type="checkbox" :id="'role-' + role.id" v-model="selectedRoles" :value="role.id"/>
                                         <label class="form-check-label" :for="'role-' + role.id">{{ role.name }}</label>
                                     </div>
                                 </div>
 
                                 <div class="modal-footer">
                                     <button v-if="bandera === 3" class="btn btn-primary" @click="asignarRoles">Guardar Roles</button>
-                                    <button class="btn btn-secondary" @click="cerrarModalRoles" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModalRoles" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

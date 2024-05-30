@@ -107,7 +107,7 @@
 
                                 <div class="modal-footer">
                                     <button v-if="bandera === 3" class="btn btn-primary" @click="asignarPermiso">Guardar Permisos</button>
-                                    <button class="btn btn-secondary" @click="cerrarModalPermiso" data-bs-dismiss="modal">Cerrar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModalPermiso" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>

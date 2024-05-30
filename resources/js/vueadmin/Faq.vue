@@ -1,14 +1,10 @@
 <template>
     <div>
-       <div class="text-center mb-4">
-           <h2><strong>MANUALES Y FAQ</strong></h2>
-       </div>
-
        <div class="nav-item d-flex align-items-center">
                    <h5 class="card-header"><strong>Preguntas</strong></h5>
                    <i class="bx bx-search fs-4 lh-0"></i>
                    <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
-               </div>
+        </div>
 
        <div class="card-container">
            <div class="card">
@@ -157,6 +153,7 @@ body.modal-open .modal-backdrop {
    text-decoration: none;
    color: inherit;
 }
+
 </style>
 <script>
 import axios from 'axios';
@@ -188,7 +185,7 @@ export default {
    mounted() {
        this.obtenerFaq();
        this.calcularTotalPaginas();
-       this.obtenerPermisos_user();
+       this.obtenerPermisos();
 
    },
 
@@ -237,7 +234,7 @@ export default {
            return this.expandedId === id;
        },
 
-       obtenerPermisos_user(){
+       obtenerPermisos(){
            axios
                .get("/Obtenerpermisos")
                .then((response) => {

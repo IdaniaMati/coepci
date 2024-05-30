@@ -18,6 +18,7 @@
                 </div>
 
 
+
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
@@ -37,7 +38,7 @@
                                 <td>{{ backup.size_mb }}</td>
                                 <td>
                                     <button v-if="hab_permisos('Descargar_Respaldo')" type="button" class="nav-link active" @click="mostrarModal(backup.filename)">
-                                        <i class="bi bi-cloud-download"  style="font-size: 20px;"></i>
+                                            <i class="bi bi-cloud-download" style="font-size: 20px;"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -247,14 +248,18 @@ export default {
         checkAndExport() {
             let today = new Date();
             let todayDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
             let existsToday = this.backups.some(backup => {
                 let backupDate = new Date(backup.creation_date);
                 let backupDateString = `${backupDate.getDate()}/${backupDate.getMonth() + 1}/${backupDate.getFullYear()}`;
                 return backupDateString === todayDate;
             });
+
             if (existsToday) {
+                console.log("Si existe respaldo");
                 this.mostrarModalRespaldo();
             } else {
+                console.log("No existe respaldo");
                 this.mostrarModalRespaldoNuevo();
             }
         },
@@ -276,44 +281,102 @@ export default {
         },
 
         confirmExport() {
-            let oldestBackupDate = '';
-            let oldestBackupSize = '';
             if (this.backups.length > 0) {
+                this.backups.sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
+
                 let oldestBackup = this.backups[0];
+                let latestBackup = this.backups[this.backups.length - 1];
+
+
                 let oldestBackupDateObj = new Date(oldestBackup.creation_date);
-                oldestBackupDate = `${oldestBackupDateObj.getDate()}/${oldestBackupDateObj.getMonth() + 1}/${oldestBackupDateObj.getFullYear()} ${oldestBackupDateObj.getHours()}:${oldestBackupDateObj.getMinutes() < 10 ? '0' : ''}${oldestBackupDateObj.getMinutes()}`;
-                oldestBackupSize = oldestBackup.size_mb;
-            }
-
-            let latestBackup = this.backups.length > 0 ? this.backups[this.backups.length - 1] : null;
-
-            let latestBackupDate = '';
-            let latestBackupSize = '';
-            if (latestBackup) {
                 let latestBackupDateObj = new Date(latestBackup.creation_date);
-                latestBackupDate = `${latestBackupDateObj.getDate()}/${latestBackupDateObj.getMonth() + 1}/${latestBackupDateObj.getFullYear()} ${latestBackupDateObj.getHours()}:${latestBackupDateObj.getMinutes() < 10 ? '0' : ''}${latestBackupDateObj.getMinutes()}`;
-                latestBackupSize = latestBackup.size_mb;
-            }
 
-            let message = `Actualmente existe un respaldo con fecha ${latestBackupDate} horas, con un tamaño de ${latestBackupSize} MB. `;
-            if (oldestBackupDate) {
-                message += `Si continua se eliminará el respaldo más antiguo con fecha: ${oldestBackupDate} horas, con un tamaño de ${oldestBackupSize} MB`;
-            }
+                let oldestBackupDate = `${oldestBackupDateObj.getDate()}/${oldestBackupDateObj.getMonth() + 1}/${oldestBackupDateObj.getFullYear()} ${oldestBackupDateObj.getHours()}:${oldestBackupDateObj.getMinutes() < 10 ? '0' : ''}${oldestBackupDateObj.getMinutes()}`;
+                let latestBackupDate = `${latestBackupDateObj.getDate()}/${latestBackupDateObj.getMonth() + 1}/${latestBackupDateObj.getFullYear()} ${latestBackupDateObj.getHours()}:${latestBackupDateObj.getMinutes() < 10 ? '0' : ''}${latestBackupDateObj.getMinutes()}`;
 
-            Swal.fire({
-                title: '¿Está seguro de agregar un nuevo registro?',
-                text: message,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí',
-                cancelButtonText: 'No'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.respaldofile();
+
+                let message = `Actualmente existe un respaldo con fecha ${latestBackupDate} horas, con un tamaño de ${latestBackup.size_mb} MB. `;
+                if (this.backups.length > 1) {
+                    message += `Si continúa, ¿cuál desea eliminar?`;
+                    message += `<br><br><b>Respaldos disponibles:</b>`;
+                    message += `<br><br><b>1.</b> Más antiguo: ${oldestBackupDate} horas, ${oldestBackup.size_mb} MB`;
+                    message += `<br><b>2.</b> Más reciente: ${latestBackupDate} horas, ${latestBackup.size_mb} MB`;
+
+                    Swal.fire({
+                        title: '¿Está seguro de agregar un nuevo registro?',
+                        html: message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Confirmar',
+                        cancelButtonText: 'Cancelar',
+                        focusConfirm: false,
+                        focusCancel: true,
+                        reverseButtons: true,
+                        showCloseButton: true,
+                        customClass: {
+                            closeButton: 'swal2-close',
+                            confirmButton: 'swal2-confirm',
+                            cancelButton: 'swal2-cancel'
+                        },
+                        showLoaderOnConfirm: true,
+
+                        preConfirm: () => {
+                            const choice = document.querySelector('input[name="swal2-radio"]:checked');
+                            return choice ? choice.value : null;
+                        },
+                        input: 'radio',
+                        inputOptions: {
+                            '1': 'Eliminar el respaldo más antiguo',
+                            '2': 'Eliminar el respaldo más reciente'
+                        },
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Debe seleccionar una opción';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            if (result.value === '1') {
+                                this.eliminarRespaldo(oldestBackup);
+                            } else if (result.value === '2') {
+                                this.eliminarRespaldo(latestBackup);
+                            }
+                        }
+                        console.log("3");
+                        this.respaldofile();
+                    });
+                } else {
+
                 }
-            });
+            } else {
+
+            }
+        },
+
+        eliminarRespaldo(respaldo) {
+            const filename = respaldo.filename;
+
+            axios.delete(`/deleteBackup/${filename}`)
+                .then(response => {
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: 'El respaldo ha sido eliminado correctamente.',
+                        icon: 'success',
+                        onClose: () => {
+                            this.crearNuevoRespaldo();
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al eliminar el respaldo:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un problema al eliminar el respaldo. Por favor, inténtalo de nuevo más tarde.',
+                        icon: 'error'
+                    });
+                });
         },
 
         respaldofile() {
@@ -340,7 +403,7 @@ export default {
                     this.backups = response.data.backups;
                 })
                 .catch(error => {
-                    //console.error('Error al descargar los archivos en el sistema:', error);
+                    console.error('Error al descargar los archivos en el sistema:', error);
                 });
         },
 
@@ -350,7 +413,7 @@ export default {
                     this.backups = response.data.backups;
                 })
                 .catch(error => {
-                    //console.error('Error al obtener la lista de respaldos:', error);
+                    console.error('Error al obtener la lista de respaldos:', error);
                 });
         },
 

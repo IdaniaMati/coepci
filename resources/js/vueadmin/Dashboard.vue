@@ -2,7 +2,7 @@
         <div>
             <div class="mb-3" v-if="showDependenciaSelect === true">
             <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
-            <select id="showDependenciaSelect"  v-model="dependenciaSeleccionada">
+            <select id="showDependenciaSelect" class="form-control" v-model="dependenciaSeleccionada">
                 <option disabled selected>Seleccionar dependencia</option>
                 <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
             </select>
@@ -228,7 +228,7 @@ export default {
             return {
             empleados: [],
             dependencias: [],
-            empleadosFiltrados: [],
+           // empleadosFiltrados: [],
             dependenciaSeleccionada: null,
             showDependenciaSelect: false,
             filtro: '',
@@ -262,19 +262,28 @@ export default {
             let empleados = this.empleados.filter((empleado) => {
                 const nombreCompleto = `${empleado.nombre} ${empleado.apellido_paterno} ${empleado.apellido_materno}`;
                 const cargoCompleto = `${empleado.cargo}`;
+                const descripcionDependencia = this.descripcionDepen(empleado.id_depen).toLowerCase();
                 const nombreSinAcentos = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 const cargoSinAcentos = cargoCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                const dependenciaSinAcentos = descripcionDependencia.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
                 this.currentPage = 1;
+
                 return (
                     nombreCompleto.toLowerCase().includes(filtroMinusculas) ||
                     nombreSinAcentos.includes(filtroMinusculas) ||
                     (empleado.curp && empleado.curp.toLowerCase().includes(filtroMinusculas)) ||
                     cargoCompleto.toLowerCase().includes(filtroMinusculas) ||
                     cargoSinAcentos.includes(filtroMinusculas) ||
-                    (empleado.id_grup && empleado.id_grup.toString().includes(filtroMinusculas))
+                    (empleado.id_grup && empleado.id_grup.toString().includes(filtroMinusculas)) ||
+                    dependenciaSinAcentos.includes(filtroMinusculas)
+
                 );
             });
+
+            if (this.dependenciaSeleccionada) {
+            empleados = empleados.filter(empleado => empleado.id_depen === this.dependenciaSeleccionada);
+            }
 
             if (this.filtroGrupo) {
                 empleados = empleados.filter(empleado => empleado.id_grup == this.filtroGrupo);
@@ -291,7 +300,7 @@ export default {
                     }
                 });
             }
-
+            // this.currentPage = 1;
             return empleados;
         },
 
@@ -307,11 +316,11 @@ export default {
         },
     },
 
-    watch: {
-        dependenciaSeleccionada() {
-        this.filtrarEmpleados();
-        }
-    },
+    // watch: {
+    //     dependenciaSeleccionada() {
+    //     this.filtrarEmpleados();
+    //     },
+    // },
 
     mounted() {
         this.obtenerEmpleados();
@@ -338,13 +347,14 @@ export default {
             });
         },
 
-        filtrarEmpleados() {
-            if (this.dependenciaSeleccionada) {
-                this.empleadosFiltrados = this.empleados.filter(empleado => empleado.id_depen === this.dependenciaSeleccionada);
-            } else {
-                this.empleadosFiltrados = this.empleados;
-            }
-        },
+        // filtrarEmpleados() {
+        //     if (this.dependenciaSeleccionada) {
+        //         this.empleadosFiltrados = this.empleados.filter(empleado => empleado.id_depen === this.dependenciaSeleccionada);
+        //     } else {
+        //         this.empleadosFiltrados = this.empleados;
+        //     }
+
+        // },
 
         obtenerPermisos(){
             axios
@@ -622,7 +632,9 @@ export default {
         limpiarFiltro() {
             this.filtroGrupo = '';
             this.ronda = '';
+            this.dependenciaSeleccionada = '';
             this.currentPage = 1;
+
         },
     },
 };

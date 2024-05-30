@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Faq;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\MyHelper;
+
+
 
 class FaqController extends Controller
 {
@@ -33,7 +36,7 @@ class FaqController extends Controller
             $nuevoFaq->respuesta = $request->input('respuesta');
             $nuevoFaq->save();
 
-            MyHelper::registrarAccion('Se agrego la FAQ: ' . $nuevoFaq -> pregunta);
+            MyHelper::registrarAccion('Se agrego la pregunta: ' . $nuevoFaq -> pregunta);
             return response()->json(['success' => true, 'message' => 'FAQ agregada exitosamente']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
