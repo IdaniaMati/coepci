@@ -50,23 +50,29 @@
       </div>
 
       <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="editModalLabel">Editar Manual</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h2 class="modal-title"><strong>Editar Manual</strong></h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <input type="file" @change="handleEditFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                <h5 class="modal-title" id="editModalLabel">Archivo seleccionado: {{ nombreArchivoSeleccionado }}</h5>
+                <input type="file" @change="handleEditFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="editarManual">Guardar cambios</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" @click="editarManual">Guardar cambios</button>
             </div>
-          </div>
         </div>
-      </div>
     </div>
+</div>
+
+
+    </div>
+
+
+
 </template>
 
 <style>
@@ -103,6 +109,7 @@ export default {
             editArchivo: null,
             editManualId: null,
             manuales: [],
+            nombreArchivoSeleccionado: '',
         };
     },
 
@@ -142,31 +149,14 @@ export default {
                 });
                 console.log(response.data.message);
                 this.obtenerManuales();
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'El archivo ha sido importado exitosamente',
+                });
             } catch (error) {
                 console.error('Hubo un error al subir el archivo:', error);
             }
-        },
-
-        obtenerPermisos() {
-            axios
-            .get("/Obtenerpermisos")
-            .then((response) => {
-                this.lista_permisos = response.data;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        },
-
-        obtenerManuales() {
-            axios
-            .get("/lista-manuales")
-            .then((response) => {
-                this.manuales = response.data;
-            })
-            .catch((error) => {
-                console.error('Error al obtener la lista de manuales:', error);
-            });
         },
 
         async eliminarManual(id) {
@@ -186,20 +176,47 @@ export default {
                     const response = await axios.delete(`/eliminar-manual/${id}`);
                     console.log(response.data.message);
                     this.obtenerManuales();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'El registro ha sido eliminado exitosamente',
+                    });
                 } catch (error) {
                     console.error('Error al eliminar el manual:', error);
                 }
             }
         },
+        obtenerManuales() {
+            axios
+            .get("/lista-manuales")
+            .then((response) => {
+                this.manuales = response.data;
+            })
+            .catch((error) => {
+                console.error('Error al obtener la lista de manuales:', error);
+            });
+        },
 
         openEditModal(manual) {
             this.editManualId = manual.id;
             $("#editModal").modal("show");
+            this.nombreArchivoSeleccionado = manual.nombre;
         },
 
-        handleFileUpload(event) {
-            this.archivo = event.target.files[0];
+        obtenerPermisos() {
+            axios
+            .get("/Obtenerpermisos")
+            .then((response) => {
+                this.lista_permisos = response.data;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         },
+
+    /*     handleFileUpload(event) {
+            this.archivo = event.target.files[0];
+        }, */
 
         handleEditFileUpload(event) {
             this.editArchivo = event.target.files[0];
@@ -226,11 +243,19 @@ export default {
                 });
                 console.log(response.data.message);
                 $("#editModal").modal("hide");
-                this.obtenerManuales(); // Refresh the list after editing
+                this.obtenerManuales();
+
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'El manual ha sido editado exitosamente',
+                });
             } catch (error) {
                 console.error('Error al editar el archivo:', error);
             }
         },
+
 
         abrirModal() {
             $("#largeModal").modal({ backdrop: "static", keyboard: false });
