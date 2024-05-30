@@ -48,7 +48,7 @@
 
                 </div>
 
-                    <!-- Modal agregar roles -->
+                    <!-- Modal confirmación de contraseña -->
                     <div class="container">
                         <div class="modal fade" id="confirmarpass" tabindex="-1">
                             <div class="modal-dialog modal-dialog-centered">
@@ -288,13 +288,11 @@ export default {
                 let oldestBackup = this.backups[0];
                 let latestBackup = this.backups[this.backups.length - 1];
 
-
                 let oldestBackupDateObj = new Date(oldestBackup.creation_date);
                 let latestBackupDateObj = new Date(latestBackup.creation_date);
 
                 let oldestBackupDate = `${oldestBackupDateObj.getDate()}/${oldestBackupDateObj.getMonth() + 1}/${oldestBackupDateObj.getFullYear()} ${oldestBackupDateObj.getHours()}:${oldestBackupDateObj.getMinutes() < 10 ? '0' : ''}${oldestBackupDateObj.getMinutes()}`;
                 let latestBackupDate = `${latestBackupDateObj.getDate()}/${latestBackupDateObj.getMonth() + 1}/${latestBackupDateObj.getFullYear()} ${latestBackupDateObj.getHours()}:${latestBackupDateObj.getMinutes() < 10 ? '0' : ''}${latestBackupDateObj.getMinutes()}`;
-
 
                 let message = `Actualmente existe un respaldo con fecha ${latestBackupDate} horas, con un tamaño de ${latestBackup.size_mb} MB. `;
                 if (this.backups.length > 1) {
@@ -322,7 +320,6 @@ export default {
                             cancelButton: 'swal2-cancel'
                         },
                         showLoaderOnConfirm: true,
-
                         preConfirm: () => {
                             const choice = document.querySelector('input[name="swal2-radio"]:checked');
                             return choice ? choice.value : null;
@@ -344,15 +341,16 @@ export default {
                             } else if (result.value === '2') {
                                 this.eliminarRespaldo(latestBackup);
                             }
+                            this.respaldofile();
+                        } else {
+                            Swal.close();
                         }
-                        console.log("3");
-                        this.respaldofile();
                     });
                 } else {
-
+                    // Lógica para cuando solo hay un respaldo disponible
                 }
             } else {
-
+                // Lógica para cuando no hay respaldos disponibles
             }
         },
 
