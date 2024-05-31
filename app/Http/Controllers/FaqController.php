@@ -86,13 +86,11 @@ class FaqController extends Controller
         try {
             $manual = Manuales::findOrFail($id);
 
-            // Eliminar el archivo del sistema de archivos
             $filePath = 'manuales/' . $manual->nombre;
             if (Storage::exists($filePath)) {
                 Storage::delete($filePath);
             }
 
-            // Eliminar el registro de la base de datos
             $manual->delete();
 
             return response()->json([
@@ -116,7 +114,6 @@ class FaqController extends Controller
         $file = $request->file('file');
         $manual = Manuales::findOrFail($id);
 
-        // Eliminar el archivo anterior del sistema de archivos
         $filePath = 'manuales/' . $manual->nombre;
         if (Storage::exists($filePath)) {
             Storage::delete($filePath);
@@ -142,7 +139,7 @@ class FaqController extends Controller
             ], 500);
         }
     }
-    
+
     public function descargarManual($id)
     {
         $manual = Manuales::findOrFail($id);
@@ -232,5 +229,4 @@ class FaqController extends Controller
         }
     }
     //End sección de preguntas
-
 }

@@ -1,4 +1,5 @@
-    <template>
+<template>
+         <!-- Filtrados dependencia admin -->
         <div>
             <div class="mb-3" v-if="showDependenciaSelect === true">
             <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
@@ -7,6 +8,7 @@
                 <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
             </select>
         </div>
+        <!-- Fin filtrados dependencia admin -->
 
         <div class="text-center mb-4">
             <h2><strong>PANEL PRINCIPAL EMPLEADOS</strong></h2>
@@ -32,29 +34,30 @@
                     </div>
                 </div>
 
+                <!-- Filtrados generales -->
                 <div class="nav-item d-flex align-items-center">
                     <h5 class="card-header"><strong>Empleados</strong></h5>
                     <i class="bx bx-search fs-4 lh-0"></i>
-                    <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                        <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                     <h5 class="card-header"><strong>Grupo</strong></h5>
-                    <select v-model="filtroGrupo" class="form-control" id="grupo" required>
-                        <option value="">Seleccionar Grupo</option>
-                        <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
-                    </select>
+                        <select v-model="filtroGrupo" class="form-control" id="grupo" required>
+                            <option value="">Seleccionar Grupo</option>
+                            <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
+                        </select>
                     <h5 class="card-header"><strong>Votos</strong></h5>
-                    <select v-model="ronda" class="form-control" id="votos" required>
-                        <option value="">Seleccionar Ronda</option>
-                        <option value="1">Ronda 1</option>
-                        <option value="2">Ronda 2</option>
-                    </select>
+                        <select v-model="ronda" class="form-control" id="votos" required>
+                            <option value="">Seleccionar Ronda</option>
+                            <option value="1">Ronda 1</option>
+                            <option value="2">Ronda 2</option>
+                        </select>
                     <button class="btn btn-refresh ms-2" title="Limpiar filtros" @click="limpiarFiltro">
                         <i class="bi bi-arrow-clockwise"  style="font-size: 20px;"></i>
                     </button>
                     <button class="btn btn-download ms-2" title="Exportar Excel" @click="exportarExcel">
-                        <!-- <i class="bi bi-cloud-download"  style="font-size: 20px;"></i> -->
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" viewBox="0 0 512 512"><path fill="#ffffff" d="M453.547 273.449H372.12v-40.714h81.427zm0 23.264H372.12v40.714h81.427zm0-191.934H372.12v40.713h81.427zm0 63.978H372.12v40.713h81.427zm0 191.934H372.12v40.714h81.427zm56.242 80.264c-2.326 12.098-16.867 12.388-26.58 12.796H302.326v52.345h-36.119L0 459.566V52.492L267.778 5.904h34.548v46.355h174.66c9.83.407 20.648-.291 29.197 5.583c5.991 8.608 5.41 19.543 5.817 29.43l-.233 302.791c-.29 16.925 1.57 34.2-1.978 50.892m-296.51-91.256c-16.052-32.57-32.395-64.909-48.39-97.48c15.82-31.698 31.408-63.512 46.937-95.327c-13.203.64-26.406 1.454-39.55 2.385c-9.83 23.904-21.288 47.169-28.965 71.888c-7.154-23.323-16.634-45.774-25.3-68.515c-12.796.698-25.592 1.454-38.387 2.21c13.493 29.78 27.86 59.15 40.946 89.104c-15.413 29.081-29.837 58.57-44.785 87.825c12.737.523 25.475 1.047 38.212 1.221c9.074-23.148 20.357-45.424 28.267-69.038c7.096 25.359 19.135 48.798 29.023 73.051c14.017.99 27.976 1.862 41.993 2.676M484.26 79.882H302.326v24.897h46.53v40.713h-46.53v23.265h46.53v40.713h-46.53v23.265h46.53v40.714h-46.53v23.264h46.53v40.714h-46.53v23.264h46.53v40.714h-46.53v26.897H484.26z"/></svg>
                     </button>
                 </div>
+                <!-- Fin Filtrados generales -->
 
                 <div class="table-container">
                     <table class="table table-striped">
@@ -105,6 +108,7 @@
                     </table>
                 </div>
 
+                <!-- Inicio Modal Agregar Emeplado -->
                 <div class="container">
                     <div class="modal fade" id="largeModal" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
@@ -171,9 +175,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- Final Modal Agregar Empleado -->
 
+                <!-- Paginador -->
                 <br>
-
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
@@ -187,8 +192,8 @@
                         </li>
                     </ul>
                 </nav>
-
                 <br>
+                <!-- Fin paginador -->
             </div>
         </div>
     </div>
@@ -220,15 +225,14 @@ import permisos from "../permisos/permisos.vue";
 
 export default {
 
-        components: {
+    components: {
 
-        },extends:permisos,
+    },extends:permisos,
 
-        data() {
-            return {
+    data() {
+        return {
             empleados: [],
             dependencias: [],
-           // empleadosFiltrados: [],
             dependenciaSeleccionada: null,
             showDependenciaSelect: false,
             filtro: '',
@@ -251,13 +255,13 @@ export default {
             grupos: [],
             lista_permisos:[],
             showDependenciaSelect: false,
-
         };
     },
 
     computed: {
 
         empleadosFiltrados() {
+
             const filtroMinusculas = this.filtro.toLowerCase();
             let empleados = this.empleados.filter((empleado) => {
                 const nombreCompleto = `${empleado.nombre} ${empleado.apellido_paterno} ${empleado.apellido_materno}`;
@@ -277,7 +281,6 @@ export default {
                     cargoSinAcentos.includes(filtroMinusculas) ||
                     (empleado.id_grup && empleado.id_grup.toString().includes(filtroMinusculas)) ||
                     dependenciaSinAcentos.includes(filtroMinusculas)
-
                 );
             });
 
@@ -300,10 +303,8 @@ export default {
                     }
                 });
             }
-            // this.currentPage = 1;
             return empleados;
         },
-
 
         totalPages() {
             return Math.ceil(this.empleadosFiltrados.length / this.perPage);
@@ -316,45 +317,29 @@ export default {
         },
     },
 
-    // watch: {
-    //     dependenciaSeleccionada() {
-    //     this.filtrarEmpleados();
-    //     },
-    // },
-
     mounted() {
+
         this.obtenerEmpleados();
         this.obtenerRegistrosVotos();
         this.obtenerGrupos();
         this.obtenerPermisos();
         this.obtenerDependencias();
         this.cargarDependencias();
-
-
      },
 
     methods: {
 
         cargarDependencias() {
-        axios.get('/dashboardWithDependencia')
-            .then(response => {
-                this.showDependenciaSelect = response.data.showDependenciaSelect;
-                console.log("Valor de showDependenciaSelect:", this.showDependenciaSelect);
-                console.log("Dependencias obtenidas:", this.dependencias);
-            })
-            .catch(error => {
-                console.error('Error al obtener los datos:', error);
-            });
+            axios.get('/dashboardWithDependencia')
+                .then(response => {
+                    this.showDependenciaSelect = response.data.showDependenciaSelect;
+                    console.log("Valor de showDependenciaSelect:", this.showDependenciaSelect);
+                    console.log("Dependencias obtenidas:", this.dependencias);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                });
         },
-
-        // filtrarEmpleados() {
-        //     if (this.dependenciaSeleccionada) {
-        //         this.empleadosFiltrados = this.empleados.filter(empleado => empleado.id_depen === this.dependenciaSeleccionada);
-        //     } else {
-        //         this.empleadosFiltrados = this.empleados;
-        //     }
-
-        // },
 
         obtenerPermisos(){
             axios
@@ -367,7 +352,6 @@ export default {
                     console.error(error);
 
                 });
-
         },
 
         obtenerEmpleados() {
@@ -380,7 +364,6 @@ export default {
                             .then((responseVotos) => {
                                 const votosRondas = responseVotos.data.resultados;
 
-                                // Asignar los votos a cada empleado
                                 this.empleados.forEach(empleado => {
                                     const votoRonda = votosRondas.find(voto => voto.id_empleado === empleado.id);
 
@@ -395,18 +378,15 @@ export default {
                                 this.filtrarEmpleados();
                             })
                             .catch((errorVotos) => {
-                                //console.error("Error al obtener los votos en ambas rondas", errorVotos);
                             });
                     } else {
-                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
                 });
         },
 
-         async obtenerGrupos() {
+        async obtenerGrupos() {
              try {
                  const response = await axios.get('/obtenerGrupos');
                  if (response.data.success) {
@@ -417,89 +397,89 @@ export default {
              } catch (error) {
                  console.error('Error al obtener los grupos:', error);
              }
-         },
+        },
 
-         async obtenerDependencias() {
-        try {
-            const response = await axios.get('/obtenerDependencias');
-            this.dependencias = response.data.user;
-        } catch (error) {
-            console.error(error);
-        }
+        async obtenerDependencias() {
+            try {
+                const response = await axios.get('/obtenerDependencias');
+                this.dependencias = response.data.user;
+            } catch (error) {
+                console.error(error);
+            }
         },
 
         descripcionDepen(idDepen) {
-        const dependencia = this.dependencias.find(dep => dep.id === idDepen);
-        return dependencia ? dependencia.descripcion : 'Sin descripción';
+            const dependencia = this.dependencias.find(dep => dep.id === idDepen);
+            return dependencia ? dependencia.descripcion : 'Sin descripción';
         },
 
         async agregarEmpleado() {
 
         const curp = this.curp.toUpperCase().substring(0, 18);
 
-        if (curp.length !== 18) {
-            Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
-            return;
-        }
-
-        const nuevoEmpleado = {
-            id_grup: this.id_grup,
-            curp: this.curp,
-            nombre: this.nombre,
-            apellido_paterno: this.apellido_paterno,
-            apellido_materno: this.apellido_materno,
-            cargo: this.cargo,
-        };
-        try {
-                const response = await axios.post('/agregarEmpleado', nuevoEmpleado);
-
-                if (response.data.success) {
-                    this.cerrarModal();
-                    this.obtenerEmpleados();
-
-                    Swal.fire('Éxito', response.data.message, 'success');
-                } else {
-                    Swal.fire('Error', response.data.error, 'error');
-                }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'La CURP ya se encuentra registrada.', 'error');
-            }
-         },
-
-         async editarEmpleado() {
-
-            const curp = this.curp.toUpperCase().substring(0, 18);
-
             if (curp.length !== 18) {
                 Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
                 return;
             }
 
-            const empleadoActualizado = {
-            id: this.idEmpleado,
-            nombre: this.nombre,
-            apellido_paterno: this.apellido_paterno,
-            apellido_materno: this.apellido_materno,
-            curp: this.curp,
-            cargo: this.cargo,
-            id_grup: this.id_grup
+            const nuevoEmpleado = {
+                id_grup: this.id_grup,
+                curp: this.curp,
+                nombre: this.nombre,
+                apellido_paterno: this.apellido_paterno,
+                apellido_materno: this.apellido_materno,
+                cargo: this.cargo,
             };
+                try {
+                        const response = await axios.post('/agregarEmpleado', nuevoEmpleado);
 
-            try {
-            const response = await axios.post('/editarEmpleado', empleadoActualizado);
+                        if (response.data.success) {
+                            this.cerrarModal();
+                            this.obtenerEmpleados();
 
-                if (response.data.success) {
-                    this.cerrarModal();
-                    this.obtenerEmpleados();
-                    Swal.fire('Éxito', response.data.message, 'success');
-                } else {
-                    Swal.fire('Error', response.data.message, 'error');
+                            Swal.fire('Éxito', response.data.message, 'success');
+                        } else {
+                            Swal.fire('Error', response.data.error, 'error');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        Swal.fire('Error', 'La CURP ya se encuentra registrada.', 'error');
+                    }
+        },
+
+        async editarEmpleado() {
+
+            const curp = this.curp.toUpperCase().substring(0, 18);
+
+                if (curp.length !== 18) {
+                    Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
+                    return;
                 }
-                } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'Hubo un error al actualizar el empleado.', 'error');
-                }
+
+                const empleadoActualizado = {
+                id: this.idEmpleado,
+                nombre: this.nombre,
+                apellido_paterno: this.apellido_paterno,
+                apellido_materno: this.apellido_materno,
+                curp: this.curp,
+                cargo: this.cargo,
+                id_grup: this.id_grup
+                };
+
+                try {
+                const response = await axios.post('/editarEmpleado', empleadoActualizado);
+
+                    if (response.data.success) {
+                        this.cerrarModal();
+                        this.obtenerEmpleados();
+                        Swal.fire('Éxito', response.data.message, 'success');
+                    } else {
+                        Swal.fire('Error', response.data.message, 'error');
+                    }
+                    } catch (error) {
+                    console.error(error);
+                    Swal.fire('Error', 'Hubo un error al actualizar el empleado.', 'error');
+                    }
         },
 
         detalleEmpleado(idEmp) {
@@ -525,9 +505,9 @@ export default {
                 });
         },
 
-         async eliminarEmpleado(idEmpleado) {
-            try {
+        async eliminarEmpleado(idEmpleado) {
 
+            try {
                 const confirmed = await Swal.fire({
                     title: '¿Estás seguro?',
                     text: 'Esto eliminará al empleado seleccionado.',
@@ -560,7 +540,6 @@ export default {
                 this.votosRonda1 = response.data.votosRonda1;
                 this.votosRonda2 = response.data.votosRonda2;
                 } catch (error) {
-                    //console.error(error);
             }
         },
 
@@ -593,6 +572,7 @@ export default {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         },
+
         nuevo() {
             this.limpiarvar();
             this.bandera = 0;
@@ -634,9 +614,7 @@ export default {
             this.ronda = '';
             this.dependenciaSeleccionada = '';
             this.currentPage = 1;
-
         },
     },
 };
-
 </script>

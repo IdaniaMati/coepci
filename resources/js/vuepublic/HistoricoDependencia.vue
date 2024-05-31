@@ -8,7 +8,6 @@
             </div>
 
           <div class="card-body">
-
             <div>
               <ul class="nav nav-tabs" role="tablist">
                 <li v-for="(concursoPorAnio, anio) in historico" :key="anio" class="nav-item">
@@ -19,7 +18,6 @@
               </ul>
               <div class="tab-content">
                 <div v-for="(concursoPorAnio, anio) in historico" :key="anio" :id="`pane-${anio}`" class="tab-pane" role="tabpanel">
-                    <!-- <h5 class="mb-3">{{ anio }}</h5> -->
                     <div v-for="(concurso, concursoKey) in concursoPorAnio" :key="concursoKey" class="row">
                         <h6 class="mb-3"><strong>{{ concurso.descripcion }}</strong></h6>
                         <div v-for="(grupo, grupoIndex) in concurso.grupos" :key="grupoIndex" class="col-md-6 col-lg-4 mb-3">
@@ -60,9 +58,7 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
               </div>
@@ -77,58 +73,57 @@
         </div>
       </div>
     </div>
-  </template>
+</template>
 
-  <style>
+<style>
 
-    .concurso-card {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 20px;
-    }
-    .card {
+.concurso-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.card {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-  }
+}
 
-  .card-title {
+.card-title {
     color: #B68400;
     font-weight: bold;
-  }
+}
 
-  .list-group-item {
+.list-group-item {
     border: 1px solid #ddd;
     margin-bottom: 5px;
-  }
+}
 
-  .card-body {
+.card-body {
     padding: 20px;
-  }
+}
 
-  .fs-4 {
+.fs-4 {
     margin-bottom: 20px;
-  }
+}
 
-  .btn-primary {
+.btn-primary {
     background-color: #AB0A3D;
     border: 1px solid #AB0A3D;
-  }
+}
 
-  .btn-primary:hover {
+.btn-primary:hover {
     background-color: #440412;
     border: 1px solid #440412;
-  }
+}
 
-
-  .bg-primeros{
+.bg-primeros{
   background-color: #ab0a3d;
 }
 
 .bg-segundos{
   background-color: #9c9312;
 }
-  </style>
+</style>
 
 <script>
 import axios from 'axios';
@@ -136,11 +131,11 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      historico: {},
-      votosTodosEmpleados: {},
-      mostrarInfoEmpleados: false,
-      pestañaActual: null,
-      dependencias: [],
+        historico: {},
+        votosTodosEmpleados: {},
+        mostrarInfoEmpleados: false,
+        pestañaActual: null,
+        dependencias: [],
         id_depen: null,
     };
   },
@@ -177,28 +172,22 @@ export default {
     },
 
     cambiarPestana(anio) {
-      this.pestañaActual = anio;
-      this.mostrarInfoEmpleados = false;
+        this.pestañaActual = anio;
+        this.mostrarInfoEmpleados = false;
     },
 
     regresar() {
-      window.location.href = '/nominaciones';
+        window.location.href = '/nominaciones';
     },
-
-
 
     obtenerHistorico(idDependencia) {
       axios.get(`/obtenerHistorico?idDependencia=${idDependencia}`)
         .then(response => {
-          //console.log(response.data);
           this.historico = response.data.historico;
         })
         .catch(error => {
-          //console.error('Error al obtener historico', error);
         });
     },
-
-
 
     obtenerVotosTodosEmpleados(idConcurso) {
         axios.get(`/obtenerVotosTodosEmpleados/${idConcurso}`)
@@ -225,7 +214,6 @@ export default {
                     });
                     }
                 }
-
                 votosEmpleados.push({
                     ronda: Number(ronda),
                     empleadosPorRonda
@@ -236,14 +224,11 @@ export default {
 
             this.votosTodosEmpleados = votosEmpleados.sort((a, b) => a.ronda - b.ronda);
             } else {
-            //console.error('La respuesta del servidor no tiene la estructura esperada.');
             }
         })
         .catch(error => {
-            //console.error('Error al obtener votos por ronda y grupo', error);
         });
     },
-
   },
 };
 </script>

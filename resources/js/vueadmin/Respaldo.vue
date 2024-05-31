@@ -83,15 +83,16 @@
     </div>
 </template>
 
-
 <script>
     import axios from 'axios';
     import Swal from 'sweetalert2';
     import permisos from "../permisos/permisos.vue";
 
     export default {
+
         components: {},
         extends: permisos,
+
         data() {
             return {
                 backups: [],
@@ -102,17 +103,22 @@
                 needsExportConfirmation: true,
             };
         },
+
         mounted() {
+
             this.getBackups();
             this.obtenerPermisos_user();
         },
+
         methods: {
+
             redirectToConfirmExport() {
                 if (this.needsExportConfirmation) {
                     this.confirmExport();
                     this.needsExportConfirmation = false;
                 }
             },
+
             obtenerPermisos_user() {
                 axios
                     .get("/Obtenerpermisos")
@@ -123,6 +129,7 @@
                         //console.error(error);
                     });
             },
+
             realizarRespaldo() {
                 axios.post('/confirmpassword', { password: this.password })
                     .then(response => {
@@ -147,6 +154,7 @@
                         });
                     });
             },
+
             realizarRespaldoNuevo() {
                 axios.post('/confirmpassword', { password: this.password })
                     .then(response => {
@@ -171,6 +179,7 @@
                         });
                     });
             },
+
             confirmarContrasena() {
                 axios.post('/confirmpassword', { password: this.password })
                     .then(response => {
@@ -200,6 +209,7 @@
                         });
                     });
             },
+
             confirmarContrasenaParaExportar() {
                 axios.post('/confirmpassword', { password: this.password })
                     .then(response => {
@@ -224,37 +234,7 @@
                         });
                     });
             },
-            mostrarModal(id) {
-                this.backupFileName = id;
-                this.bandera = 1;
-                this.abrirModal();
-                this.limpiarvar();
-            },
-            mostrarModalRespaldoNuevo() {
-                this.bandera = 3;
-                this.abrirModal();
-                this.limpiarvar();
-            },
-            mostrarModalRespaldo() {
-                this.bandera = 2;
-                this.abrirModal();
-                this.limpiarvar();
-            },
-            importarRespaldo() {
-                this.bandera = 3;
-                this.abrirModal();
-                this.limpiarvar();
-            },
-            limpiarvar() {
-                this.password = null;
-            },
-            abrirModal() {
-                $("#confirmarpass").modal({ backdrop: "static", keyboard: false });
-                $("#confirmarpass").modal("toggle");
-            },
-            cerrarModal() {
-                $("#confirmarpass").modal("hide");
-            },
+
             checkAndExport() {
                 if (this.needsExportConfirmation) {
                     this.bandera = 4;
@@ -268,6 +248,7 @@
                     }
                 }
             },
+
             downloadBackup(filename) {
                 axios
                     .get("/downloadBackup/" + filename, { responseType: "blob" })
@@ -283,6 +264,7 @@
                         //console.error("Error al descargar el archivo de respaldo:", error);
                     });
             },
+
             confirmExport() {
                 if (this.backups.length >= 10) {
                     this.backups.sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
@@ -347,6 +329,7 @@
                     this.respaldofile();
                 }
             },
+
             eliminarRespaldo(respaldo, type) {
                 const filename = respaldo.filename;
 
@@ -371,6 +354,7 @@
                         });
                     });
             },
+
             respaldofile() {
                 axios.get('/respaldofile', { responseType: 'blob' })
                     .then(response => {
@@ -387,6 +371,7 @@
                         console.error('Error al exportar los datos:', error);
                     });
             },
+
             getBackupFileInfo() {
                 axios.get('/getBackupFileInfo')
                     .then(response => {
@@ -396,6 +381,7 @@
                         console.error('Error al descargar los archivos en el sistema:', error);
                     });
             },
+
             getBackups() {
                 axios.get('/getBackupList')
                     .then(response => {
@@ -404,6 +390,46 @@
                     .catch(error => {
                         console.error('Error al obtener la lista de respaldos:', error);
                     });
+            },
+
+            //Metodos generales
+
+            mostrarModal(id) {
+                this.backupFileName = id;
+                this.bandera = 1;
+                this.abrirModal();
+                this.limpiarvar();
+            },
+
+            mostrarModalRespaldoNuevo() {
+                this.bandera = 3;
+                this.abrirModal();
+                this.limpiarvar();
+            },
+
+            mostrarModalRespaldo() {
+                this.bandera = 2;
+                this.abrirModal();
+                this.limpiarvar();
+            },
+
+            importarRespaldo() {
+                this.bandera = 3;
+                this.abrirModal();
+                this.limpiarvar();
+            },
+
+            limpiarvar() {
+                this.password = null;
+            },
+
+            abrirModal() {
+                $("#confirmarpass").modal({ backdrop: "static", keyboard: false });
+                $("#confirmarpass").modal("toggle");
+            },
+
+            cerrarModal() {
+                $("#confirmarpass").modal("hide");
             },
         },
     };

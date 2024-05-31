@@ -1,46 +1,35 @@
 <template>
-  <div class="authentication-wrapper authentication-basic container-p-y">
-    <div class="authentication-inner">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <div class="card">
+                <div class="card-body">
+                    <div class="app-brand justify-content-center">
+                        <img :src="rutaImagen" alt="" height="150px" />
+                    </div>
+                    <div class="justify-content-center">
+                        <h2 class="app-brand-text fw-bolder">COEPCI</h2>
+                    </div>
 
-      <div class="card">
-        <div class="card-body">
+                    <h4 class="mb-2">Sistema de Votación para el Comité de Ética y Prevención de Conflicto de Interés</h4>
+                    <p class="mb-4">Para iniciar la votación es necesario ingresar su CURP</p>
 
-          <div class="app-brand justify-content-center">
-
-              <!-- <img src="assets/img/logo-2.png" alt="" height="150px" /> -->
-              <img :src="rutaImagen" alt="" height="150px" />
-
-          </div>
-          <div class="justify-content-center">
-            <h2 class="app-brand-text fw-bolder">COEPCI</h2>
-          </div>
-
-          <h4 class="mb-2">Sistema de Votación para el Comité de Ética y Prevención de Conflicto de Interés</h4>
-          <p class="mb-4">Para iniciar la votación es necesario ingresar su CURP</p>
-
-          <form>
-            <div class="mb-3 form-password-toggle">
-              <div class="d-flex justify-content-between">
-                <label class="form-label" for="curp">CURP</label>
-              </div>
-              <div class="input-group input-group-merge">
-                <input v-model="curp" type="text" id="curp" class="form-control" name="curp" maxlength="18" required/>
-
-
-              </div>
+                    <form>
+                        <div class="mb-3 form-password-toggle">
+                            <div class="d-flex justify-content-between">
+                                <label class="form-label" for="curp">CURP</label>
+                            </div>
+                            <div class="input-group input-group-merge">
+                                <input v-model="curp" type="text" id="curp" class="form-control" name="curp" maxlength="18" required/>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary d-grid w-100" type="button" @click="ingresar"> Ingresar </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-              <button class="btn btn-primary d-grid w-100" type="button" @click="ingresar"> Ingresar </button>
-            </div>
-
-          </form>
         </div>
-      </div>
-
-
-
     </div>
-  </div>
 </template>
 
 <script>
@@ -60,7 +49,6 @@ export default {
   },
 
   computed: {
-
   },
 
   created() {
@@ -121,11 +109,6 @@ export default {
             text: message,
         });
     },
-
   },
 };
 </script>
-
-<style>
-
-</style>

@@ -85,58 +85,56 @@
         </div>
       </div>
     </div>
-  </template>
+</template>
 
-  <style>
-
-    .concurso-card {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 20px;
-    }
-    .card {
+<style>
+.concurso-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.card {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-  }
+}
 
-  .card-title {
+.card-title {
     color: #B68400;
     font-weight: bold;
-  }
+}
 
-  .list-group-item {
+.list-group-item {
     border: 1px solid #ddd;
     margin-bottom: 5px;
-  }
+}
 
-  .card-body {
+.card-body {
     padding: 20px;
-  }
+}
 
-  .fs-4 {
+.fs-4 {
     margin-bottom: 20px;
-  }
+}
 
-  .btn-primary {
+.btn-primary {
     background-color: #AB0A3D;
     border: 1px solid #AB0A3D;
-  }
+}
 
-  .btn-primary:hover {
+.btn-primary:hover {
     background-color: #440412;
     border: 1px solid #440412;
-  }
+}
 
-
-  .bg-primeros{
+.bg-primeros{
   background-color: #ab0a3d;
 }
 
 .bg-segundos{
   background-color: #9c9312;
 }
-  </style>
+</style>
 
 <script>
 import axios from 'axios';
@@ -185,20 +183,15 @@ export default {
       window.location.href = '/nominaciones';
     },
 
-
-
     obtenerHistorico(idDependencia) {
       axios.get(`/obtenerHistorico?idDependencia=${idDependencia}`)
         .then(response => {
-          //console.log(response.data);
           this.historico = response.data.historico;
         })
         .catch(error => {
-          //console.error('Error al obtener historico', error);
+
         });
     },
-
-
 
     obtenerVotosTodosEmpleados(idConcurso) {
         axios.get(`/obtenerVotosTodosEmpleados/${idConcurso}`)
@@ -243,7 +236,6 @@ export default {
             console.error('Error al obtener votos por ronda y grupo', error);
         });
     },
-
   },
 };
 </script>

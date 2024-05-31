@@ -20,39 +20,10 @@ class DashboardController extends Controller
 
     }
 
-    // public function obtenerEmpleados()
-    // {
-    //     try {
-
-    //         $user = Auth::user();
-
-    //         if (!$user) {
-    //             return response()->json(['message' => 'Usuario no autenticado'], 401);
-    //         }
-
-    //         $depen_user = $user->id_depen;
-
-    //         if ($depen_user == 1) {
-    //             $empleados = Empleado::all();
-    //         } else{
-    //             $empleados = Empleado::where('id_depen', $depen_user)
-    //             ->get();
-    //         }
-
-    //         if ($empleados->isEmpty()) {
-    //             return response()->json(['message' => 'No hay empleados en el sistema.']);
-    //         }
-
-    //         return response()->json(['empleados' => $empleados]);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
-    // }
-
     public function obtenerEmpleados(Request $request)
     {
         try {
-            // Obtener el usuario autenticado
+
             $user = Auth::user();
 
             if (!$user) {
@@ -71,10 +42,8 @@ class DashboardController extends Controller
                 return response()->json(['message' => 'No hay empleados en el sistema.']);
             }
 
-            // Retornar los empleados en formato JSON
             return response()->json(['empleados' => $empleados]);
         } catch (\Exception $e) {
-            // Si ocurre una excepción, retornar un mensaje de error con el código 500 (error interno del servidor)
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -84,7 +53,6 @@ class DashboardController extends Controller
         $grupos = Grupo::all();
         return response()->json(['success' => true, 'grupos' => $grupos]);
     }
-
 
     public function agregarEmpleado(Request $request)
     {
@@ -132,15 +100,12 @@ class DashboardController extends Controller
 
     public function detalleEmpleado($id)
     {
-
         $empleado = Empleado::where('id',$id)->get();
         return response()->json($empleado);
-
     }
 
     public function editarEmpleado(Request $request)
     {
-
         try {
             $request->validate([
                 'id' => 'required|exists:empleados,id',
@@ -158,7 +123,6 @@ class DashboardController extends Controller
             }
 
             $empleado = Empleado::findOrFail($request->input('id'));
-
 
             $empleado->nombre = $request->input('nombre');
             $empleado->apellido_paterno = $request->input('apellido_paterno');
@@ -180,8 +144,7 @@ class DashboardController extends Controller
     public function eliminarEmpleado($id)
     {
         try {
-            // Empleado::findOrFail($id)->delete();
-            // MyHelper::registrarAccion('Se elimino al empleado con CURP: ' . $id -> curp);
+
             $empleado = Empleado::findOrFail($id);
             $nombre = $empleado->nombre;
             $empleado->delete();
@@ -215,8 +178,6 @@ class DashboardController extends Controller
 
             $depen_user = $user->id_depen;
 
-            /* $votosRonda1 = Registro::where('ronda', 1)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot');
-            $votosRonda2 = Registro::where('ronda', 2)->where('id_depen', $depen_user)->distinct('id_vot')->count('id_vot'); */
             $empleadosTotales = Empleado::where('id_depen', $depen_user)->count();
 
             $empleadosNoVotaronRonda1 = $empleadosTotales - $votosRonda1;
@@ -271,7 +232,6 @@ class DashboardController extends Controller
         return response()->json($dependencia);
     }
 
-
     public function showDashboardDependencia(Request $request)
     {
         $user = Auth::user();
@@ -281,6 +241,4 @@ class DashboardController extends Controller
         return response()->json([
             'showDependenciaSelect' => $showDependenciaSelect]);
     }
-
-
 }

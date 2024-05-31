@@ -20,32 +20,10 @@ use App\Helpers\MyHelper;
 
 class AdminController extends Controller
 {
-
-    /* public function __construct()
-    {
-        $this->middleware('can: Modulo_Ajustes')->only('showDatosForm');
-        // $this->middleware(['permission:Modulo_Ajustes'])->only('showDatosForm');
-    } */
-
     public function showDatosForm()
     {
         return view('admin.datos');
     }
-
-    /* public function obtenerEvento()
-    {
-        try {
-            $concurso = Concurso::all();
-
-            if ($concurso->isEmpty()) {
-                return response()->json(['message' => 'No hay eventos en el sistema.']);
-            }
-
-            return response()->json(['concurso' => $concurso]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    } */
 
     public function obtenerEvento()
     {
@@ -203,8 +181,6 @@ class AdminController extends Controller
                 $hayRegistros = Registro::whereIn('id_conc', $concursosDependencia)->count() > 0;
             }
 
-
-
         return response()->json(['hayRegistros' => $hayRegistros]);
     }
 
@@ -240,10 +216,8 @@ class AdminController extends Controller
 
     public function detalleEvento($id)
     {
-
         $evento = Concurso::where('id',$id)->get();
         return response()->json($evento);
-
     }
 
     public function editarEvento(Request $request)
@@ -255,7 +229,6 @@ class AdminController extends Controller
             'fechaIni2ronda' => 'required',
             'fechaFin' => 'required',
             'comentario' => 'required',
-
         ]);
 
         try {
@@ -296,7 +269,6 @@ class AdminController extends Controller
     public function verificarGanadores($idEvento)
     {
         try {
-            // Verificar si hay registros en la tabla ganadores asociados al evento
             $ganadoresCount = DB::table('ganadores')->where('id_conc', $idEvento)->count();
 
             return response()->json(['tieneGanadores' => $ganadoresCount > 0]);
@@ -309,8 +281,6 @@ class AdminController extends Controller
     {
         try {
 
-            // Concurso::findOrFail($idEvento)->delete();
-            // MyHelper::registrarAccion('Se elimino el evento: ' . $idEvento);
             $evento = Concurso::findOrFail($idEvento);
             $descripcion = $evento->descripcion;
             $evento->delete();
@@ -328,5 +298,4 @@ class AdminController extends Controller
         $dependencia = Concurso::find($id_depen);
         return response()->json($dependencia);
     }
-
 }

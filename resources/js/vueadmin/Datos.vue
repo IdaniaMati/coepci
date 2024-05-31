@@ -69,6 +69,7 @@
                     </table>
                 </div>
 
+                <!-- Modal Agregar Evento -->
                 <div class="container">
                     <div class="modal fade" id="largeModal" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
@@ -115,8 +116,9 @@
                         </div>
                     </div>
                 </div>
-
                 <br>
+                <!-- Fin Modal Agregar Evento -->
+
                 <!-- Agregamos el paginador -->
                 <div class="row justify-content-center">
                     <div class="col-md-auto">
@@ -157,7 +159,6 @@
   .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
     z-index: 11000;
   }
-
 </style>
 
 <script>
@@ -188,11 +189,11 @@ export default {
             fechaFin: "",
             numeroDependencia: null,
             lista_permisos:[],
-
         };
     },
 
     computed: {
+
         eventosFiltrados() {
             const filtroMinusculas = this.filtro.toLowerCase();
             let eventos = this.eventos.filter((evento) => {
@@ -210,7 +211,6 @@ export default {
             });
             return eventos;
         },
-
 
         totalPages() {
             return Math.ceil(this.eventosFiltrados.length / this.perPage);
@@ -243,7 +243,6 @@ export default {
                     console.error(error);
 
                 });
-
         },
 
         handleFileUpload(event) {
@@ -328,11 +327,9 @@ export default {
                         this.eventos = response.data.eventos;
                         this.calcularTotalPaginas();
                     } else {
-                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
                 });
         },
 
@@ -346,6 +343,7 @@ export default {
             }
             return true;
         },
+
         validarSegundaFecha() {
             if (this.fechaIni1ronda && this.fechaIni2ronda) {
                 const fechaIni1 = new Date(this.fechaIni1ronda);
@@ -373,20 +371,19 @@ export default {
         },
 
         obtenerDependencias(){
-        axios.get('/obtenerDependencias')
-            .then((response) => {
-                this.dependencias = response.data.user;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+            axios.get('/obtenerDependencias')
+                .then((response) => {
+                    this.dependencias = response.data.user;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         },
 
         descripcionDepen(id_depen) {
-        const dependencia = this.dependencias.find(dep => dep.id === id_depen);
-        return dependencia ? dependencia.descripcion : 'Sin descripción';
+            const dependencia = this.dependencias.find(dep => dep.id === id_depen);
+            return dependencia ? dependencia.descripcion : 'Sin descripción';
         },
-
 
         async agregarEvento() {
 
@@ -483,7 +480,6 @@ export default {
                                             timer: 1800
                                         });
                                         this.limpiarvar();
-                                        /* this.cerrarModal(); */
                                         this.obtenerEvento();
                                     } else {
                                         Swal.fire({
@@ -494,7 +490,6 @@ export default {
                                     }
                                 })
                                 .catch((error) => {
-                                    // Manejo de errores
                                 });
                         }
                     });
@@ -523,6 +518,7 @@ export default {
         },
 
         async eliminarEvento(idEvento) {
+
             try {
                 const tieneGanadores = await this.verificarGanadores(idEvento);
 
@@ -570,7 +566,6 @@ export default {
                 const response = await axios.get(`/verificarGanadores/${idEvento}`);
                 return response.data.tieneGanadores;
             } catch (error) {
-                //console.error(error);
                 Swal.fire('Error', 'Hubo un error al verificar la existencia de ganadores.', 'error');
                 return true;
             }
@@ -632,23 +627,23 @@ export default {
         },
 
         calcularTotalPaginas() {
-        this.totalPaginas = Math.ceil(this.eventosFiltrados.length / this.registrosPorPagina);
+            this.totalPaginas = Math.ceil(this.eventosFiltrados.length / this.registrosPorPagina);
         },
 
         paginaAnterior() {
-        if (this.pagina > 1) {
-            this.pagina--;
-        }
+            if (this.pagina > 1) {
+                this.pagina--;
+            }
         },
 
         paginaSiguiente() {
-        if (this.pagina < this.totalPaginas) {
-            this.pagina++;
-        }
+            if (this.pagina < this.totalPaginas) {
+                this.pagina++;
+            }
         },
 
         cambiarPagina(numero) {
-        this.pagina = numero;
+            this.pagina = numero;
         },
     }
 };

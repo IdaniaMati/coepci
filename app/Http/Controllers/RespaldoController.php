@@ -78,7 +78,6 @@ class RespaldoController extends Controller
         $filePath = Storage::disk('backups')->path($fileName);
         File::put($filePath, $sql);
         MyHelper::registrarAccion('Genero el respaldo: ' . $fileName);
-
     }
 
     public function getBackupCount()
@@ -95,7 +94,6 @@ class RespaldoController extends Controller
 
         return response()->json(['message' => 'El respaldo ha sido eliminado correctamente']);
     }
-
 
     public function cleanupOldBackups()
     {
