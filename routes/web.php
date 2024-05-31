@@ -166,6 +166,10 @@ Route::middleware(['auth', 'can:Modulo_Faq'])->group(function () {
     Route::get('/detalleFaq/{id}', [FaqController::class, 'detalleFaq']);
     Route::post('/editarFaq', [FaqController::class, 'editarFaq']);
     Route::delete('/eliminarFaq/{id}', [FaqController::class, 'eliminarFaq']);
+    Route::post('/importar-manual', [FaqController::class, 'importarManual'])->name('importar-manual');
+    Route::get('/lista-manuales', [FaqController::class, 'listaManuales'])->name('lista-manuales');
+    Route::delete('/eliminar-manual/{id}', [FaqController::class, 'eliminarManual'])->name('eliminar-manual');
+    Route::post('/editar-manual/{id}', [FaqController::class, 'editarManual'])->name('editar-manual');
 });
 
 /*----------------------- Permisos ------------------------*/
