@@ -98,15 +98,9 @@
                 </div>
                 <!-- Fin del paginador -->
                 <br>
-
             </div>
         </div>
-
-
-
     </div>
-
-
 </template>
 
 <style>
@@ -185,13 +179,10 @@ export default {
                 .get("/Obtenerpermisos")
                 .then((response) => {
                     this.lista_permisos  = response.data;
-
                 })
                 .catch((error) => {
                     console.error(error);
-
                 });
-
         },
 
         obtenerPermisos() {
@@ -201,11 +192,9 @@ export default {
                         this.permisos = response.data.permiso;
                         this.calcularTotalPaginas();
                     } else {
-                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
                 });
         },
 
@@ -237,7 +226,6 @@ export default {
             .then((response) => {
                 const permiso = response.data[0];
                 this.name = permiso.name;
-
             })
             .catch((error) => {
                 console.error(error);
@@ -275,9 +263,7 @@ export default {
                     }
                 })
                 .catch((error) => {
-
                 });
-
         },
 
         eliminarPermiso(idPerm){

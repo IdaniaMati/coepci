@@ -46,10 +46,8 @@ class RoleController extends Controller
 
     public function detalleRol($id)
     {
-
         $rol = Role::where('id',$id)->get();
         return response()->json($rol);
-
     }
 
     public function editarRol(Request $request)
@@ -120,7 +118,6 @@ class RoleController extends Controller
         }
     }
 
-
     public function obtenerPermisosRol($idRol)
     {
         $role = Role::findOrFail($idRol);
@@ -128,7 +125,6 @@ class RoleController extends Controller
         $permisosAsignados = $todosLosPermisos->filter(function ($permiso) use ($role) {
             return $role->hasPermissionTo($permiso);
         });
-
         return response()->json(['permisos' => $permisosAsignados]);
     }
 }

@@ -34,9 +34,12 @@
                   <td>{{ manual.nombre }}</td>
                   <td>{{ formatFecha(manual.updated_at) }}</td>
                   <td v-if="hab_permisos('ver_opciones')">
+                    <button v-if="hab_permisos('descargar_manual')" class="btn btn-download btn-sm" title="Descargar" @click="descargarManual(manual.id)">
+                        <i class="bi bi-download" style="font-size: 15px;"></i>
+                    </button>&nbsp;
                     <button class="btn btn-edit btn-sm" title="Editar" @click="openEditModal(manual)" v-if="hab_permisos('editar_manual')">
                       <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
-                    </button>
+                    </button>&nbsp;
                     <button class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarManual(manual.id)" v-if="hab_permisos('eliminar_manual')">
                       <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
                     </button>
@@ -366,7 +369,10 @@
                     console.error('Error al editar el archivo:', error);
                 }
             },
-                //End métodos de manuales
+            descargarManual(id) {
+                window.location.href = `/descargar-manual/${id}`;
+            },
+            //End métodos de manuales
 
             //Start métodos de preguntas
             toggleCollapse(id) {

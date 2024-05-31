@@ -4,7 +4,6 @@
             <h2><strong>GESTIÓN DE ROLES</strong></h2>
         </div>
 
-
         <div class="card-container">
             <div class="card">
 
@@ -114,7 +113,6 @@
                     </div>
                 </div>
 
-
                 <br>
                 <!-- Agregamos el paginador -->
                 <div class="row justify-content-center">
@@ -138,15 +136,9 @@
                 </div>
                 <!-- Fin del paginador -->
                 <br>
-
             </div>
         </div>
-
-
-
     </div>
-
-
 </template>
 
 <style>
@@ -196,6 +188,7 @@ export default {
     },
 
     computed: {
+
         paginatedRoles() {
             const startIndex = (this.pagina - 1) * this.registrosPorPagina;
             const endIndex = startIndex + this.registrosPorPagina;
@@ -263,7 +256,6 @@ export default {
             .then((response) => {
                 const evento = response.data[0];
                 this.name = evento.name;
-
             })
             .catch((error) => {
                 console.error(error);
@@ -353,7 +345,6 @@ export default {
             $("#modalroles").modal("hide");
         },
 
-
         /* Metodos de Permisos */
         detallePermiso(idPerm) {
 
@@ -386,13 +377,10 @@ export default {
             .then((response) => {
                     if (response.data.permiso) {
                         this.permisos = response.data.permiso;
-
                     } else {
-                        //(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
                 });
         },
 
@@ -423,7 +411,6 @@ export default {
         cerrarModalPermiso() {
             $("#modalpermisos").modal("hide");
         },
-
 
         /* General */
         nuevo() {

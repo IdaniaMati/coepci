@@ -277,11 +277,9 @@ export default {
                     this.users = response.data.user;
                     this.calcularTotalPaginas();
                 } else {
-                    //console.log(response.data.message);
                 }
             })
             .catch((error) => {
-                //console.error(error);
             });
         },
 
@@ -439,7 +437,6 @@ export default {
         cerrarModalUsuario() {
             $("#modalusuarios").modal("hide");
         },
-
 
         /* Metodos de Roles */
         detalleRol(idRol) {

@@ -36,7 +36,6 @@ class DependenciaController extends Controller
         try {
             $descripcion = $request->input('descripcion');
 
-            //Validación
             $existeDependencia = Dependencias::where('descripcion', $descripcion)->exists();
 
             if($existeDependencia) {
@@ -59,7 +58,6 @@ class DependenciaController extends Controller
         return response()->json($dependencia);
 
     }
-
 
     public function editarDependencia(Request $request)
     {

@@ -46,6 +46,7 @@ class VedaController extends Controller
             $estadoVeda = Configuracion::value('veda');
             return response()->json(['estado' => $estadoVeda]);
         } catch (\Exception $e) {
+
             return response()->json(['error' => 'Error al obtener el estado de la veda'], 500);
         }
     }
@@ -55,6 +56,7 @@ class VedaController extends Controller
         $configuracion = Configuracion::first();
 
         if (!$configuracion) {
+
             return response()->json(['error' => 'No se encontró la configuración'], 404);
         }
 
@@ -69,8 +71,6 @@ class VedaController extends Controller
         }
 
         MyHelper::registrarAccion($mensaje);
-
-
         return response()->json(['message' => 'Estado de la veda actualizado correctamente']);
     }
 
@@ -84,13 +84,9 @@ class VedaController extends Controller
             } else {
                 $imagen->estado = 1;
             }
-
             $imagen->save();
-
         }
 
         return response()->json(['message' => 'Estados de las imágenes actualizados correctamente']);
     }
-
-
 }

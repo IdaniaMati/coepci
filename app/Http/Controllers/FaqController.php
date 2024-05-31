@@ -142,6 +142,18 @@ class FaqController extends Controller
             ], 500);
         }
     }
+    
+    public function descargarManual($id)
+    {
+        $manual = Manuales::findOrFail($id);
+
+        $filePath = storage_path('app/manuales/' . $manual->nombre);
+        if (!file_exists($filePath)) {
+            return response()->json(['message' => 'El archivo no existe'], 404);
+        }
+
+        return response()->download($filePath);
+    }
     //End sección de manuales
 
     //Start sección de preguntas

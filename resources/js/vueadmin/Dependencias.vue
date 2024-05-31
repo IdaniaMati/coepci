@@ -75,8 +75,8 @@
                         </div>
                     </div>
                 </div>
-
                 <br>
+
                 <!-- Agregamos el paginador -->
                 <div class="row justify-content-center">
                     <div class="col-md-auto">
@@ -99,15 +99,9 @@
                 </div>
                 <!-- Fin del paginador -->
                 <br>
-
             </div>
         </div>
-
-
-
     </div>
-
-
 </template>
 
 <style>
@@ -120,8 +114,6 @@
     resize: none;
     white-space: pre-line;
     }
-
-
 </style>
 
 <script>
@@ -189,11 +181,9 @@ export default {
                 .get("/Obtenerpermisos")
                 .then((response) => {
                     this.lista_permisos  = response.data;
-
                 })
                 .catch((error) => {
                     console.error(error);
-
                 });
 
         },
@@ -202,17 +192,14 @@ export default {
                 .then((response) => {
                     if (response.data.user) {
                         this.dependencias = response.data.user;
-                        // Ordenar alfabéticamente
                         this.dependencias.sort((a, b) => {
                             return a.descripcion.localeCompare(b.descripcion);
                         });
                         this.calcularTotalPaginas();
                     } else {
-                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
             });
         },
 
@@ -247,7 +234,6 @@ export default {
             .then((response) => {
                 const dependencia = response.data[0];
                 this.descripcion = dependencia.descripcion;
-
             })
             .catch((error) => {
                 console.error(error);
@@ -285,7 +271,6 @@ export default {
                     }
                 })
                 .catch((error) => {
-
                 });
 
         },
