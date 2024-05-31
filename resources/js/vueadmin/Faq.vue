@@ -261,6 +261,9 @@
 
         methods: {
             //Start métodos de manuales
+            handleFileUpload(event) {
+                this.archivo = event.target.files[0];
+            },
             formatFecha(fecha) {
                 const fechaObj = new Date(fecha);
                 const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
