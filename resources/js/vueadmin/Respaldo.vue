@@ -96,6 +96,7 @@ export default {
             password: "",
             bandera: "",
             lista_permisos: [],
+            needsExportConfirmation: true,
         };
     },
     mounted() {
@@ -103,7 +104,13 @@ export default {
         this.obtenerPermisos_user();
     },
     methods: {
-        obtenerPermisos_user() {
+        redirectToConfirmExport() {
+            if (this.needsExportConfirmation) {
+                this.confirmExport();
+                this.needsExportConfirmation = false; // Resetear la bandera después de confirmar
+            }
+        },
+            obtenerPermisos_user() {
             axios
                 .get("/Obtenerpermisos")
                 .then((response) => {
@@ -222,10 +229,14 @@ export default {
             $("#confirmarpass").modal("hide");
         },
         checkAndExport() {
-            if (this.backups.length >= 10) {
-                this.confirmExport();
+            if (this.needsExportConfirmation) {
+                this.redirectToConfirmExport();
             } else {
-                this.mostrarModalRespaldoNuevo();
+                if (this.backups.length >= 10) {
+                    this.confirmExport();
+                } else {
+                    this.mostrarModalRespaldoNuevo();
+                }
             }
         },
         downloadBackup(filename) {
@@ -243,7 +254,6 @@ export default {
                     //console.error("Error al descargar el archivo de respaldo:", error);
                 });
         },
-
         confirmExport() {
             if (this.backups.length >= 10) {
                 this.backups.sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
@@ -308,8 +318,6 @@ export default {
                 this.respaldofile();
             }
         },
-
-
         eliminarRespaldo(respaldo, type) {
             const filename = respaldo.filename;
 
@@ -334,8 +342,6 @@ export default {
                     });
                 });
         },
-
-
         respaldofile() {
             axios.get('/respaldofile', { responseType: 'blob' })
                 .then(response => {
