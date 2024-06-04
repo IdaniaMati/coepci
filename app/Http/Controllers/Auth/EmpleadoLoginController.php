@@ -191,10 +191,13 @@ class EmpleadoLoginController extends Controller
         }
     }
 
+
+
+
+
     public function obtenerOpcionesVotacion($ronda)
     {
         try {
-
             $user = Auth::user();
 
             if (!$user) {
@@ -205,17 +208,18 @@ class EmpleadoLoginController extends Controller
 
             if ($ronda == 1) {
                 $opciones = Empleado::where('id_depen', $idDependenciaUsuario)
-                ->get();
+                    ->get();
             } elseif ($ronda == 2) {
                 $opciones = DB::table('empleados')
                     ->join('registros', 'empleados.id', '=', 'registros.id_nom')
-                    ->select('empleados.id', 'empleados.nombre', 'empleados.apellido_paterno','empleados.apellido_materno', 'registros.id_grup', DB::raw('COUNT(registros.id_nom) AS votos'))
+                    ->select('empleados.id', 'empleados.nombre', 'empleados.apellido_paterno', 'empleados.apellido_materno', 'registros.id_grup', DB::raw('COUNT(registros.id_nom) AS votos'))
                     ->where('registros.ronda', 1)
                     ->where('empleados.id_depen', $idDependenciaUsuario)
-                    ->groupBy('empleados.id', 'registros.id_grup')
+                    ->groupBy('empleados.id', 'registros.id_grup', 'empleados.nombre', 'empleados.apellido_paterno', 'empleados.apellido_materno') // Asegúrate de agrupar por todos los campos seleccionados
                     ->orderBy('registros.id_grup')
                     ->orderByDesc('votos')
                     ->get();
+
                 $resultadosLimitados = collect();
 
                 $opciones->each(function ($opcion) use (&$resultadosLimitados) {
@@ -230,20 +234,35 @@ class EmpleadoLoginController extends Controller
                     }
                 });
 
-            $resultadosLimitados->each(function ($grupo) {
-                $grupo->sortBy(function ($opcion) {
-                    return $opcion->nombre . ' ' . $opcion->apellido_paterno . ' ' . $opcion->apellido_materno;
+                $resultadosLimitados->each(function ($grupo) {
+                    $grupo->sortBy(function ($opcion) {
+                        return $opcion->nombre . ' ' . $opcion->apellido_paterno . ' ' . $opcion->apellido_materno;
+                    });
                 });
-            });
+
                 $opciones = $resultadosLimitados->flatMap(function ($grupo) {
                     return $grupo->all();
                 });
             }
+
             return response()->json($opciones);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al obtener las opciones de votación']);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function obtenerConcursoId()
     {

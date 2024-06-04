@@ -335,11 +335,11 @@ export default {
             axios.get('/dashboardWithDependencia')
                 .then(response => {
                     this.showDependenciaSelect = response.data.showDependenciaSelect;
-                    console.log("Valor de showDependenciaSelect:", this.showDependenciaSelect);
-                    console.log("Dependencias obtenidas:", this.dependencias);
+                    //console.log("Valor de showDependenciaSelect:", this.showDependenciaSelect);
+                    //console.log("Dependencias obtenidas:", this.dependencias);
                 })
                 .catch(error => {
-                    console.error('Error al obtener los datos:', error);
+                    //console.error('Error al obtener los datos:', error);
                 });
         },
 
@@ -351,7 +351,7 @@ export default {
 
                 })
                 .catch((error) => {
-                    console.error(error);
+                    //console.error(error);
 
                 });
         },

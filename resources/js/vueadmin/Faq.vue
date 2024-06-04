@@ -294,7 +294,7 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                     this.obtenerManuales();
                     Swal.fire({
                         icon: 'success',
@@ -323,7 +323,7 @@
                 if (result.isConfirmed) {
                     try {
                         const response = await axios.delete(`/eliminar-manual/${id}`);
-                        console.log(response.data.message);
+                        //console.log(response.data.message);
                         this.obtenerManuales();
                         Swal.fire({
                             icon: 'success',
@@ -380,7 +380,7 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                     $("#editModal").modal("hide");
                     this.obtenerManuales();
                     Swal.fire({
