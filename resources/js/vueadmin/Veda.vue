@@ -1,49 +1,49 @@
 <template>
     <div>
-      <div class="text-center mb-4">
-        <h2><strong>VEDA ELECTORAL</strong></h2>
-      </div>
-
-      <div class="card-container">
-        <div class="card">
-          <div class="card-body">
-            <div class="form-check form-switch mb-2">
-              <input v-model="vedaActiva" @change="cambiarEstadoVeda" v-if="hab_permisos('Activar_Veda')" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-              <label class="form-check-label" for="flexSwitchCheckDefault">Veda Electoral</label>
-            </div>
-          </div>
-
-          <div class="table-container">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                    <th>Imágenes Activas</th>
-                    <th>Imágenes Inactivas</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <template v-if="imagenesActivas.length > 0 || imagenesInactivas.length > 0">
-                        <tr v-for="(active, index) in imagenesActivas" :key="'row-' + index">
-                        <td><img :src="active.ruta" alt="Imagen Actual" class="imagen-preview"></td>
-                        <td v-if="index < imagenesInactivas.length">
-                            <img :src="imagenesInactivas[index].ruta" alt="Imagen Actual" class="imagen-preview">
-                        </td>
-
-                        </tr>
-                    </template>
-                    <template v-else>
-                        <tr>
-                        <td colspan="4">No hay imágenes para mostrar</td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-          </div>
+        <div class="text-center mb-4">
+            <h2><strong>VEDA ELECTORAL</strong></h2>
         </div>
-      </div>
+
+        <div class="card-container">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-check form-switch mb-2">
+                        <input v-model="vedaActiva" @change="cambiarEstadoVeda" v-if="hab_permisos('Activar_Veda')" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Veda Electoral</label>
+                    </div>
+                </div>
+
+                <!-- Selector para cambiar veda -->
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                            <th>Imágenes Activas</th>
+                            <th>Imágenes Inactivas</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <template v-if="imagenesActivas.length > 0 || imagenesInactivas.length > 0">
+                                <tr v-for="(active, index) in imagenesActivas" :key="'row-' + index">
+                                    <td><img :src="active.ruta" alt="Imagen Actual" class="imagen-preview"></td>
+                                    <td v-if="index < imagenesInactivas.length">
+                                        <img :src="imagenesInactivas[index].ruta" alt="Imagen Actual" class="imagen-preview">
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="4">No hay imágenes para mostrar</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-  </template>
+</template>
 
   <script>
   import Swal from 'sweetalert2';

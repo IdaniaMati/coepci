@@ -10,7 +10,6 @@ class HistoricoVotos extends Model
     use HasFactory;
     protected $table = 'historico_votos';
     protected $fillable = [
-        /* 'id_vot', */
         'nombre',
         'id_grup',
         'id_conc',

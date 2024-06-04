@@ -63,7 +63,7 @@ class AdminController extends Controller
             }
 
             $archivo = $request->file('archivo');
-            //dd($user->id_depen);
+            
             Excel::import(new EmpleadosImport($user->id_depen), $archivo);
 
             MyHelper::registrarAccion('Importo un excel con empleados a Dashboard');

@@ -47,7 +47,7 @@
   </div>
 </template>
 
-  <script>
+<script>
   import axios from "axios";
   import Swal from 'sweetalert2'
   import 'sweetalert2/dist/sweetalert2.min.css'
@@ -66,7 +66,7 @@
 
     methods: {
 
-      cerrarSesion() {
+    cerrarSesion() {
         axios.post("/CerrarSesion").then(() => {
 
           window.location.href = '/';
@@ -74,18 +74,17 @@
             }).catch((error) => {
                 console.error(error);
             });
-      },
+    },
 
+    votarprimera() {
+        this.verificarVotoUsuario('1');
+    },
 
-      votarprimera() {
-            this.verificarVotoUsuario('1');
-        },
+    votarsegunda() {
+        this.verificarVotoUsuario('2');
+    },
 
-      votarsegunda() {
-            this.verificarVotoUsuario('2');
-        },
-
-      verificarVotoUsuario(ronda) {
+    verificarVotoUsuario(ronda) {
         axios.get(`/verificarVotoUsuarioActual/${ronda}`)
             .then((response) => {
                 if (response.data.yaVoto) {
@@ -101,10 +100,10 @@
             .catch((error) => {
                 console.error(error);
             });
-      },
+    },
 
-        obtenerUltimoConcursoId() {
-            axios.get("/obtenerConcursoId")
+    obtenerUltimoConcursoId() {
+        axios.get("/obtenerConcursoId")
                 .then((response) => {
                     if (response.data.ultimoConcursoId) {
                         const ultimoConcursoId = response.data.ultimoConcursoId;
@@ -120,63 +119,40 @@
                 .catch((error) => {
                     console.error(error);
                 });
-        },
+    },
 
-      /* verificarFechaVotacion() {
-            axios.get("/obtenerSegundaFechaConcurso")
-                .then((response) => {
-                    if (response.data.fechaSegundo) {
-                        const fechaSegundoConcurso = new Date(response.data.fechaSegundo);
-                        this.isVotacionDesactivada = new Date() < fechaSegundoConcurso;
-                    } else {
-                        console.error('No se pudo obtener la fecha de inicio del concurso.');
-                    }
+    verificarFechaVotacion() {
+        axios.get("/obtenerSegundaFechaConcurso")
+            .then((response) => {
+                const { fechaActual, fechaSegundo} = response.data;
+
+                    this.yaVotoPrimera = fechaActual >= fechaSegundo;
+
+                    const fechaSegundoConcurso = fechaSegundo;
+                    this.isVotacionDesactivada = fechaActual < fechaSegundoConcurso;
                 })
                 .catch((error) => {
                     console.error(error);
                 });
-        }, */
-
-
-        verificarFechaVotacion() {
-            axios.get("/obtenerSegundaFechaConcurso")
-                .then((response) => {
-                    const { fechaActual, fechaSegundo} = response.data;
-
-                        this.yaVotoPrimera = fechaActual >= fechaSegundo;
-
-                        const fechaSegundoConcurso = fechaSegundo;
-                        this.isVotacionDesactivada = fechaActual < fechaSegundoConcurso;
-
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        },
-
-
+    },
     },
   };
 
-  </script>
+</script>
 
 <style scoped>
-
 .adaptive-text {
   font-size: .5rem;}
 
 .fs-4 {
-  /* Tamaño de fuente 1.5rem */
   font-size: 1.5rem;
 }
 
 .fs-5 {
-  /* Tamaño de fuente 1.25rem */
   font-size: 1.25rem;
 }
 
 .fs-6 {
-  /* Tamaño de fuente 1rem */
   font-size: 1rem;
   text-align: justify;
 }

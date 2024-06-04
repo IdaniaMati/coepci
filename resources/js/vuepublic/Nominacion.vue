@@ -39,10 +39,9 @@
 
       created() {
         this.calcularYGuardarGanadores();
-        /* this.copiarDatosAHistoricoVotos(); */
     },
 
-      methods: {
+    methods: {
         resultados() {
           window.location.href = '/resultado';
         },
@@ -55,10 +54,8 @@
         axios
             .get("/calcular-y-guardar-ganadores")
             .then((response) => {
-            //console.log(response.data.message);
             })
             .catch((error) => {
-            //console.error("Error al calcular y guardar ganadores", error);
             });
         },
 
@@ -68,19 +65,15 @@
   </script>
 
 <style scoped>
-
 .fs-4 {
-  /* Tamaño de fuente 1.5rem */
   font-size: 1.5rem;
 }
 
 .fs-5 {
-  /* Tamaño de fuente 1.25rem */
   font-size: 1.25rem;
 }
 
 .fs-6 {
-  /* Tamaño de fuente 1rem */
   font-size: 12px;
   text-align: justify;
 }

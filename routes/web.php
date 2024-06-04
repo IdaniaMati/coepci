@@ -21,10 +21,10 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 /*------------------------ Resultados Públicos ------------------------*/
 Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
 Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
-Route::get('/resultado/dependencia',[EmpleadoLoginController::class, 'resultadoPorDependencia'])->name('resultado.dependencia'); //?idDependencia=????
+Route::get('/resultado/dependencia',[EmpleadoLoginController::class, 'resultadoPorDependencia'])->name('resultado.dependencia');
 Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
-Route::get('/historico/dependencia',[EmpleadoLoginController::class, 'historicoDependencia'])->name('historico.dependencia'); //?idDependencia=????
+Route::get('/historico/dependencia',[EmpleadoLoginController::class, 'historicoDependencia'])->name('historico.dependencia'); 
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
 Route::get('/obtenerHistorico', [EmpleadoLoginController::class, 'obtenerHistorico'])->name('obtenerHistorico');
 Route::get('/obtenerVotosTodosEmpleados/{idConcurso}', [EmpleadoLoginController::class, 'obtenerVotosTodosEmpleados'])->name('obtenerVotosTodosEmpleados');

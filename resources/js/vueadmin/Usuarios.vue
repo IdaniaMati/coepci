@@ -53,6 +53,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Fin tabla de lista de Usuarios -->
 
                 <!-- Modal Agregar Usuario -->
                 <div class="container">
@@ -108,6 +109,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Fin Modal Agregar Usuario -->
 
                 <!-- Modal agregar Roles -->
                 <div class="container">
@@ -136,6 +138,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Fin Modal agregar Roles -->
 
                 <br>
                 <!-- Agregamos el paginador -->
@@ -147,9 +150,9 @@
                     </div>
                     <div class="col-md-auto">
                         <ul class="pagination">
-                        <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
-                            <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
-                        </li>
+                            <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
+                                <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="col-md-auto">
@@ -160,19 +163,16 @@
                 </div>
                 <!-- Fin del paginador -->
                 <br>
-
             </div>
         </div>
-
     </div>
-
 </template>
 
 <style>
-  body.modal-open .modal-backdrop {
+body.modal-open .modal-backdrop {
     opacity: 0.5;
-  }
-  .custom-input {
+}
+.custom-input {
     width: 400px;
     height: 100px;
     resize: none;
@@ -472,11 +472,9 @@ export default {
                         this.roles = response.data.role;
 
                     } else {
-                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
                 });
         },
 
@@ -506,7 +504,6 @@ export default {
         cerrarModalRoles() {
             $("#modalroles").modal("hide");
         },
-
 
         /* General */
         nuevo() {

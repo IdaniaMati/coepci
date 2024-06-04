@@ -182,7 +182,6 @@ class RespaldoController extends Controller
             MyHelper::registrarAccion('Descargo el respaldo: '. $filename);
             return response()->download($filePath, $filename, ['Content-Type' => 'application/sql']);
         } else {
-            // Si el archivo no existe, devolver una respuesta de error
             return response()->json(['error' => 'El archivo de respaldo no existe'], 404);
         }
     }

@@ -67,6 +67,9 @@ class FaqController extends Controller
             $manual = new Manuales();
             $manual->nombre = $nombre;
             $manual->save();
+
+            MyHelper::registrarAccion('Se agrego el manual: ' . $manual->nombre);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -92,6 +95,7 @@ class FaqController extends Controller
             }
 
             $manual->delete();
+            MyHelper::registrarAccion('Se eliminó el manual: ' . $manual->nombre );
 
             return response()->json([
                 'success' => true,
@@ -127,6 +131,8 @@ class FaqController extends Controller
             $manual->nombre = $originalName;
             $manual->save();
 
+            MyHelper::registrarAccion('Se edito el manual: ' . $manual->nombre);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Archivo actualizado exitosamente',
@@ -145,6 +151,7 @@ class FaqController extends Controller
         $manual = Manuales::findOrFail($id);
 
         $filePath = storage_path('app/manuales/' . $manual->nombre);
+        MyHelper::registrarAccion('Descargo el manual: ' . $manual->nombre);
         if (!file_exists($filePath)) {
             return response()->json(['message' => 'El archivo no existe'], 404);
         }

@@ -89,23 +89,20 @@
       },
 
       created() {
-        this.obtenerDependencias();
-        this.cambiarDependencia();
+            this.obtenerDependencias();
+            this.cambiarDependencia();
 
-        // Obtener el ID de la dependencia de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const idDependencia = urlParams.get('idDependencia');
+            const urlParams = new URLSearchParams(window.location.search);
+            const idDependencia = urlParams.get('idDependencia');
 
-        if (idDependencia) {
-            // Si hay un ID de dependencia en la URL, cargar automáticamente los datos
-            this.id_depen = idDependencia;
-            this.obtenerResultados(idDependencia);
-            this.obtenerGanadoresV(idDependencia);
-        } else {
-            // Si no hay un ID de dependencia en la URL, cargar con la dependencia seleccionada
-            this.obtenerResultados();
-            this.obtenerGanadoresV();
-        }
+            if (idDependencia) {
+                this.id_depen = idDependencia;
+                this.obtenerResultados(idDependencia);
+                this.obtenerGanadoresV(idDependencia);
+            } else {
+                this.obtenerResultados();
+                this.obtenerGanadoresV();
+            }
       },
 
       methods: {
@@ -115,60 +112,54 @@
           },
 
           obtenerDependencias(){
-          axios.get('/obtenerDependencias')
-              .then((response) => {
-                  this.dependencias = response.data.user;
-              })
-              .catch((error) => {
-                  console.error(error);
-              });
+             axios.get('/obtenerDependencias')
+                .then((response) => {
+                    this.dependencias = response.data.user;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
           },
 
           cambiarDependencia() {
-               // Obtener el ID de la dependencia de la URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const idDependencia = urlParams.get('idDependencia');
-            // Resto del código ...
+                const urlParams = new URLSearchParams(window.location.search);
+                const idDependencia = urlParams.get('idDependencia');
 
-            // Si hay un ID de dependencia en la URL, cargar automáticamente los datos
-            if (idDependencia) {
-                this.id_depen = idDependencia;
-                this.obtenerResultados(idDependencia);
-                this.obtenerGanadoresV(idDependencia);
-
-            } else {
-                // Si no hay un ID de dependencia en la URL, cargar con la dependencia seleccionada
-                this.obtenerResultados();
-                this.obtenerGanadoresV();
-
-            }
+                if (idDependencia) {
+                    this.id_depen = idDependencia;
+                    this.obtenerResultados(idDependencia);
+                    this.obtenerGanadoresV(idDependencia);
+                } else {
+                    this.obtenerResultados();
+                    this.obtenerGanadoresV();
+                }
           },
 
           obtenerResultados(idDependencia) {
 
-              axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
-              .then(response => {
-                  this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
-              })
-              .catch(error => {
-                  if (error.response && error.response.status === 404) {
-                  this.resultadosPorRonda[1] = [];
-                  } else {
-                  console.error('Error al obtener resultados de la ronda 1', error);
-                  }
-              });
+                axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
+                .then(response => {
+                    this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+                })
+                .catch(error => {
+                    if (error.response && error.response.status === 404) {
+                    this.resultadosPorRonda[1] = [];
+                    } else {
+                    console.error('Error al obtener resultados de la ronda 1', error);
+                    }
+                });
 
-              axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
-              .then(response => {
-                  this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
-              })
-              .catch(error => {
-                  if (error.response && error.response.status === 404) {
-                  this.resultadosPorRonda[2] = [];
-                  } else {
-                  console.error('Error al obtener resultados de la ronda 2', error);
-                  }
-              });
+                axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
+                .then(response => {
+                    this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+                })
+                .catch(error => {
+                    if (error.response && error.response.status === 404) {
+                    this.resultadosPorRonda[2] = [];
+                    } else {
+                    console.error('Error al obtener resultados de la ronda 2', error);
+                    }
+                });
           },
 
           agregarNumeracion(resultados) {
@@ -187,30 +178,13 @@
                           numeradosResultados[ronda] = [];
                       }
                   }
-
                   return numeradosResultados;
-              },
-
-          /* calcularYGuardarGanadores() {
-              axios
-                  .get("/calcular-y-guardar-ganadores")
-                  .then((response) => {
-                  console.log(response.data.message);
-                  })
-                  .catch((error) => {
-                  console.error("Error al calcular y guardar ganadores", error);
-                  });
-              }, */
+          },
 
           obtenerGanadoresV(idDependencia) {
               axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
                   .then(response => {
                   this.ganadores = [];
-
-                  /* if (response.data.message) {
-                      this.mensajeNoVotaciones = "No hay resultados para la Ronda 1.";
-                  return;
-                  } */
 
                   for (let grupo in response.data.ganadores) {
                       let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
@@ -224,15 +198,13 @@
                       });
                   }
 
-                  /* this.mensajeNoVotaciones = ""; */
                   })
                   .catch(error => {
                   console.error('Error al obtener ganadores', error);
                   });
-              },
           },
+        },
     };
-
   </script>
 
 
@@ -242,7 +214,6 @@
   .center-container {
     text-align: center;
   }
-
 
   .round-container {
     margin-bottom: 10px;
@@ -261,5 +232,4 @@
   .bg-segundos{
     background-color: #9c9312;
   }
-
   </style>

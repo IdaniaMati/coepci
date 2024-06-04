@@ -1,9 +1,10 @@
 <template>
     <div>
         <div class="text-center mb-4">
-            <h2><strong>PANEL PRINCIPAL EMPLEADOS</strong></h2>
+            <h2><strong>IMPORTAR EMPLEADOS</strong></h2>
         </div>
 
+        <!-- Sección para importr/exportar empleados -->
         <div class="card-container">
             <div class="card">
                 <div class="nav-item d-flex align-items-center">
@@ -16,10 +17,11 @@
                         <i class="bi bi-file-arrow-up" style="font-size: 20px;"></i>
                     </button>
                 </div>
-
                 <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Empleados</button>
             </div>
         </div>
+
+        <!-- Configuración de eventos -->
         <div class="card-container">
             <div class="card">
                 <h5 class="card-header" style="text-align: center;"><strong>Configuración de Evento</strong></h5>
@@ -35,6 +37,7 @@
                         </button>
                 </div>
 
+                <!-- Tabla de datos -->
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
@@ -68,6 +71,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Fin Tabla de datos -->
 
                 <!-- Modal Agregar Evento -->
                 <div class="container">

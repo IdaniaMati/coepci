@@ -14,6 +14,7 @@
                     </button>
                 </div>
 
+                <!-- Tabla de datos de roles -->
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
@@ -42,6 +43,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Fin de tabla de datos de roles -->
 
                 <!-- Modal agregar roles -->
                 <div class="container">
@@ -123,9 +125,9 @@
                     </div>
                     <div class="col-md-auto">
                         <ul class="pagination">
-                        <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
-                            <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
-                        </li>
+                            <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
+                                <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="col-md-auto">
@@ -220,11 +222,9 @@ export default {
                         this.roles = response.data.role;
                         this.calcularTotalPaginas();
                     } else {
-                        //console.log(response.data.message);
                     }
                 })
                 .catch((error) => {
-                    //console.error(error);
                 });
         },
 

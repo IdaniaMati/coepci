@@ -19,6 +19,7 @@
                         </button>
                     </div>
 
+                <!-- Tabla de datos -->
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
@@ -44,7 +45,9 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Fin tabla de datos -->
 
+                <!-- modal de permisos -->
                 <div class="container">
                     <div class="modal fade" id="largeModal" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
@@ -74,6 +77,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Fin modal de permisos -->
 
                 <br>
                 <!-- Agregamos el paginador -->

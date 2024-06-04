@@ -12,44 +12,40 @@
                     <div class="col-xxl">
 
                         <div class="card mb-4" v-for="(grupo, index) in grupos" :key="index">
-                        <div class="card-header d-flex align-items-center justify-content-between">
-                            <h5 class="mb-0">Grupo {{ grupo.numero }}</h5>
-                        </div>
-                        <div class="card-body col-xxl">
-                            <div class="col-sm-10" v-for="i in grupo.numCandidatos">
-                            <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
-
-                                <div class="col-sm-10">
-                                <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
-                                    <option disabled selected>Seleccionar</option>
-                                    <option v-for="opcion in grupo.opciones" :value="opcion.id">
-                                        {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
-                                    </option>
-                                </select>
-                                <div v-if="!votos[grupo.numero - 1][i - 1]" class="text-danger">Este campo es obligatorio.</div>
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0">Grupo {{ grupo.numero }}</h5>
+                            </div>
+                            <div class="card-body col-xxl">
+                                <div class="col-sm-10" v-for="i in grupo.numCandidatos">
+                                    <div class="row mb-3">
+                                        <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
+                                        <div class="col-sm-10">
+                                            <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
+                                                <option disabled selected>Seleccionar</option>
+                                                <option v-for="opcion in grupo.opciones" :value="opcion.id">
+                                                    {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
+                                                </option>
+                                            </select>
+                                            <div v-if="!votos[grupo.numero - 1][i - 1]" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-
-                            </div>
                             </div>
                         </div>
-                        </div>
-
-                    </div>
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"></label>
-                        <div class="col-sm-10">
-                            <button type="button" class="btn btn-primary" @click="enviarVotacion" :disabled="yaVoto || !idUsuarioAutenticado">Enviar votación</button>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="button" class="btn btn-primary" @click="limpiarCampos" :disabled="yaVoto || !idUsuarioAutenticado">Limpiar campos</button>
-                        </div>
-                        <div class="card-header d-flex align-items-center justify-content-between">
-                            <button type="button" class="btn btn-secondary ms-auto" @click="regresar">Regresar</button>
-                        </div>
-                    </div>
-                    </form>
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label"></label>
+                                <div class="col-sm-10">
+                                    <button type="button" class="btn btn-primary" @click="enviarVotacion" :disabled="yaVoto || !idUsuarioAutenticado">Enviar votación</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="btn btn-primary" @click="limpiarCampos" :disabled="yaVoto || !idUsuarioAutenticado">Limpiar campos</button>
+                                </div>
+                                <div class="card-header d-flex align-items-center justify-content-between">
+                                    <button type="button" class="btn btn-secondary ms-auto" @click="regresar">Regresar</button>
+                                </div>
+                            </div>
+                        </form>
                 </div>
-
             </div>
         </div>
     </div>
@@ -71,6 +67,7 @@
         },
 
         created() {
+
             const urlParams = new URLSearchParams(window.location.search);
             const ronda = urlParams.get('ronda');
 
@@ -174,7 +171,6 @@
 
                 axios.get(`/obtenerOpcionesVotacion/${ronda}`)
                 .then((response) => {
-                    //console.log('Datos recibidos:', response.data);
 
                     try {
                         let dataArray;
@@ -184,7 +180,6 @@
                         } else if (typeof response.data === 'object') {
                             dataArray = Object.values(response.data);
                         } else {
-                            //console.error('La respuesta no es un array ni un objeto.');
                             return;
                         }
 
@@ -225,13 +220,13 @@
             },
 
             obtenerIdUsuarioAutenticado() {
-            axios.get("/obtenerIdUsuarioAutenticado")
-                .then((response) => {
-                this.idUsuarioAutenticado = response.data.id;
-                })
-                .catch((error) => {
-                console.error('Error al obtener el ID del usuario autenticado', error);
-                });
+                axios.get("/obtenerIdUsuarioAutenticado")
+                    .then((response) => {
+                    this.idUsuarioAutenticado = response.data.id;
+                    })
+                    .catch((error) => {
+                    console.error('Error al obtener el ID del usuario autenticado', error);
+                    });
             },
 
             enviarVotacion() {
@@ -263,7 +258,6 @@
                         }
 
                         if (errores.length > 0) {
-                            // Mostrar mensajes de error al usuario
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Errores',
@@ -271,8 +265,6 @@
                             });
                             return;
                         }
-
-                        // Continuar con el envío de votos si no hay errores
 
                         const promises = [];
 
@@ -296,7 +288,6 @@
 
                         Promise.all(promises)
                             .then(responses => {
-                                //console.log('Votos enviados con éxito', responses);
 
                                 Swal.fire({
                                     icon: 'success',
@@ -319,9 +310,6 @@
                         console.error('Error al obtener el último concursoId', error);
                     });
             },
-
         },
     };
-
-
 </script>

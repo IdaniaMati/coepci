@@ -59,6 +59,7 @@
                 </div>
                 <!-- Fin Filtrados generales -->
 
+                <!-- Tabla de datos  -->
                 <div class="table-container">
                     <table class="table table-striped">
                         <thead>
@@ -107,6 +108,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Fin Tabla de datos  -->
 
                 <!-- Inicio Modal Agregar Emeplado -->
                 <div class="container">

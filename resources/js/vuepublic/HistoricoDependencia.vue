@@ -76,7 +76,6 @@
 </template>
 
 <style>
-
 .concurso-card {
     border: 1px solid #ddd;
     border-radius: 5px;

@@ -70,7 +70,6 @@
               <button type="button" class="btn btn-primary mx-auto fs-5" @click="regresar">Regresar</button>
             </div>
           </div>
-
   </div>
 </template>
 
@@ -97,8 +96,6 @@
         this.obtenerDependencias();
         this.obtenerResultados();
         this.obtenerGanadoresV();
-
-      /* this.calcularYGuardarGanadores(); */
     },
 
     methods: {
@@ -149,32 +146,6 @@
             });
         },
 
-        /* obtenerResultados() {
-            axios.get(`/obtenerResultados?ronda=1`)
-            .then(response => {
-                this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 404) {
-                this.resultadosPorRonda[1] = [];
-                } else {
-                console.error('Error al obtener resultados de la ronda 1', error);
-                }
-            });
-
-            axios.get(`/obtenerResultados?ronda=2`)
-            .then(response => {
-                this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 404) {
-                this.resultadosPorRonda[2] = [];
-                } else {
-                console.error('Error al obtener resultados de la ronda 2', error);
-                }
-            });
-        }, */
-
         agregarNumeracion(resultados) {
                 if (typeof resultados !== 'object' || resultados === null) {
                     return {};
@@ -191,19 +162,13 @@
                         numeradosResultados[ronda] = [];
                     }
                 }
-
                 return numeradosResultados;
-            },
+        },
 
         obtenerGanadoresV(idDependencia) {
             axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
                 .then(response => {
                 this.ganadores = [];
-
-                /* if (response.data.message) {
-                    this.mensajeNoVotaciones = "No hay resultados para la Ronda 1.";
-                return;
-                } */
 
                 for (let grupo in response.data.ganadores) {
                     let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
@@ -217,17 +182,14 @@
                     });
                 }
 
-                /* this.mensajeNoVotaciones = ""; */
                 })
                 .catch(error => {
                 console.error('Error al obtener ganadores', error);
                 });
-            },
         },
+    },
   };
-
 </script>
-
 
 <style scoped>
 .container {}
@@ -235,7 +197,6 @@
 .center-container {
   text-align: center;
 }
-
 
 .round-container {
   margin-bottom: 10px;
@@ -254,5 +215,4 @@
 .bg-segundos{
   background-color: #9c9312;
 }
-
 </style>

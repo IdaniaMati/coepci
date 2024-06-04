@@ -1,188 +1,189 @@
-<template>
-    <div>
+    <template>
         <div>
-      <div class="text-center mb-4">
-        <h2><strong>Lista de Manuales</strong></h2>
-      </div>
-      <div class="card-container" v-if="hab_permisos('importar_manual')">
-        <div class="card">
-          <div class="nav-item d-flex align-items-center">
-            <h5 class="card-header"><strong>Importar Manual</strong></h5>
-            <input type="file" @change="handleFileUpload" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-            <button class="btn btn-upload" title="Subir Formato" @click="importarManuales">
-              <i class="bi bi-file-arrow-up" style="font-size: 20px;"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <br>
-
-      <div class="card-container">
-        <div class="card">
-          <div class="table-container">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Nombre de manual</th>
-                  <th>Fecha de actualización</th>
-                  <th v-if="hab_permisos('ver_opciones')">Opciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="manual in manuales" :key="manual.id">
-                  <td>{{ manual.nombre }}</td>
-                  <td>{{ formatFecha(manual.updated_at) }}</td>
-                  <td v-if="hab_permisos('ver_opciones')">
-                    <button v-if="hab_permisos('descargar_manual')" class="btn btn-download btn-sm" title="Descargar" @click="descargarManual(manual.id)">
-                        <i class="bi bi-download" style="font-size: 15px;"></i>
-                    </button>&nbsp;
-                    <button class="btn btn-edit btn-sm" title="Editar" @click="openEditModal(manual)" v-if="hab_permisos('editar_manual')">
-                      <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
-                    </button>&nbsp;
-                    <button class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarManual(manual.id)" v-if="hab_permisos('eliminar_manual')">
-                      <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <br>
-        </div>
-      </div>
-
-      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="editModalLabel">Editar Manual</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <input type="file" @change="handleEditFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="editarManual">Guardar cambios</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-        <!--Start todo de manuales-->
-
-        <!--Start todo de preguntas-->
-    <div>
-        <div>
-            <div class="nav-item d-flex align-items-center">
-                <h5 class="card-header"><strong>Preguntas</strong></h5>
-                    <i class="bx bx-search fs-4 lh-0"></i>
-                <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
-            </div>
-
-            <div class="card-container">
+            <div>
+                <div class="text-center mb-4">
+                    <h2><strong>Lista de Manuales</strong></h2>
+                </div>
+            <div class="card-container" v-if="hab_permisos('importar_manual')">
                 <div class="card">
                     <div class="nav-item d-flex align-items-center">
-                        <button  class="btn btn-add mb-3" title="Agregar" @click="nuevo">
-                            <i class="bi bi-question-square" ></i>
-                            &nbsp;<p> Agregar</p>
+                        <h5 class="card-header"><strong>Importar Manual</strong></h5>
+                        <input type="file" @change="handleFileUpload" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                        <button class="btn btn-upload" title="Subir Formato" @click="importarManuales">
+                            <i class="bi bi-file-arrow-up" style="font-size: 20px;"></i>
                         </button>
                     </div>
+                </div>
+            </div>
+            <br>
 
-                        <!-- Espacio para el collapse -->
-                        <div>
-                            <div v-for="faq in paginatedFaqs" :key="faq.id" class="mb-4 border border-gray-300 rounded-lg">
-                                <div class="p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 d-flex justify-content-between align-items-center" @click="toggleCollapse(faq.id)">
-                                    <strong>{{ faq.pregunta }}</strong>
-                                    <i :class="isExpanded(faq.id) ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
-                                </div>
-
-                                <div v-show="isExpanded(faq.id)" class="p-4 bg-white">
-                                    <p>{{ faq.respuesta }}</p>
-
-                                    <div class="mt-2 flex space-x-2">
-                                        <button class="btn btn-edit btn-sm" title="Editar" @click="datalleFaq(faq.id)">
-                                            <i class="bi bi-pencil-fill" style="font-size: 15px;"></i> Editar
+            <!--Tabla de manuales-->
+            <div class="card-container">
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                <th>Nombre de manual</th>
+                                <th>Fecha de actualización</th>
+                                <th v-if="hab_permisos('ver_opciones')">Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="manual in manuales" :key="manual.id">
+                                    <td>{{ manual.nombre }}</td>
+                                    <td>{{ formatFecha(manual.updated_at) }}</td>
+                                    <td v-if="hab_permisos('ver_opciones')">
+                                        <button v-if="hab_permisos('descargar_manual')" class="btn btn-download btn-sm" title="Descargar" @click="descargarManual(manual.id)">
+                                            <i class="bi bi-download" style="font-size: 15px;"></i>
+                                        </button>&nbsp;
+                                        <button class="btn btn-edit btn-sm" title="Editar" @click="openEditModal(manual)" v-if="hab_permisos('editar_manual')">
+                                            <i class="bi bi-pencil-fill" style="font-size: 15px;"></i>
+                                        </button>&nbsp;
+                                        <button class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarManual(manual.id)" v-if="hab_permisos('eliminar_manual')">
+                                            <i class="bi bi-trash3-fill" style="font-size: 15px;"></i>
                                         </button>
-                                        <button class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarFaq(faq.id)">
-                                            <i class="bi bi-trash3-fill" style="font-size: 15px;"></i> Eliminar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <!-- Fin Tabla de manuales-->
+
+            <!--Modal de manuales-->
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Editar Manual</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <br>
-                        <!-- Fin del Collapse -->
-
-                        <!-- Modal agregar FAQ -->
-                        <div class="container">
-                            <div class="modal fade" id="largeModal" tabindex="-1">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"><strong>FAQ</strong></h5>
-                                            <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form>
-                                                <div class="row">
-                                                    <div class="col-md-12 mb-3">
-                                                        <label>Pregunta</label>
-                                                        <input v-model="pregunta" class="form-control" placeholder="Pregunta" required/>
-                                                        <div v-if="!pregunta" class="text-danger">Este campo es obligatorio.</div>
-                                                    </div>
-                                                    <div class="col-md-12 mb-3">
-                                                        <label>Respuesta</label>
-                                                        <input v-model="respuesta" class="form-control" placeholder="Respuesta" required/>
-                                                        <div v-if="!respuesta" class="text-danger">Este campo es obligatorio.</div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button v-if="bandera === 0" class="btn btn-primary" @click="agregarFaq">Guardar</button>
-                                            <button v-if="bandera === 1" class="btn btn-primary" @click="editarFaq">Editar</button>
-                                            <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="modal-body">
+                            <input type="file" @change="handleEditFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                         </div>
-                         <!-- Fin Modal agregar FAQ -->
-
-                         <!-- Paginador FAQ -->
-                        <br>
-                            <div class="row justify-content-center">
-                                <div class="col-md-auto">
-                                    <button @click="paginaAnterior" :disabled="pagina === 1" class="btn btn-primary mr-2">
-                                    Anterior
-                                    </button>
-                                </div>
-                                <div class="col-md-auto">
-                                    <ul class="pagination">
-                                    <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
-                                        <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
-                                    </li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-auto">
-                                    <button @click="paginaSiguiente" :disabled="pagina === totalPaginas" class="btn btn-primary ml-2">
-                                    Siguiente
-                                    </button>
-                                </div>
-                            </div>
-                        </br>
-                         <!-- Final Paginador FAQ -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @click="editarManual">Guardar cambios</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!--Fin todo de manuales-->
+
         <!--Start todo de preguntas-->
-    </div>
-</template>
+        <div>
+            <div>
+                <div class="nav-item d-flex align-items-center">
+                    <h5 class="card-header"><strong>Preguntas</strong></h5>
+                        <i class="bx bx-search fs-4 lh-0"></i>
+                    <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
+                </div>
+
+                <div class="card-container">
+                    <div class="card">
+                        <div class="nav-item d-flex align-items-center">
+                            <button v-if="hab_permisos('Crear_faq')" class="btn btn-add mb-3" title="Agregar" @click="nuevo">
+                                <i class="bi bi-question-square" ></i>
+                                &nbsp;<p> Agregar</p>
+                            </button>
+                        </div>
+
+                            <!-- Espacio para el collapse FAQ-->
+                            <div>
+                                <div v-for="faq in paginatedFaqs" :key="faq.id" class="mb-4 border border-gray-300 rounded-lg">
+                                    <div class="p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 d-flex justify-content-between align-items-center" @click="toggleCollapse(faq.id)">
+                                        <strong>{{ faq.pregunta }}</strong>
+                                        <i :class="isExpanded(faq.id) ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                                    </div>
+
+                                    <div v-show="isExpanded(faq.id)" class="p-4 bg-white">
+                                        <p>{{ faq.respuesta }}</p>
+
+                                        <div class="mt-2 flex space-x-2">
+                                            <button v-if="hab_permisos('Editar_faq')" class="btn btn-edit btn-sm" title="Editar" @click="datalleFaq(faq.id)">
+                                                <i class="bi bi-pencil-fill" style="font-size: 15px;"></i> Editar
+                                            </button>
+                                            <button v-if="hab_permisos('Eliminar_faq')" class="btn btn-delete btn-sm" title="Eliminar" @click="eliminarFaq(faq.id)">
+                                                <i class="bi bi-trash3-fill" style="font-size: 15px;"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <!-- Fin del Collapse FAQ -->
+
+                            <!-- Modal agregar FAQ -->
+                            <div class="container">
+                                <div class="modal fade" id="largeModal" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"><strong>FAQ</strong></h5>
+                                                <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    <div class="row">
+                                                        <div class="col-md-12 mb-3">
+                                                            <label>Pregunta</label>
+                                                            <input v-model="pregunta" class="form-control" placeholder="Pregunta" required/>
+                                                            <div v-if="!pregunta" class="text-danger">Este campo es obligatorio.</div>
+                                                        </div>
+                                                        <div class="col-md-12 mb-3">
+                                                            <label>Respuesta</label>
+                                                            <input v-model="respuesta" class="form-control" placeholder="Respuesta" required/>
+                                                            <div v-if="!respuesta" class="text-danger">Este campo es obligatorio.</div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button v-if="bandera === 0" class="btn btn-primary" @click="agregarFaq">Guardar</button>
+                                                <button v-if="bandera === 1" class="btn btn-primary" @click="editarFaq">Editar</button>
+                                                <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Fin Modal agregar FAQ -->
+
+                            <!-- Paginador FAQ -->
+                            <br>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-auto">
+                                        <button @click="paginaAnterior" :disabled="pagina === 1" class="btn btn-primary mr-2">
+                                        Anterior
+                                        </button>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <ul class="pagination">
+                                        <li v-for="numero in totalPaginas" :key="numero" class="page-item" :class="{ active: numero === pagina }">
+                                            <a class="page-link" @click="cambiarPagina(numero)">{{ numero }}</a>
+                                        </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <button @click="paginaSiguiente" :disabled="pagina === totalPaginas" class="btn btn-primary ml-2">
+                                        Siguiente
+                                        </button>
+                                    </div>
+                                </div>
+                            </br>
+                            <!-- Final Paginador FAQ -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Start todo de preguntas-->
+        </div>
+    </template>
 
 <script>
     import permisos from "../permisos/permisos.vue";
@@ -295,6 +296,13 @@
                     });
                     console.log(response.data.message);
                     this.obtenerManuales();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Manual importado exitosamente',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
                 } catch (error) {
                     console.error('Hubo un error al subir el archivo:', error);
                 }
@@ -317,6 +325,12 @@
                         const response = await axios.delete(`/eliminar-manual/${id}`);
                         console.log(response.data.message);
                         this.obtenerManuales();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Manual eliminado exitosamente',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     } catch (error) {
                         console.error('Error al eliminar el manual:', error);
                     }
@@ -368,7 +382,14 @@
                     });
                     console.log(response.data.message);
                     $("#editModal").modal("hide");
-                    this.obtenerManuales(); // Refresh the list after editing
+                    this.obtenerManuales();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Manual editado exitosamente',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
                 } catch (error) {
                     console.error('Error al editar el archivo:', error);
                 }

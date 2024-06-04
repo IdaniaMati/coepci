@@ -17,6 +17,7 @@
                     </div>
                 </div>
 
+                <!-- Tabla de respaldos -->
                 <div class="nav-item d-flex align-items-center">
                     <h5 class="card-header"><strong>Respaldos Base de Datos</strong></h5>
                 </div>
@@ -47,6 +48,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Fin tabla de respaldos -->
 
                 <!-- Modal confirmación de contraseña -->
                 <div class="container">
@@ -55,7 +57,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title"><strong>Confirmar contraseña</strong></h5>
-                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                    <button class="btn-cerrar" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
@@ -77,6 +79,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Fin modal confirmación de contraseña -->
                 </div>
             </div>
         </div>
@@ -160,7 +163,7 @@
                     .then(response => {
                         if (response.data.success) {
                             this.cerrarModal();
-                            this.respaldofile();
+                            this.verificarYRespaldar();
                         } else {
                             this.cerrarModal();
                             Swal.fire({
@@ -178,6 +181,33 @@
                             text: 'Hubo un error al procesar la solicitud. Inténtalo de nuevo.'
                         });
                     });
+            },
+
+            verificarYRespaldar() {
+                const today = new Date().toISOString().slice(0, 10);
+                const todayBackups = this.backups.filter(backup => backup.creation_date.slice(0, 10) === today);
+
+                if (todayBackups.length > 0) {
+                    const latestBackup = todayBackups.sort((a, b) => new Date(b.creation_date) - new Date(a.creation_date))[0];
+                    Swal.fire({
+                        title: 'Respaldo existente',
+                        text: `Ya existe un respaldo con fecha de hoy: ${latestBackup.creation_date}`,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Continuar',
+                        cancelButtonText: 'Cancelar',
+                        showDenyButton: true,
+                        denyButtonText: 'Sustituir'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.respaldofile();
+                        } else if (result.isDenied) {
+                            this.eliminarRespaldo(latestBackup, 'replace');
+                        }
+                    });
+                } else {
+                    this.respaldofile();
+                }
             },
 
             confirmarContrasena() {
@@ -236,15 +266,24 @@
             },
 
             checkAndExport() {
-                if (this.needsExportConfirmation) {
+                if (this.backups.length === 0) {
                     this.bandera = 4;
                     this.abrirModal();
                     this.limpiarvar();
+                } else if (this.backups.length < 10) {
+                    this.bandera = 3;
+                    this.abrirModal();
+                    this.limpiarvar();
                 } else {
-                    if (this.backups.length >= 10) {
+                    const today = new Date().toISOString().slice(0, 10);
+                    const todayBackups = this.backups.filter(backup => backup.creation_date.slice(0, 10) === today);
+
+                    if (todayBackups.length > 0) {
                         this.confirmExport();
                     } else {
-                        this.mostrarModalRespaldoNuevo();
+                        this.bandera = 3;
+                        this.abrirModal();
+                        this.limpiarvar();
                     }
                 }
             },
@@ -261,7 +300,6 @@
                         link.click();
                     })
                     .catch((error) => {
-                        //console.error("Error al descargar el archivo de respaldo:", error);
                     });
             },
 
