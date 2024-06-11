@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="text-center mb-4">
-            <h2><strong>IMPORTAR EMPLEADOS</strong></h2>
+            <h2><strong>CARGA MASIVA</strong></h2>
         </div>
 
         <!-- Sección para importr/exportar empleados -->
@@ -11,20 +11,20 @@
                     <button class="btn btn-download" title="Descargar Formato" @click="descargarFormato">
                         <i class="bi bi-file-earmark-arrow-down" style="font-size: 20px;"></i>
                     </button>
-                    <h5 class="card-header"><strong>Importar Empleados</strong></h5>
+                    <h5 class="card-header"><strong>Importar Personal</strong></h5>
                     <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                     <button class="btn btn-upload" title="Subir Formato" @click="importarEmpleados">
                         <i class="bi bi-file-arrow-up" style="font-size: 20px;"></i>
                     </button>
                 </div>
-                <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Empleados</button>
+                <button class="btn btn-outline-dark" @click="vaciarBaseDatos">Eliminar Personal</button>
             </div>
         </div>
 
         <!-- Configuración de eventos -->
         <div class="card-container">
             <div class="card">
-                <h5 class="card-header" style="text-align: center;"><strong>Configuración de Evento</strong></h5>
+                <h5 class="card-header" style="text-align: center;"><strong>CONFIGURACIÓN VOTACIONES</strong></h5>
                 <div class="nav-item d-flex align-items-center">
                         <div class="nav-item d-flex align-items-center">
                             <h5 class="card-header"><strong>Buscar</strong></h5>

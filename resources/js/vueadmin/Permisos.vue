@@ -5,7 +5,7 @@
         </div>
 
         <div class="nav-item d-flex align-items-center">
-                    <h5 class="card-header"><strong>Permiso</strong></h5>
+                    <h5 class="card-header"><strong>Buscar</strong></h5>
                     <i class="bx bx-search fs-4 lh-0"></i>
                     <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
         </div>

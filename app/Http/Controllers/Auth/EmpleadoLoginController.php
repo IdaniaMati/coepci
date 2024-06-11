@@ -14,6 +14,7 @@ use Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class EmpleadoLoginController extends Controller
@@ -191,10 +192,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-
-
-
-
     public function obtenerOpcionesVotacion($ronda)
     {
         try {
@@ -215,7 +212,7 @@ class EmpleadoLoginController extends Controller
                     ->select('empleados.id', 'empleados.nombre', 'empleados.apellido_paterno', 'empleados.apellido_materno', 'registros.id_grup', DB::raw('COUNT(registros.id_nom) AS votos'))
                     ->where('registros.ronda', 1)
                     ->where('empleados.id_depen', $idDependenciaUsuario)
-                    ->groupBy('empleados.id', 'registros.id_grup', 'empleados.nombre', 'empleados.apellido_paterno', 'empleados.apellido_materno') // Asegúrate de agrupar por todos los campos seleccionados
+                    ->groupBy('empleados.id', 'registros.id_grup' /* 'empleados.nombre', 'empleados.apellido_paterno', 'empleados.apellido_materno'*/) // Asegúrate de agrupar por todos los campos seleccionados
                     ->orderBy('registros.id_grup')
                     ->orderByDesc('votos')
                     ->get();
@@ -244,25 +241,11 @@ class EmpleadoLoginController extends Controller
                     return $grupo->all();
                 });
             }
-
             return response()->json($opciones);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al obtener las opciones de votación']);
+        return response()->json(['error' => 'Error al obtener las opciones de votación']);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public function obtenerConcursoId()
     {
@@ -421,6 +404,35 @@ class EmpleadoLoginController extends Controller
                 ->get();
 
             $ganadoresAgrupados = $ganadores->groupBy('id_grup');
+
+            //Agrupamos los ganadores por grupo y limitamos los resultados
+            // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo, $idGrupo) {
+            //     if ($idGrupo == 1 || $idGrupo == 2) {
+            //         return $grupo->take(2);
+            //     } elseif ($idGrupo == 3) {
+            //         return $grupo->take(3);
+            //     }
+            //     return $grupo;
+            // });
+
+            //Agrupamos los ganadores por grupo y limitamos los resultados
+            // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo, $idGrupo) {
+            //     $maxGanadores = ($idGrupo == 1 || $idGrupo == 2) ? 2 : ($idGrupo == 3 ? 3 : 0);
+            //     return $grupo->take($maxGanadores);
+            // });
+
+            // Convirtiendo la colección a array para asegurarnos que se retornan los resultados correctos
+            //$ganadoresAgrupadosArray = $ganadoresAgrupados->toArray();
+
+            // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo) {
+            //     $maxGanadores = [
+            //         1 => 2, // Máximo 2 ganadores para el grupo 1
+            //         2 => 2, // Máximo 2 ganadores para el grupo 2
+            //         3 => 3, // Máximo 3 ganadores para el grupo 3
+            //     ];
+
+            //     return $grupo->take($maxGanadores[$grupo->first()->id_grup] ?? 0);
+            // });
 
             return response()->json(['ganadores' => $ganadoresAgrupados]);
         } catch (\Exception $e) {

@@ -6,6 +6,6 @@
             </div>
         </div>
 
-        @section('titulo', 'Dependencias :: Sistema de Votación COEPCI')
+        @section('titulo', 'Institución :: Sistema de Votación COEPCI')
     </x-slot>
 </x-app-layout>

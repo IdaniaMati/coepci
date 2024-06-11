@@ -1,17 +1,19 @@
 <template>
+    <div>
          <!-- Filtrados dependencia admin -->
         <div>
             <div class="mb-3" v-if="showDependenciaSelect === true">
-            <label for="defaultSelect" class="form-label">Seleccione una Dependencia o Institución</label>
-            <select id="showDependenciaSelect" class="form-control" v-model="dependenciaSeleccionada">
-                <option disabled selected>Seleccionar dependencia</option>
-                <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
-            </select>
+                <label for="defaultSelect" class="form-label">Seleccione una Institución</label>
+                <select id="showDependenciaSelect" class="form-control" v-model="dependenciaSeleccionada">
+                    <option disabled selected>Seleccionar institución</option>
+                    <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
+                </select>
+            </div>
         </div>
         <!-- Fin filtrados dependencia admin -->
 
         <div class="text-center mb-4">
-            <h2><strong>PANEL PRINCIPAL EMPLEADOS</strong></h2>
+            <h2><strong>GESTIÓN DE PERSONAS SERVIDORAS PUBLICAS</strong></h2>
         </div>
 
         <div class="card-container">
@@ -24,7 +26,7 @@
                         </button>
                     </div>
                     <div class="info-item">
-                        <strong>Total Empleados:</strong> {{ empleados.length }}
+                        <strong>Total del Personal:</strong> {{ empleados.length }}
                     </div>
                     <div class="info-item">
                         <strong>Ronda 1 - Votaron:</strong> {{ votosRonda1 }} | <strong> Sin Votar:</strong> {{ empleados.length - votosRonda1 }}
@@ -36,7 +38,7 @@
 
                 <!-- Filtrados generales -->
                 <div class="nav-item d-flex align-items-center">
-                    <h5 class="card-header"><strong>Empleados</strong></h5>
+                    <h5 class="card-header"><strong>Buscar</strong></h5>
                     <i class="bx bx-search fs-4 lh-0"></i>
                         <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                     <h5 class="card-header"><strong>Grupo</strong></h5>
@@ -67,7 +69,7 @@
                             <th style="width: 1%;">ID</th>
                             <th style="width: 15%;">Nombre</th>
                             <th style="width: 15%;">Curp</th>
-                            <th style="width: 20%;">Cargo</th>
+                            <th style="width: 20%;">Puesto</th>
                             <th style="width: 1%;">Grupo</th>
                             <th style="width: 3%;">Voto 1</th>
                             <th style="width: 3%;">Voto 2</th>
@@ -181,19 +183,19 @@
 
                 <!-- Paginador -->
                 <br>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
-                            <a class="page-link" href="#" @click="prevPage">Anterior</a>
-                        </li>
-                        <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': currentPage === page }">
-                            <a class="page-link" href="#" @click="gotoPage(page)">{{ page }}</a>
-                        </li>
-                        <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
-                            <a class="page-link" href="#" @click="nextPage">Siguiente</a>
-                        </li>
-                    </ul>
-                </nav>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+                                <a class="page-link" href="#" @click="prevPage">Anterior</a>
+                            </li>
+                            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ 'active': currentPage === page }">
+                                <a class="page-link" href="#" @click="gotoPage(page)">{{ page }}</a>
+                            </li>
+                            <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+                                <a class="page-link" href="#" @click="nextPage">Siguiente</a>
+                            </li>
+                        </ul>
+                    </nav>
                 <br>
                 <!-- Fin paginador -->
             </div>

@@ -2,7 +2,7 @@
         <div>
             <div>
                 <div class="text-center mb-4">
-                    <h2><strong>Lista de Manuales</strong></h2>
+                    <h2><strong>LISTA DE MANUALES</strong></h2>
                 </div>
             <div class="card-container" v-if="hab_permisos('importar_manual')">
                 <div class="card">
@@ -77,8 +77,11 @@
         <!--Start todo de preguntas-->
         <div>
             <div>
+                <div class="text-center mb-4">
+                    <h2><strong>PREGUNTAS FRECUENTES</strong></h2>
+                </div>
                 <div class="nav-item d-flex align-items-center">
-                    <h5 class="card-header"><strong>Preguntas</strong></h5>
+                    <h5 class="card-header"><strong>Buscar</strong></h5>
                         <i class="bx bx-search fs-4 lh-0"></i>
                     <input v-model="filtro" type="text" class="form-control border-0 shadow-none" placeholder="Buscar..." aria-label="Buscar..." />
                 </div>
