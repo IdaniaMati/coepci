@@ -217,6 +217,7 @@ class EmpleadoLoginController extends Controller
                     ->orderByDesc('votos')
                     ->get();
 
+                   
                 $resultadosLimitados = collect();
 
                 $opciones->each(function ($opcion) use (&$resultadosLimitados) {

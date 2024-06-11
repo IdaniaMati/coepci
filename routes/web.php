@@ -12,6 +12,7 @@ use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\ResultadosController;
 
 use App\Models\Bitacora;
 use App\Models\Faq;
@@ -22,7 +23,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 Route::get('/nominaciones',[EmpleadoLoginController::class, 'nominaciones'])->name('nominaciones');
 Route::get('/resultado',[EmpleadoLoginController::class, 'resultado'])->name('resultado');
 Route::get('/resultado/dependencia',[EmpleadoLoginController::class, 'resultadoPorDependencia'])->name('resultado.dependencia');
-Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
+//Route::get('/obtenerResultados', [EmpleadoLoginController::class, 'obtenerResultados'])->name('obtenerResultados');
 Route::get('/historico',[EmpleadoLoginController::class, 'historico'])->name('historico');
 Route::get('/historico/dependencia',[EmpleadoLoginController::class, 'historicoDependencia'])->name('historico.dependencia');
 Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
@@ -35,7 +36,7 @@ Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('emplea
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
 Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
-Route::get('/obtenerGanadoresV', [EmpleadoLoginController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
+//Route::get('/obtenerGanadoresV', [EmpleadoLoginController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
 Route::get('/obtenerGanadores', [EmpleadoLoginController::class, 'obtenerGanadores'])->name('obtenerGanadores');
 
 
@@ -172,6 +173,13 @@ Route::middleware(['auth', 'can:Modulo_Faq'])->group(function () {
     Route::post('/editar-manual/{id}', [FaqController::class, 'editarManual'])->name('editar-manual');
     Route::get('/descargar-manual/{id}', [FaqController::class, 'descargarManual']);
 
+});
+
+/*----------------------- Resultados ------------------------*/
+Route::middleware(['auth', 'can:Modulo_Resultados'])->group(function () {
+    Route::get('/resultados', [ResultadosController::class, 'showResultadosForm'])->name('resultados');
+    Route::get('/obtenerResultados', [ResultadosController::class, 'obtenerResultados'])->name('obtenerResultados');
+    Route::get('/obtenerGanadoresV', [ResultadosController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
 });
 
 /*----------------------- Permisos ------------------------*/

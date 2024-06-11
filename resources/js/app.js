@@ -64,4 +64,7 @@ app.component('bitacora-vue', Bitacora);
 import Faq from './vueadmin/Faq.vue';
 app.component('faq-vue', Faq);
 
+import Resultados from './vueadmin/Resultados.vue';
+app.component('resultados-vue', Resultados);
+
 app.mount('#app');

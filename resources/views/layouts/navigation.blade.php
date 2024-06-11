@@ -62,6 +62,11 @@
                         {{ __('Faq') }}
                     </x-nav-link>
                     @endcan
+                    @can('Modulo_Resultados')
+                    <x-nav-link :href="route('resultados')" :active="request()->routeIs('resultados')">
+                        {{ __('Votaciones') }}
+                    </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
