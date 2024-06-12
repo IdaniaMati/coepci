@@ -180,6 +180,7 @@ Route::middleware(['auth', 'can:Modulo_Resultados'])->group(function () {
     Route::get('/resultados', [ResultadosController::class, 'showResultadosForm'])->name('resultados');
     Route::get('/obtenerResultados', [ResultadosController::class, 'obtenerResultados'])->name('obtenerResultados');
     Route::get('/obtenerGanadoresV', [ResultadosController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
+    Route::get('/resultadosWithDependencia', [ResultadosController::class, 'showResultadosDependencia'])->name('obtenerResultadosDependencia');
 });
 
 /*----------------------- Permisos ------------------------*/

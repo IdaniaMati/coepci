@@ -7,70 +7,19 @@
         </div>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-3" v-if="showDependenciaSelect === true">
           <label for="defaultSelect" class="form-label">Seleccione una Institución</label>
-          <select v-model="id_depen" @change="cambiarDependencia" class="form-select">
+          <select id="showDependenciaSelect" v-model="id_depen" @change="cambiarDependencia" class="form-select">
               <option disabled selected>Seleccionar</option>
               <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
           </select>
       </div>
-
-      <!--Resultado final del concurso-->
-
-      <!-- <br>
-      <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
-      <div v-if="ganadores.length > 0" class="card">
-          <div class="card-body">
-              <h4 class="pb-1 mb-4">Ganadores del Concurso</h4>
-              <div class="row">
-              <div v-for="(grupo, index) in ganadores" :key="index" class="col-md-4 mb-3">
-                  <h5>{{ `Grupo ${grupo.grupo}` }}</h5>
-                  <ul class="list-group">
-                  <li v-for="(ganador, ganadorIndex) in grupo.ganadores" :key="ganadorIndex" class="list-group-item d-flex justify-content-between align-items-center">
-                      <span>{{ `${ganador.numero}. ${ganador.nombre}` }}</span>
-                  </li>
-                  </ul>
-              </div>
-              </div>
-          </div>
-      </div> -->
-
-      <!--Resultados de rondas (1 y 2) del concurso-->
-      <!-- <br>
-      <div v-for="(resultadosRonda, ronda) in resultadosPorRonda" :key="ronda" class="card mb-4">
-          <div class="card-body">
-              <div class="content-wrapper">
-                  <div class="container-xxl flex-grow-1 container-p-y">
-                      <h4 class="pb-1 mb-4">Ronda {{ ronda }}</h4>
-                      <div class="row mb-5">
-                          <div v-for="(grupo, numeroGrupo) in resultadosRonda" :key="numeroGrupo" class="col-md-6 col-lg-4 mb-3">
-                              <div class="card h-100">
-                                  <div class="card-body">
-                                      <h5 class="card-title">Grupo {{ numeroGrupo }}</h5>
-                                      <h6 class="card-subtitle text-muted"></h6>
-                                      <p class="card-text"></p>
-                                      <ul class="list-group card-text">
-                                          <li v-for="votado in grupo" :key="votado.id" class="list-group-item d-flex justify-content-between align-items-center card-text">
-                                              <span>{{ `${votado.numero}. ${votado.nombre} ${votado.apellido_paterno} ${votado.apellido_materno}` }}</span>
-                                              <span :class="{ 'badge': true, 'bg-primeros': grupo.indexOf(votado) < 5, 'bg-segundos': grupo.indexOf(votado) >= 5 }" class="rounded-pill">{{ `${votado.votos} votos` }}</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          <p v-if="resultadosRonda.length === 0" class="text-center mt-4">{{ `No hay resultados para la Ronda ${ronda}.` }}</p>
-      </div> -->
 
             <div>
                 <!-- Resultado final del concurso -->
                 <br>
                 <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
                     <div v-if="ganadores.length > 0" class="card mb-4">
-
                             <div class="p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 d-flex justify-content-between align-items-center" @click="toggleCollapse('ganadores')">
                                 <h4 class="pb-1 mb-4">Ganadores del Concurso</h4>
                                 <i :class="isExpanded('ganadores') ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
@@ -85,7 +34,6 @@
                                             </li>
                                         </ul>
                                     </div>
-
                     </div>
                 </div>
             </div>
@@ -144,6 +92,7 @@
           },
           ganadores: [],
           expandedId: null,
+          showDependenciaSelect: false,
         };
       },
 
@@ -151,9 +100,26 @@
           this.obtenerDependencias();
           this.obtenerResultados();
           this.obtenerGanadoresV();
+          this.cargarDependencias();
       },
 
       methods: {
+
+        cargarDependencias() {
+        axios.get('/resultadosWithDependencia')
+            .then(response => {
+                this.showDependenciaSelect = response.data.showDependenciaSelect;
+                this.userDependencia = response.data.userDependencia;
+                if (!this.showDependenciaSelect && this.userDependencia) {
+                    this.id_depen = this.userDependencia;
+                    this.obtenerResultados(this.id_depen);
+                    this.obtenerGanadoresV(this.id_depen);
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos:', error);
+            });
+    },
 
         toggleCollapse(id) {
                 if (this.expandedId === id) {
@@ -182,32 +148,60 @@
               this.obtenerGanadoresV(this.id_depen);
           },
 
-          obtenerResultados(idDependencia) {
+        //   obtenerResultados(idDependencia) {
 
-              axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
-              .then(response => {
-                  this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
-              })
-              .catch(error => {
-                  if (error.response && error.response.status === 404) {
-                  this.resultadosPorRonda[1] = [];
-                  } else {
-                  console.error('Error al obtener resultados de la ronda 1', error);
-                  }
-              });
+        //       axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
+        //       .then(response => {
+        //           this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+        //       })
+        //       .catch(error => {
+        //           if (error.response && error.response.status === 404) {
+        //           this.resultadosPorRonda[1] = [];
+        //           } else {
+        //           console.error('Error al obtener resultados de la ronda 1', error);
+        //           }
+        //       });
 
-              axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
-              .then(response => {
-                  this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
-              })
-              .catch(error => {
-                  if (error.response && error.response.status === 404) {
-                  this.resultadosPorRonda[2] = [];
-                  } else {
-                  console.error('Error al obtener resultados de la ronda 2', error);
-                  }
-              });
-          },
+        //       axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
+        //       .then(response => {
+        //           this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+        //       })
+        //       .catch(error => {
+        //           if (error.response && error.response.status === 404) {
+        //           this.resultadosPorRonda[2] = [];
+        //           } else {
+        //           console.error('Error al obtener resultados de la ronda 2', error);
+        //           }
+        //       });
+        //   },
+            obtenerResultados(idDependencia = null) {
+            if (!idDependencia) {
+                idDependencia = this.id_depen;
+            }
+            axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
+                .then(response => {
+                    this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+                })
+                .catch(error => {
+                    if (error.response && error.response.status === 404) {
+                        this.resultadosPorRonda[1] = [];
+                    } else {
+                        console.error('Error al obtener resultados de la ronda 1', error);
+                    }
+                });
+
+            axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
+                .then(response => {
+                    this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+                })
+                .catch(error => {
+                    if (error.response && error.response.status === 404) {
+                        this.resultadosPorRonda[2] = [];
+                    } else {
+                        console.error('Error al obtener resultados de la ronda 2', error);
+                    }
+                });
+        },
 
           agregarNumeracion(resultados) {
                   if (typeof resultados !== 'object' || resultados === null) {
@@ -228,28 +222,53 @@
                   return numeradosResultados;
           },
 
-          obtenerGanadoresV(idDependencia) {
-              axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
-                  .then(response => {
-                  this.ganadores = [];
+        //   obtenerGanadoresV(idDependencia) {
+        //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+        //           .then(response => {
+        //           this.ganadores = [];
 
-                  for (let grupo in response.data.ganadores) {
-                      let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-                      numero: index + 1,
-                      nombre: ganador.id_emp
-                      }));
+        //           for (let grupo in response.data.ganadores) {
+        //               let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+        //               numero: index + 1,
+        //               nombre: ganador.id_emp
+        //               }));
 
-                      this.ganadores.push({
-                      grupo: grupo,
-                      ganadores: ganadoresGrupo
-                      });
-                  }
+        //               this.ganadores.push({
+        //               grupo: grupo,
+        //               ganadores: ganadoresGrupo
+        //               });
+        //           }
 
-                  })
-                  .catch(error => {
-                  console.error('Error al obtener ganadores', error);
-                  });
-          },
+        //           })
+        //           .catch(error => {
+        //           console.error('Error al obtener ganadores', error);
+        //           });
+        //   },
+
+        obtenerGanadoresV(idDependencia = null) {
+        if (!idDependencia) {
+            idDependencia = this.id_depen;
+        }
+        axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+            .then(response => {
+                this.ganadores = [];
+
+                for (let grupo in response.data.ganadores) {
+                    let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+                        numero: index + 1,
+                        nombre: ganador.id_emp
+                    }));
+
+                    this.ganadores.push({
+                        grupo: grupo,
+                        ganadores: ganadoresGrupo
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener ganadores', error);
+            });
+    },
       },
     };
   </script>

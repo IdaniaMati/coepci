@@ -119,32 +119,32 @@
             this.obtenerGanadoresV(this.id_depen);
         },
 
-        obtenerResultados(idDependencia) {
+        // obtenerResultados(idDependencia) {
 
-            axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
-            .then(response => {
-                this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 404) {
-                this.resultadosPorRonda[1] = [];
-                } else {
-                console.error('Error al obtener resultados de la ronda 1', error);
-                }
-            });
+        //     axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
+        //     .then(response => {
+        //         this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+        //     })
+        //     .catch(error => {
+        //         if (error.response && error.response.status === 404) {
+        //         this.resultadosPorRonda[1] = [];
+        //         } else {
+        //         console.error('Error al obtener resultados de la ronda 1', error);
+        //         }
+        //     });
 
-            axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
-            .then(response => {
-                this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 404) {
-                this.resultadosPorRonda[2] = [];
-                } else {
-                console.error('Error al obtener resultados de la ronda 2', error);
-                }
-            });
-        },
+        //     axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
+        //     .then(response => {
+        //         this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+        //     })
+        //     .catch(error => {
+        //         if (error.response && error.response.status === 404) {
+        //         this.resultadosPorRonda[2] = [];
+        //         } else {
+        //         console.error('Error al obtener resultados de la ronda 2', error);
+        //         }
+        //     });
+        // },
 
         agregarNumeracion(resultados) {
                 if (typeof resultados !== 'object' || resultados === null) {
@@ -165,28 +165,28 @@
                 return numeradosResultados;
         },
 
-        obtenerGanadoresV(idDependencia) {
-            axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
-                .then(response => {
-                this.ganadores = [];
+        // obtenerGanadoresV(idDependencia) {
+        //     axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+        //         .then(response => {
+        //         this.ganadores = [];
 
-                for (let grupo in response.data.ganadores) {
-                    let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-                    numero: index + 1,
-                    nombre: ganador.id_emp
-                    }));
+        //         for (let grupo in response.data.ganadores) {
+        //             let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+        //             numero: index + 1,
+        //             nombre: ganador.id_emp
+        //             }));
 
-                    this.ganadores.push({
-                    grupo: grupo,
-                    ganadores: ganadoresGrupo
-                    });
-                }
+        //             this.ganadores.push({
+        //             grupo: grupo,
+        //             ganadores: ganadoresGrupo
+        //             });
+        //         }
 
-                })
-                .catch(error => {
-                console.error('Error al obtener ganadores', error);
-                });
-        },
+        //         })
+        //         .catch(error => {
+        //         console.error('Error al obtener ganadores', error);
+        //         });
+        // },
     },
   };
 </script>

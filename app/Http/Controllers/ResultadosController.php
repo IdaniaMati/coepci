@@ -122,6 +122,22 @@ class ResultadosController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
+
+    public function showResultadosDependencia(Request $request)
+    {
+        $user = Auth::user();
+        $showDependenciaSelect = ($user && $user->id_depen === 1);
+        $dependencias = $showDependenciaSelect ? Empleado::all() : [];
+
+        // return response()->json([
+        //     'showDependenciaSelect' => $showDependenciaSelect]);
+        return response()->json([
+            'showDependenciaSelect' => $showDependenciaSelect,
+            'userDependencia' => $user ? $user->id_depen : null,
+            'dependencias' => $dependencias,
+        ]);
+    }
+
 
 }
