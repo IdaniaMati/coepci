@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Empleado;
@@ -9,10 +10,15 @@ use App\Models\Ganadores;
 use App\Models\Registro;
 use App\Models\HistoricoVotos;
 use App\Models\Dependencias;
+use App\Models\Grupo;
+use App\Models\Cargo;
 use App\Http\Controllers\Controller;
+use App\Helpers\MyHelper;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+
 
 use Illuminate\Http\Request;
 
@@ -123,6 +129,44 @@ class ResultadosController extends Controller
         }
     }
 
+    public function agregarExcepcion(Request $request){
+        try {
+            $user = Auth::user();
+            //dd($request->all());
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $request->validate([
+                'id_emp' => 'required',
+                'curp' => 'required',
+                'id_grup' => 'required',
+                'id_cargo' => 'required',
+                'id_conc' => 'required',
+                'documento' => 'required|file|mimes:pdf|max:8192',
+            ]);
+
+            $nuevoExcepcion = new Ganadores;
+            $nuevoExcepcion->id_emp = $request->id_emp;
+            $nuevoExcepcion->curp = strtoupper($request->curp);
+            $nuevoExcepcion->id_grup = $request->id_grup;
+            $nuevoExcepcion->id_conc = $user->concurso_id;
+            $nuevoExcepcion->id_cargo = $request->id_cargo;
+
+            if ($request->hasFile('documento')) {
+                $file = $request->file('documento');
+                $path = $file->store('documentos', 'public');
+                $nuevoExcepcion->documento = $path;
+            }
+
+            $nuevoExcepcion->save();
+            //MyHelper::registrarAccion('Se agrego el Caso excepcional: ' . $nuevoExcepcion->nombreCompleto);
+
+            return response()->json(['success' => true, 'message' => 'Ganador guardado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 
     public function showResultadosDependencia(Request $request)
     {
@@ -137,6 +181,18 @@ class ResultadosController extends Controller
             'userDependencia' => $user ? $user->id_depen : null,
             'dependencias' => $dependencias,
         ]);
+    }
+
+    public function obtenerGrupos()
+    {
+        $grupos = Grupo::all();
+        return response()->json(['success' => true, 'grupos' => $grupos]);
+    }
+
+    public function obtenerCargos()
+    {
+        $cargos = Cargo::all();
+        return response()->json(['success' => true, 'cargos' => $cargos]);
     }
 
 

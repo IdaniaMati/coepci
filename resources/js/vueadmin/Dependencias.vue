@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="text-center mb-4">
-            <h2><strong>GESTIÓN DE DEPENDENCIAS</strong></h2>
+            <h2><strong>GESTIÓN DE INSTITUCIONES</strong></h2>
         </div>
 
         <div class="nav-item d-flex align-items-center">
@@ -51,14 +51,14 @@
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title"><strong>Dependencia</strong></h5>
+                                    <h5 class="modal-title"><strong>Institución</strong></h5>
                                     <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
-                                                <label>Nombre de la Dependencia o Institución</label>
+                                                <label>Nombre de la Institución</label>
                                                 <input v-model="descripcion" class="form-control" placeholder="Descripción" required/>
                                                 <div v-if="!descripcion" class="text-danger">Este campo es obligatorio.</div>
                                             </div>

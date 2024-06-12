@@ -27,7 +27,7 @@
                             <th>ID</th>
                             <th>Usuario</th>
                             <th>Acción</th>
-                            <th>Dependencia</th>
+                            <th>Institución</th>
                             <th>Fecha y hora</th>
                         </tr>
                     </thead>

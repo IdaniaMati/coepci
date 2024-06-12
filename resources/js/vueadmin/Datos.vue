@@ -47,7 +47,7 @@
                                 <th>Fecha Primera Ronda</th>
                                 <th>Fecha Segunda Ronda</th>
                                 <th>Fecha Fin Evento</th>
-                                <th>Dependencia</th>
+                                <th>Institución</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>

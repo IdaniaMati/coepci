@@ -5,7 +5,7 @@
             <div class="mb-3" v-if="showDependenciaSelect === true">
                 <label for="defaultSelect" class="form-label">Seleccione una Institución</label>
                 <select id="showDependenciaSelect" class="form-control" v-model="dependenciaSeleccionada">
-                    <option disabled selected>Seleccionar institución</option>
+                    <option disabled selected>Seleccionar</option>
                     <option v-for="dependencia in dependencias" :value="dependencia.id">{{ dependencia.descripcion }}</option>
                 </select>
             </div>
@@ -73,7 +73,7 @@
                             <th style="width: 1%;">Grupo</th>
                             <th style="width: 3%;">Voto 1</th>
                             <th style="width: 3%;">Voto 2</th>
-                            <th style="width: 15%;">Dependencia</th>
+                            <th style="width: 15%;">Institución</th>
                             <th style="width: 10%;">Opciones</th>
                         </tr>
                         </thead>

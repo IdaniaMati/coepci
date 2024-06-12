@@ -11,8 +11,11 @@ class Ganadores extends Model
     protected $table = 'ganadores';
     protected $fillable = [
         'id_conc',
-        'id_grup',
         'id_emp',
+        'id_curp',
+        'id_grup',
+        'id_cargo',
+        'documento',
     ];
 
     public function concurso()

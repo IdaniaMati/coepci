@@ -27,7 +27,7 @@
                                 <th>ID</th>
                                 <th>Nombre Completo</th>
                                 <th>Correo Electrónico</th>
-                                <th>Dependencia</th>
+                                <th>Institución</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>

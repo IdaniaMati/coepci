@@ -181,6 +181,9 @@ Route::middleware(['auth', 'can:Modulo_Resultados'])->group(function () {
     Route::get('/obtenerResultados', [ResultadosController::class, 'obtenerResultados'])->name('obtenerResultados');
     Route::get('/obtenerGanadoresV', [ResultadosController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
     Route::get('/resultadosWithDependencia', [ResultadosController::class, 'showResultadosDependencia'])->name('obtenerResultadosDependencia');
+    Route::get('/obtenerGrupos', [ResultadosController::class, 'obtenerGrupos']);
+    Route::get('/obtenerCargos', [ResultadosController::class, 'obtenerCargos']);
+    Route::post('/agregarExcepcion', [ResultadosController::class, 'agregarExcepcion']);
 });
 
 /*----------------------- Permisos ------------------------*/

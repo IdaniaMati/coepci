@@ -16,27 +16,60 @@
       </div>
 
             <div>
-                <!-- Resultado final del concurso -->
-                <br>
-                <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
-                    <div v-if="ganadores.length > 0" class="card mb-4">
-                            <div class="p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 d-flex justify-content-between align-items-center" @click="toggleCollapse('ganadores')">
-                                <h4 class="pb-1 mb-4">Ganadores del Concurso</h4>
-                                <i :class="isExpanded('ganadores') ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
-                            </div>
-                            <div v-show="isExpanded('ganadores')">
-                                <div class="row">
-                                    <div v-for="(grupo, index) in ganadores" :key="index" class="col-md-4 mb-3">
-                                        <h5>{{ `Grupo ${grupo.grupo}` }}</h5>
-                                        <ul class="list-group">
-                                            <li v-for="(ganador, ganadorIndex) in grupo.ganadores" :key="ganadorIndex" class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>{{ `${ganador.numero}. ${ganador.nombre}` }}</span>
-                                            </li>
-                                        </ul>
-                                    </div>
+
+            <br>
+            <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
+                <div v-if="ganadores.length > 0" class="card mb-4">
+                    <div class="table-container">
+                        <div class="nav-item d-flex align-items-center">
+                            <button class="btn btn-excepcion mb-3" title="Caso Excepcional" @click="nuevo">
+                                <i class="bi bi-person-add" style="font-size: 20px;"></i>
+                                &nbsp;<p>Excepción</p>
+                            </button>
+                        </div>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>CURP</th>
+                                    <th>Grupo</th>
+                                    <th>Cargo</th>
+                                    <th>Documento</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(grupo, index) in ganadores" :key="index">
+                                    <tr v-for="(ganador, ganadorIndex) in grupo.ganadores" :key="ganadorIndex">
+                                        <td>{{ ganador.nombre }}</td>
+                                        <td>{{ ganador.nombre }}</td>
+                                        <td>{{ `Grupo ${grupo.grupo}` }}</td>
+                                        <td>
+                                                <select v-model="id_cargo" class="form-control" id="cargo" required>
+                                                        <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
+                                                </select>
+                                        </td>
+                                        <td>
+                                            <input type="file" @change="" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                            <button class="btn btn-roles" title="Subir Formato" @click="importarManuales">
+                                                <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button  class="btn btn-edit btn-sm"  title="Aprobar" @click="">
+                                                <i class="bi bi-check-circle" style="font-size: 15px;"></i>
+                                            </button> &nbsp;
+                                            <button  class="btn btn-delete btn-sm"  title="Rechazar" @click="">
+                                                <i class="bi bi-x-circle" style="font-size: 15px;"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
+
 
             <!-- Resultados de rondas (1 y 2) del concurso -->
             <br>
@@ -71,28 +104,100 @@
                         <p v-if="resultadosRonda.length === 0" class="text-center mt-4">{{ `No hay resultados para la Ronda ${ronda}.` }}</p>
                     </div>
             </div>
+
+             <!-- Inicio Modal Agregar Caso excepcional -->
+             <div class="container">
+                    <div class="modal fade" id="largeModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><strong>Empleado</strong></h5>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Nombre completo</label>
+                                                <input v-model="nombreCompleto" class="form-control" placeholder="Nombre Completo" required/>
+                                                <div v-if="!nombreCompleto" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>CURP</label>
+                                                    <input v-model="curp" class="form-control" placeholder="Curp" required/>
+                                                <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Grupo</label>
+                                                    <select v-model="id_grup" class="form-control" id="grupo" required>
+                                                        <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
+                                                    </select>
+                                                <div v-if="!id_grup" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Cargo</label>
+                                                <select v-model="id_cargo" class="form-control" id="cargo" required>
+                                                        <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
+                                                </select>
+                                                <div v-if="!cargo" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Documento</label>
+                                                <div class="modal-body">
+                                                    <input type="file" @change="handleFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button v-if="bandera === 0" class="btn btn-primary" @click="agregarExcepcion">Guardar</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Final Modal Agregar Caso excepcional -->
         </div>
     </div>
   </template>
 
   <script>
     import axios from "axios";
-    import Swal from 'sweetalert2';
     import 'sweetalert2/dist/sweetalert2.min.css';
+    import permisos from "../permisos/permisos.vue";
 
     export default {
       data() {
         return {
-          mensajeNoVotaciones: "",
-          dependencias: [],
-          id_depen: null,
-          resultadosPorRonda: {
-            1: [],
-            2: [],
-          },
-          ganadores: [],
-          expandedId: null,
-          showDependenciaSelect: false,
+            mensajeNoVotaciones: "",
+            dependencias: [],
+            id_depen: null,
+            resultadosPorRonda: {
+                1: [],
+                2: [],
+            },
+            ganadores: [],
+            expandedId: null,
+            showDependenciaSelect: false,
+            bandera: "",
+            lista_permisos:[],
+            nombreCompleto: "",
+            curp: "",
+            id_cargo: "",
+            id_grup: "",
+            documento: null,
+            id_conc: this.idConcursoActual
         };
       },
 
@@ -101,9 +206,50 @@
           this.obtenerResultados();
           this.obtenerGanadoresV();
           this.cargarDependencias();
+          this.obtenerGrupos();
+          this.obtenerPermisos();
+          this.obtenerCargos();
       },
 
       methods: {
+
+        obtenerPermisos(){
+            axios
+                .get("/Obtenerpermisos")
+                .then((response) => {
+                    this.lista_permisos  = response.data;
+
+                })
+                .catch((error) => {
+
+                });
+        },
+
+        async obtenerGrupos() {
+             try {
+                 const response = await axios.get('/obtenerGrupos');
+                 if (response.data.success) {
+                 this.grupos = response.data.grupos;
+                 } else {
+                 console.error('Error al obtener los grupos');
+                 }
+             } catch (error) {
+                 console.error('Error al obtener los grupos:', error);
+             }
+        },
+
+        async obtenerCargos() {
+             try {
+                 const response = await axios.get('/obtenerCargos');
+                 if (response.data.success) {
+                 this.cargos = response.data.cargos;
+                 } else {
+                 console.error('Error al obtener los cargos');
+                 }
+             } catch (error) {
+                 console.error('Error al obtener los cargos:', error);
+             }
+        },
 
         cargarDependencias() {
         axios.get('/resultadosWithDependencia')
@@ -246,29 +392,88 @@
         //   },
 
         obtenerGanadoresV(idDependencia = null) {
-        if (!idDependencia) {
-            idDependencia = this.id_depen;
-        }
-        axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
-            .then(response => {
-                this.ganadores = [];
+            if (!idDependencia) {
+                idDependencia = this.id_depen;
+            }
+            axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+                .then(response => {
+                    this.ganadores = [];
 
-                for (let grupo in response.data.ganadores) {
-                    let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-                        numero: index + 1,
-                        nombre: ganador.id_emp
-                    }));
+                    for (let grupo in response.data.ganadores) {
+                        let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+                            numero: index + 1,
+                            nombre: ganador.id_emp
+                        }));
 
-                    this.ganadores.push({
-                        grupo: grupo,
-                        ganadores: ganadoresGrupo
-                    });
+                        this.ganadores.push({
+                            grupo: grupo,
+                            ganadores: ganadoresGrupo
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener ganadores', error);
+                });
+        },
+
+            async agregarExcepcion() {
+            if (this.curp.length !== 18) {
+                Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('id_emp', this.nombreCompleto);
+            formData.append('curp', this.curp.toUpperCase().substring(0, 18));
+            formData.append('id_grup', this.id_grup);
+            formData.append('id_cargo', this.id_cargo);
+            formData.append('documento', this.documento);
+            formData.append('id_conc', this.id_conc);
+
+            try {
+                const response = await axios.post('/agregarExcepcion', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (response.data.success) {
+                    this.cerrarModal();
+                    this.obtenerGanadoresV();
+                    Swal.fire('Éxito', response.data.message, 'success');
+                } else {
+                    Swal.fire('Error', response.data.error, 'error');
                 }
-            })
-            .catch(error => {
-                console.error('Error al obtener ganadores', error);
-            });
-    },
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'No se pudo guardar al ganador.', 'error');
+            }
+        },
+
+        handleFileUpload(event) {
+            this.documento = event.target.files[0];
+        },
+
+        nuevo() {
+            this.limpiarvar();
+            this.bandera = 0;
+            this.abrirModal();
+        },
+
+        abrirModal() {
+            $("#largeModal").modal({ backdrop: "static", keyboard: false });
+            $("#largeModal").modal("toggle");
+        },
+        cerrarModal() {
+            $("#largeModal").modal("hide");
+        },
+
+        limpiarvar() {
+            this.nombreCompleto = null;
+            this.curp = null;
+            this.id_cargo = null;
+            this.id_grup = null;
+        },
       },
     };
   </script>

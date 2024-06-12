@@ -223,6 +223,19 @@ button.list-group-item-primary.active {
         text-align: center;
 }
 
+.btn-excepcion {
+    background-color: #3D3935;
+    color: white;
+    width: 110px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 15px;
+    text-align: center;
+}
+
 .btn-add:hover {
     color: #fff;
     background-color: #B0ABA1;
