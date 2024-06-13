@@ -184,6 +184,9 @@ Route::middleware(['auth', 'can:Modulo_Resultados'])->group(function () {
     Route::get('/obtenerGrupos', [ResultadosController::class, 'obtenerGrupos']);
     Route::get('/obtenerCargos', [ResultadosController::class, 'obtenerCargos']);
     Route::post('/agregarExcepcion', [ResultadosController::class, 'agregarExcepcion']);
+    //Route::get('/obtenerIdConc', [ResultadosController::class, 'obtenerIdConc']);
+    Route::post('/upload-document', [ResultadosController::class, 'uploadDocument']);
+
 });
 
 /*----------------------- Permisos ------------------------*/

@@ -29,6 +29,26 @@ class ResultadosController extends Controller
         return view('admin.resultados');
     }
 
+    public function uploadDocument(Request $request)
+    {
+        $request->merge(['ganador_id' => (int) $request->input('ganador_id')]);
+        
+        $request->validate([
+            'file' => 'required|mimes:pdf|max:2048',
+            'ganador_id' => 'required|integer|exists:ganadores,id'
+        ]);
+
+        $file = $request->file('file');
+        $ganadorId = $request->input('ganador_id');
+
+        $fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs('documentos', $fileName, 'public');
+
+        Ganadores::where('id', $ganadorId)->update(['documento' => $filePath]);
+
+        return response()->json(['message' => 'Archivo subido exitosamente', 'file_path' => $filePath], 200);
+    }
+
     public function obtenerResultados(Request $request)
     {
         $ronda = $request->get('ronda', 1);
@@ -77,22 +97,24 @@ class ResultadosController extends Controller
         return response()->json($resultados);
     }
 
-    public function obtenerGanadoresV(Request $request)
-    {
-        try {
-            $idDependenciaSeleccionada = $request->get('idDependencia');
+    // public function obtenerGanadoresV(Request $request)
+    // {
+    //     try {
+    //         $idDependenciaSeleccionada = $request->get('idDependencia');
 
-            $ultimoConcurso = Concurso::where('id_depen', $idDependenciaSeleccionada)->latest()->first();
+    //         $ultimoConcurso = Concurso::where('id_depen', $idDependenciaSeleccionada)->latest()->first();
 
-            if (!$ultimoConcurso) {
-                return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
-            }
+    //         if (!$ultimoConcurso) {
+    //             return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
+    //         }
 
-            $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
-                ->select('ganadores.id_emp', 'ganadores.id_grup')
-                ->get();
+    //         $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
+    //             ->select('ganadores.id_emp', 'ganadores.id_grup')
+    //             ->get();
 
-            $ganadoresAgrupados = $ganadores->groupBy('id_grup');
+    //         $ganadoresAgrupados = $ganadores->groupBy('id_grup');
+
+            //NO DESCOMENTAR
 
             //Agrupamos los ganadores por grupo y limitamos los resultados
             // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo, $idGrupo) {
@@ -123,11 +145,46 @@ class ResultadosController extends Controller
             //     return $grupo->take($maxGanadores[$grupo->first()->id_grup] ?? 0);
             // });
 
-            return response()->json(['ganadores' => $ganadoresAgrupados]);
+            //AQUI DESCOMENTAR
+
+    //         return response()->json(['ganadores' => $ganadoresAgrupados]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
+
+    public function obtenerGanadoresV(Request $request)
+    {
+        try {
+
+            $idDependenciaSeleccionada = $request->get('idDependencia');
+
+            $ultimoConcurso = Concurso::where('id_depen', $idDependenciaSeleccionada)->latest()->first();
+
+            if (!$ultimoConcurso) {
+                return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
+            }
+
+            $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
+                ->select('ganadores.id_emp', 'ganadores.id_grup')
+
+                //PRUEBAS
+                // ->select('ganadores.id_emp', 'ganadores.id_grup', 'empleados.curp') // Incluir CURP desde la tabla empleados
+                // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id')
+
+                //PRUEBAS
+                //->with('empleado')
+
+                ->get();
+
+                $ganadoresAgrupados = $ganadores->groupBy('id_grup');
+
+            return response()->json(['ganadores' => $ganadoresAgrupados, 'id_conc' => $ultimoConcurso->id]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function agregarExcepcion(Request $request){
         try {

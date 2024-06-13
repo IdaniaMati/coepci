@@ -42,7 +42,7 @@
                                 <template v-for="(grupo, index) in ganadores" :key="index">
                                     <tr v-for="(ganador, ganadorIndex) in grupo.ganadores" :key="ganadorIndex">
                                         <td>{{ ganador.nombre }}</td>
-                                        <td>{{ ganador.nombre }}</td>
+                                        <td>{{ ganador.curp }}</td>
                                         <td>{{ `Grupo ${grupo.grupo}` }}</td>
                                         <td>
                                                 <select v-model="id_cargo" class="form-control" id="cargo" required>
@@ -50,8 +50,8 @@
                                                 </select>
                                         </td>
                                         <td>
-                                            <input type="file" @change="" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                            <button class="btn btn-roles" title="Subir Formato" @click="importarManuales">
+                                            <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                            <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador.id)">
                                                 <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
                                             </button>
                                         </td>
@@ -182,6 +182,7 @@
         return {
             mensajeNoVotaciones: "",
             dependencias: [],
+            cargos: [],
             id_depen: null,
             resultadosPorRonda: {
                 1: [],
@@ -197,7 +198,9 @@
             id_cargo: "",
             id_grup: "",
             documento: null,
-            id_conc: this.idConcursoActual
+            id_conc: this.idConcursoActual,
+            selectedFile: null,
+            selectedGanadorId: null,
         };
       },
 
@@ -212,6 +215,34 @@
       },
 
       methods: {
+
+        handleFileChange(event, ganadorId) {
+            this.selectedFile = event.target.files[0];
+            this.selectedGanadorId = ganadorId;
+        },
+        async uploadDocument(ganadorId) {
+            if (!this.selectedFile || this.selectedGanadorId !== ganadorId) {
+                alert("Por favor seleccione un archivo.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", this.selectedFile);
+            formData.append("ganador_id", parseInt(ganadorId));
+
+            try {
+                let response = await axios.post('/upload-document', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+                });
+
+                alert(response.data.message);
+            } catch (error) {
+                console.error(error);
+                alert("Hubo un error al subir el archivo.");
+            }
+        },
 
         obtenerPermisos(){
             axios
@@ -252,20 +283,20 @@
         },
 
         cargarDependencias() {
-        axios.get('/resultadosWithDependencia')
-            .then(response => {
-                this.showDependenciaSelect = response.data.showDependenciaSelect;
-                this.userDependencia = response.data.userDependencia;
-                if (!this.showDependenciaSelect && this.userDependencia) {
-                    this.id_depen = this.userDependencia;
-                    this.obtenerResultados(this.id_depen);
-                    this.obtenerGanadoresV(this.id_depen);
-                }
-            })
-            .catch(error => {
-                console.error('Error al obtener los datos:', error);
-            });
-    },
+            axios.get('/resultadosWithDependencia')
+                .then(response => {
+                    this.showDependenciaSelect = response.data.showDependenciaSelect;
+                    this.userDependencia = response.data.userDependencia;
+                    if (!this.showDependenciaSelect && this.userDependencia) {
+                        this.id_depen = this.userDependencia;
+                        this.obtenerResultados(this.id_depen);
+                        this.obtenerGanadoresV(this.id_depen);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                });
+        },
 
         toggleCollapse(id) {
                 if (this.expandedId === id) {
@@ -327,6 +358,7 @@
             axios.get(`/obtenerResultados?ronda=1&idDependencia=${idDependencia}`)
                 .then(response => {
                     this.resultadosPorRonda[1] = this.agregarNumeracion(response.data);
+                    this.id_conc = response.data.id_conc; // Guardar id_conc
                 })
                 .catch(error => {
                     if (error.response && error.response.status === 404) {
@@ -339,6 +371,7 @@
             axios.get(`/obtenerResultados?ronda=2&idDependencia=${idDependencia}`)
                 .then(response => {
                     this.resultadosPorRonda[2] = this.agregarNumeracion(response.data);
+                    this.id_conc = response.data.id_conc; // Guardar id_conc
                 })
                 .catch(error => {
                     if (error.response && error.response.status === 404) {
@@ -398,11 +431,19 @@
             axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
                 .then(response => {
                     this.ganadores = [];
+                    this.id_conc = response.data.id_conc;
 
                     for (let grupo in response.data.ganadores) {
-                        let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+                        let ganadoresGrupo = response.data.ganadores[grupo].map /*(ganador => ({ */ ((ganador, index) => ({
                             numero: index + 1,
-                            nombre: ganador.id_emp
+                            nombre: ganador.id_emp,
+
+                            //PRUEBAS
+                            // numero: ganador.numero,
+                            // nombre: ganador.empleado.nombre, // Nombre del empleado
+                            // curp: ganador.empleado.curp,     // CURP del empleado
+                            // id_cargo: ganador.id_cargo,      // ID de cargo si es necesario
+                            // documento: ganador.documento
                         }));
 
                         this.ganadores.push({
@@ -423,12 +464,12 @@
             }
 
             const formData = new FormData();
+            formData.append('id_conc', this.id_conc); // Incluir id_conc
             formData.append('id_emp', this.nombreCompleto);
             formData.append('curp', this.curp.toUpperCase().substring(0, 18));
             formData.append('id_grup', this.id_grup);
             formData.append('id_cargo', this.id_cargo);
             formData.append('documento', this.documento);
-            formData.append('id_conc', this.id_conc);
 
             try {
                 const response = await axios.post('/agregarExcepcion', formData, {
@@ -448,10 +489,6 @@
                 console.error(error);
                 Swal.fire('Error', 'No se pudo guardar al ganador.', 'error');
             }
-        },
-
-        handleFileUpload(event) {
-            this.documento = event.target.files[0];
         },
 
         nuevo() {
