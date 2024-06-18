@@ -32,21 +32,32 @@ class ResultadosController extends Controller
     public function uploadDocument(Request $request)
     {
         $request->merge(['ganador_id' => (int) $request->input('ganador_id')]);
-        
+
         $request->validate([
             'file' => 'required|mimes:pdf|max:2048',
             'ganador_id' => 'required|integer|exists:ganadores,id'
         ]);
 
-        $file = $request->file('file');
-        $ganadorId = $request->input('ganador_id');
+        try {
+            $file = $request->file('file');
+            $ganadorId = $request->input('ganador_id');
 
-        $fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
-        $filePath = $file->storeAs('documentos', $fileName, 'public');
+            $fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('public/documentos', $fileName);
 
-        Ganadores::where('id', $ganadorId)->update(['documento' => $filePath]);
+            // Elimina 'public/' del filePath para almacenar solo 'documentos/nombre_archivo.pdf' en la base de datos
+            $filePath = substr($filePath, 7);
 
-        return response()->json(['message' => 'Archivo subido exitosamente', 'file_path' => $filePath], 200);
+            // Actualiza el registro del ganador con la ruta del archivo
+            Ganadores::where('id', $ganadorId)->update(['documento' => $filePath]);
+
+            // Genera la URL completa del archivo
+            $fileUrl = Storage::url($filePath);
+
+            return response()->json(['success' => true, 'message' => 'Archivo subido exitosamente', 'url' => $fileUrl], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
     public function obtenerResultados(Request $request)
@@ -185,7 +196,6 @@ class ResultadosController extends Controller
         }
     }
 
-
     public function agregarExcepcion(Request $request){
         try {
             $user = Auth::user();
@@ -220,6 +230,33 @@ class ResultadosController extends Controller
             //MyHelper::registrarAccion('Se agrego el Caso excepcional: ' . $nuevoExcepcion->nombreCompleto);
 
             return response()->json(['success' => true, 'message' => 'Ganador guardado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function editarGanadores(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required',
+                'ganador_id' => 'required|integer|exists:ganadores,id'
+            ]);
+
+            $ganador = Ganadores::findOrFail($request->input('id'));
+
+            $ganador->id_conc = $request->input('id_conc');
+            $ganador->id_emp = $request->input('id_emp');
+            $ganador->curp = $request->input('curp');
+            $ganador->id_grup = $request->input('id_grup');
+            $ganador->id_cargo = $request->input('id_cargo');
+            $ganador->documento = $request->input('documento');
+
+            $ganador->save();
+
+            MyHelper::registrarAccion('Se editó al empleado: ' . $ganador -> id_emp);
+
+            return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }

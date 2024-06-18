@@ -30,6 +30,7 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Nombre</th>
                                     <th>CURP</th>
                                     <th>Grupo</th>
@@ -41,6 +42,7 @@
                             <tbody>
                                 <template v-for="(grupo, index) in ganadores" :key="index">
                                     <tr v-for="(ganador, ganadorIndex) in grupo.ganadores" :key="ganadorIndex">
+                                        <td>{{ ganador.id }}</td>
                                         <td>{{ ganador.nombre }}</td>
                                         <td>{{ ganador.curp }}</td>
                                         <td>{{ `Grupo ${grupo.grupo}` }}</td>
@@ -51,12 +53,12 @@
                                         </td>
                                         <td>
                                             <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                            <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador.id)">
+                                            <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
                                                 <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
                                             </button>
                                         </td>
                                         <td>
-                                            <button  class="btn btn-edit btn-sm"  title="Aprobar" @click="">
+                                            <button  class="btn btn-edit btn-sm"  title="Aprobar" @click="editarGanador(ganador)">
                                                 <i class="bi bi-check-circle" style="font-size: 15px;"></i>
                                             </button> &nbsp;
                                             <button  class="btn btn-delete btn-sm"  title="Rechazar" @click="">
@@ -201,6 +203,7 @@
             id_conc: this.idConcursoActual,
             selectedFile: null,
             selectedGanadorId: null,
+            idGanador: "",
         };
       },
 
@@ -216,33 +219,34 @@
 
       methods: {
 
-        handleFileChange(event, ganadorId) {
-            this.selectedFile = event.target.files[0];
-            this.selectedGanadorId = ganadorId;
-        },
-        async uploadDocument(ganadorId) {
-            if (!this.selectedFile || this.selectedGanadorId !== ganadorId) {
-                alert("Por favor seleccione un archivo.");
-                return;
-            }
+        // handleFileChange(event, ganadorId) {
+        //     this.selectedFile = event.target.files[0];
+        //     this.selectedGanadorId = ganadorId;
+        // },
 
-            let formData = new FormData();
-            formData.append("file", this.selectedFile);
-            formData.append("ganador_id", parseInt(ganadorId));
+        // async uploadDocument(ganadorId) {
+        //     if (!this.selectedFile || this.selectedGanadorId !== ganadorId) {
+        //         alert("Por favor seleccione un archivo.");
+        //         return;
+        //     }
 
-            try {
-                let response = await axios.post('/upload-document', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-                });
+        //     let formData = new FormData();
+        //     formData.append("file", this.selectedFile);
+        //     formData.append("ganador_id", parseInt(ganadorId));
 
-                alert(response.data.message);
-            } catch (error) {
-                console.error(error);
-                alert("Hubo un error al subir el archivo.");
-            }
-        },
+        //     try {
+        //         let response = await axios.post('/upload-document', formData, {
+        //         headers: {
+        //             'Content-Type': 'multipart/form-data'
+        //         }
+        //         });
+
+        //         alert(response.data.message);
+        //     } catch (error) {
+        //         console.error(error);
+        //         alert("Hubo un error al subir el archivo.");
+        //     }
+        // },
 
         obtenerPermisos(){
             axios
@@ -275,7 +279,7 @@
                  if (response.data.success) {
                  this.cargos = response.data.cargos;
                  } else {
-                 console.error('Error al obtener los cargos');
+                    console.error('Error al obtener los cargos');
                  }
              } catch (error) {
                  console.error('Error al obtener los cargos:', error);
@@ -298,19 +302,7 @@
                 });
         },
 
-        toggleCollapse(id) {
-                if (this.expandedId === id) {
-                    this.expandedId = null;
-                } else {
-                    this.expandedId = id;
-                }
-            },
-
-            isExpanded(id) {
-                return this.expandedId === id;
-            },
-
-          obtenerDependencias(){
+        obtenerDependencias(){
           axios.get('/obtenerDependencias')
               .then((response) => {
                   this.dependencias = response.data.user;
@@ -318,12 +310,25 @@
               .catch((error) => {
                   console.error(error);
               });
-          },
+        },
 
-          cambiarDependencia() {
+        cambiarDependencia() {
               this.obtenerResultados(this.id_depen);
               this.obtenerGanadoresV(this.id_depen);
-          },
+        },
+
+         //Metodos para efecto acordeón
+        toggleCollapse(id) {
+            if (this.expandedId === id) {
+                    this.expandedId = null;
+            } else {
+                    this.expandedId = id;
+                }
+        },
+
+        isExpanded(id) {
+            return this.expandedId === id;
+        },
 
         //   obtenerResultados(idDependencia) {
 
@@ -351,7 +356,8 @@
         //           }
         //       });
         //   },
-            obtenerResultados(idDependencia = null) {
+
+        obtenerResultados(idDependencia = null) {
             if (!idDependencia) {
                 idDependencia = this.id_depen;
             }
@@ -382,7 +388,7 @@
                 });
         },
 
-          agregarNumeracion(resultados) {
+        agregarNumeracion(resultados) {
                   if (typeof resultados !== 'object' || resultados === null) {
                       return {};
                   }
@@ -399,7 +405,7 @@
                       }
                   }
                   return numeradosResultados;
-          },
+        },
 
         //   obtenerGanadoresV(idDependencia) {
         //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
@@ -457,7 +463,7 @@
                 });
         },
 
-            async agregarExcepcion() {
+        async agregarExcepcion() {
             if (this.curp.length !== 18) {
                 Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
                 return;
@@ -491,6 +497,75 @@
             }
         },
 
+        async handleFileUpload(ganador) {
+
+            console.log('Ganador ID 1:', ganador);
+            console.log('Ganador ID 2:', ganador.id);
+            console.log('Ganador ID (con corchetes):', ganador['id']);
+
+            const formData = new FormData();
+            formData.append('file', this.documento);
+            formData.append('ganador_id', ganador.id);
+
+            try {
+                const response = await axios.post('/uploadDocument', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (response.data.success) {
+                    return response.data.url;
+                } else {
+                    Swal.fire('Error', response.data.message, 'error');
+                    return null;
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
+                return null;
+            }
+        },
+
+        async editarGanador(ganador) {
+            // Primero, sube el archivo y obtén la URL
+            const documentoUrl = await this.handleFileUpload(ganador);
+            if (!documentoUrl) {
+                return;
+            }
+
+            // Luego, actualiza el registro del ganador con la URL del archivo
+            const ganadorActualizado = {
+                id: ganador.id,
+                id_conc: ganador.id_conc,
+                id_emp: ganador.id_emp,
+                curp: ganador.curp,
+                id_grup: ganador.id_grup,
+                id_cargo: this.id_cargo, // Asegúrate de que el v-model del select esté actualizado correctamente
+                documento: documentoUrl // Utiliza la URL del archivo subido
+            };
+
+            try {
+                const response = await axios.post('/editarGanadores', ganadorActualizado);
+
+                if (response.data.success) {
+                    this.obtenerGanadoresV();
+                    Swal.fire('Éxito', response.data.message, 'success');
+                } else {
+                    Swal.fire('Error', response.data.message, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al actualizar el ganador.', 'error');
+            }
+        },
+
+        handleFileChange(event, ganadorId) {
+            const file = event.target.files[0];
+            this.documento = file; // Guarda el archivo seleccionado en la propiedad documento
+        },
+
+        //metodos del modal
         nuevo() {
             this.limpiarvar();
             this.bandera = 0;
@@ -501,6 +576,7 @@
             $("#largeModal").modal({ backdrop: "static", keyboard: false });
             $("#largeModal").modal("toggle");
         },
+
         cerrarModal() {
             $("#largeModal").modal("hide");
         },
@@ -516,8 +592,6 @@
   </script>
 
   <style scoped>
-  .container {}
-
   .center-container {
     text-align: center;
   }
@@ -550,5 +624,5 @@
       height: 100px;
       resize: none;
       white-space: pre-line;
-    }
+}
   </style>
