@@ -30,4 +30,9 @@ class Empleado extends Authenticatable
     {
         return $this->belongsTo(Dependencias::class, 'id_depen');
     }
+
+    public function ganadores()
+    {
+        return $this->belongsTo(Ganadores::class, 'id_emp', 'id');
+    }
 }

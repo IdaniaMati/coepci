@@ -22,4 +22,9 @@ class Ganadores extends Model
     {
         return $this->belongsTo(Concurso::class, 'id');
     }
+
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class, 'id_emp', 'id');
+    }
 }

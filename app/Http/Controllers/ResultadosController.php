@@ -94,6 +94,7 @@ class ResultadosController extends Controller
                     'nombre' => $empleado->nombre,
                     'apellido_paterno' => $empleado->apellido_paterno,
                     'apellido_materno' => $empleado->apellido_materno,
+                    'curp' => $empleado->curp,
                     'votos' => 1,
                 ];
             }
@@ -169,24 +170,30 @@ class ResultadosController extends Controller
         try {
 
             $idDependenciaSeleccionada = $request->get('idDependencia');
-
             $ultimoConcurso = Concurso::where('id_depen', $idDependenciaSeleccionada)->latest()->first();
 
             if (!$ultimoConcurso) {
                 return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
             }
 
-            $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
-                ->select('ganadores.id_emp', 'ganadores.id_grup')
+            $ganadores = Ganadores::with('empleado')->where('id_conc', $ultimoConcurso->id)
+                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_conc')
 
-                //PRUEBAS
-                // ->select('ganadores.id_emp', 'ganadores.id_grup', 'empleados.curp') // Incluir CURP desde la tabla empleados
-                // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id')
-
-                //PRUEBAS
-                //->with('empleado')
+                // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id') // Unir con la tabla empleados
+                // ->select(
+                //     'ganadores.*',
+                //     'ganadores.id',
+                //     'ganadores.id_emp',
+                //     'ganadores.id_grup',
+                //     'empleados.curp',
+                //     'empleados.nombre',
+                //     'empleados.apellido_paterno',
+                //     'empleados.apellido_materno'
+                // )
 
                 ->get();
+
+                //dd($ganadores);
 
                 $ganadoresAgrupados = $ganadores->groupBy('id_grup');
 

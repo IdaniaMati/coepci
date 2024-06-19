@@ -52,10 +52,12 @@
                                                 </select>
                                         </td>
                                         <td>
-                                            <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                            <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
-                                                <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
-                                            </button>
+                                            <div class="input-group">
+                                                <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                                <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
+                                                    <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                         <td>
                                             <button  class="btn btn-edit btn-sm"  title="Aprobar" @click="editarGanador(ganador)">
@@ -219,6 +221,10 @@
 
       methods: {
 
+        triggerFileInput() {
+            this.$refs.fileInput.click();
+        },
+        
         // handleFileChange(event, ganadorId) {
         //     this.selectedFile = event.target.files[0];
         //     this.selectedGanadorId = ganadorId;
@@ -436,20 +442,19 @@
             }
             axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
                 .then(response => {
+                    console.log(response.data);
                     this.ganadores = [];
                     this.id_conc = response.data.id_conc;
-
+                    if (response.data.ganadores && Object.keys(response.data.ganadores).length > 0) {
                     for (let grupo in response.data.ganadores) {
                         let ganadoresGrupo = response.data.ganadores[grupo].map /*(ganador => ({ */ ((ganador, index) => ({
                             numero: index + 1,
+                            id:ganador.id,
                             nombre: ganador.id_emp,
-
-                            //PRUEBAS
-                            // numero: ganador.numero,
-                            // nombre: ganador.empleado.nombre, // Nombre del empleado
-                            // curp: ganador.empleado.curp,     // CURP del empleado
-                            // id_cargo: ganador.id_cargo,      // ID de cargo si es necesario
-                            // documento: ganador.documento
+                            curp: ganador.curp,
+                            // id_cargo: ganador.id_cargo,
+                            // documento: ganador.documento,
+                            // id_conc: ganador.id_conc
                         }));
 
                         this.ganadores.push({
@@ -457,6 +462,7 @@
                             ganadores: ganadoresGrupo
                         });
                     }
+                 }
                 })
                 .catch(error => {
                     console.error('Error al obtener ganadores', error);
