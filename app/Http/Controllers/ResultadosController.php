@@ -60,6 +60,12 @@ class ResultadosController extends Controller
         }
     }
 
+    public function detalleGanadores($id)
+    {
+        $ganador = Ganadores::where('id',$id)->get();
+        return response()->json($ganador);
+    }
+
     public function obtenerResultados(Request $request)
     {
         $ronda = $request->get('ronda', 1);

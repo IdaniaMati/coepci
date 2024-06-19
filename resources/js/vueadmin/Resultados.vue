@@ -47,20 +47,25 @@
                                         <td>{{ ganador.curp }}</td>
                                         <td>{{ `Grupo ${grupo.grupo}` }}</td>
                                         <td>
-                                                <select v-model="id_cargo" class="form-control" id="cargo" required>
+                                            <td>{{ ganador.id_cargo }}</td>
+                                                <!-- <select v-model="id_cargo" class="form-control" id="cargo" required>
                                                         <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
-                                                </select>
+                                                </select> -->
                                         </td>
                                         <td>
-                                            <div class="input-group">
+                                            <!-- <div class="input-group">
                                                 <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                                                 <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
                                                     <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
                                                 </button>
-                                            </div>
+                                            </div> -->
+                                            <td>{{ ganador.documento }}</td>
                                         </td>
                                         <td>
-                                            <button  class="btn btn-edit btn-sm"  title="Aprobar" @click="editarGanador(ganador)">
+                                            <button  class="btn btn-roles btn-sm"  title="Asignar cargo" @click="detalleGanadores(ganador.id)">
+                                                <i class="bi bi-person-rolodex" style="font-size: 15px;"></i>
+                                            </button> &nbsp;
+                                            <button  class="btn btn-edit btn-sm"  title="Aceptar" @click="">
                                                 <i class="bi bi-check-circle" style="font-size: 15px;"></i>
                                             </button> &nbsp;
                                             <button  class="btn btn-delete btn-sm"  title="Rechazar" @click="">
@@ -172,6 +177,51 @@
                     </div>
                 </div>
                 <!-- Final Modal Agregar Caso excepcional -->
+
+                <!-- Modal asignar cargos -->
+                <div class="container">
+                    <div class="modal fade" id="modalcargos" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><strong>Cargos</strong></h5>
+                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalCargos" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Nombre Completo</label>
+                                                <input v-model="id_emp" class="form-control" placeholder="Nombre Completo" disabled/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Selecciona el cargo a asignar:</label>
+                                                <select v-model="id_cargo" class="form-control" id="cargo" required>
+                                                    <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Documento comprobatorio:</label>&nbsp;
+                                                    <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                            <!-- <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
+                                                <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
+                                            </button> -->
+                                             </div>
+                                        </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarGanador(ganador.id)">Guardar Cambios</button>
+                                    <button class="btn btn-cerrar" @click="cerrarModalCargos" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Modal asignar cargos -->
         </div>
     </div>
   </template>
@@ -206,6 +256,7 @@
             selectedFile: null,
             selectedGanadorId: null,
             idGanador: "",
+            idGan: ""
         };
       },
 
@@ -224,7 +275,7 @@
         triggerFileInput() {
             this.$refs.fileInput.click();
         },
-        
+
         // handleFileChange(event, ganadorId) {
         //     this.selectedFile = event.target.files[0];
         //     this.selectedGanadorId = ganadorId;
@@ -533,7 +584,28 @@
             }
         },
 
+        //Metodos de ganadores
+        detalleGanadores(idGan) {
+
+        this.idGanador = idGan;
+        this.bandera = 1;
+        this.abrirModalCargos();
+
+        axios
+            .get("/detalleGanadores/" + idGan)
+            .then((response) => {
+                const ganador = response.data[0];
+                this.id_emp = ganador.id_emp;
+                this.id_cargo = ganador.id_cargo;
+                this.documento = ganador.documento;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        },
+
         async editarGanador(ganador) {
+
             // Primero, sube el archivo y obtén la URL
             const documentoUrl = await this.handleFileUpload(ganador);
             if (!documentoUrl) {
@@ -571,7 +643,17 @@
             this.documento = file; // Guarda el archivo seleccionado en la propiedad documento
         },
 
-        //metodos del modal
+        //metodos modal asginar cargos
+        abrirModalCargos() {
+            $("#modalcargos").modal({ backdrop: "static", keyboard: false });
+            $("#modalcargos").modal("toggle");
+        },
+
+        cerrarModalCargos() {
+            $("#modalcargos").modal("hide");
+        },
+
+        //metodos del modal agregar caso excepcional
         nuevo() {
             this.limpiarvar();
             this.bandera = 0;
