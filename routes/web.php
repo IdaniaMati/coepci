@@ -186,8 +186,12 @@ Route::middleware(['auth', 'can:Modulo_Resultados'])->group(function () {
     Route::post('/agregarExcepcion', [ResultadosController::class, 'agregarExcepcion']);
     //Route::get('/obtenerIdConc', [ResultadosController::class, 'obtenerIdConc']);
     Route::post('/uploadDocument', [ResultadosController::class, 'uploadDocument']);
-    Route::post('/detalleGanadores/{id}', [ResultadosController::class, 'detalleGanadores']);
+    Route::get('/detalleGanadores/{id}', [ResultadosController::class, 'detalleGanadores']);
     Route::post('/editarGanadores', [ResultadosController::class, 'editarGanadores']);
+    // Route::post('aprobarGanador/{id}', [ResultadosController::class, 'aprobarGanador'])->name('ganadores.aprobar');
+    // Route::post('rechazarGanador/{id}', [ResultadosController::class, 'rechazarGanador'])->name('ganadores.rechazar');
+    Route::post('/actualizarEstadoGanador/{id}', [ResultadosController::class, 'actualizarEstadoGanador']);
+
 
 });
 

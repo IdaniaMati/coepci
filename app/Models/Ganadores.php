@@ -16,6 +16,7 @@ class Ganadores extends Model
         'id_grup',
         'id_cargo',
         'documento',
+        'estado'
     ];
 
     public function concurso()

@@ -46,29 +46,16 @@
                                         <td>{{ ganador.nombre }}</td>
                                         <td>{{ ganador.curp }}</td>
                                         <td>{{ `Grupo ${grupo.grupo}` }}</td>
+                                        <td>{{ ganador.id_cargo }}</td>
+                                        <td>{{ ganador.documento }}</td>
                                         <td>
-                                            <td>{{ ganador.id_cargo }}</td>
-                                                <!-- <select v-model="id_cargo" class="form-control" id="cargo" required>
-                                                        <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
-                                                </select> -->
-                                        </td>
-                                        <td>
-                                            <!-- <div class="input-group">
-                                                <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                                <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
-                                                    <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
-                                                </button>
-                                            </div> -->
-                                            <td>{{ ganador.documento }}</td>
-                                        </td>
-                                        <td>
-                                            <button  class="btn btn-roles btn-sm"  title="Asignar cargo" @click="detalleGanadores(ganador.id)">
+                                            <button  class="btn btn-roles btn-sm"  title="Asignar cargo" @click="detalleGanadores(ganador.id)" :disabled="isGanadorRechazado(ganador.estado)">
                                                 <i class="bi bi-person-rolodex" style="font-size: 15px;"></i>
                                             </button> &nbsp;
-                                            <button  class="btn btn-edit btn-sm"  title="Aceptar" @click="">
+                                            <button  class="btn btn-edit btn-sm"  title="Aceptar" @click="aprobarGanador(ganador.id)":disabled="isGanadorRechazado(ganador.estado)">
                                                 <i class="bi bi-check-circle" style="font-size: 15px;"></i>
                                             </button> &nbsp;
-                                            <button  class="btn btn-delete btn-sm"  title="Rechazar" @click="">
+                                            <button  class="btn btn-delete btn-sm"  title="Rechazar" @click="rechazarGanador(ganador.id)":disabled="isGanadorRechazado(ganador.estado)">
                                                 <i class="bi bi-x-circle" style="font-size: 15px;"></i>
                                             </button>
                                         </td>
@@ -161,7 +148,7 @@
                                             <div class="col-md-12 mb-3">
                                                 <label>Documento</label>
                                                 <div class="modal-body">
-                                                    <input type="file" @change="handleFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                                    <input type="file" @change="" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                                                 </div>
                                             </div>
                                         </div>
@@ -205,16 +192,13 @@
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Documento comprobatorio:</label>&nbsp;
-                                                    <input type="file" @change="handleFileChange($event, ganador.id)" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                            <!-- <button class="btn btn-roles" title="Subir Formato" @click="uploadDocument(ganador)">
-                                                <i class="bi bi-file-arrow-up" style="font-size: 15px;"></i>
-                                            </button> -->
+                                                    <input type="file" @change="handleFileChange" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                                              </div>
                                         </div>
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarGanador(ganador.id)">Guardar Cambios</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarGanador">Guardar Cambios</button>
                                     <button class="btn btn-cerrar" @click="cerrarModalCargos" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
@@ -222,6 +206,11 @@
                     </div>
                 </div>
                 <!-- Fin Modal asignar cargos -->
+        </div>
+        <div class="d-grid gap-2">
+            <button  class="btn btn-edit btn-sm"  style="height: 40px;" title="Publicar Resultados" @click="publicarResultados">
+                <strong>PUBLICAR RESULTADOS</strong>
+            </button>
         </div>
     </div>
   </template>
@@ -251,6 +240,7 @@
             curp: "",
             id_cargo: "",
             id_grup: "",
+            id_emp:"",
             documento: null,
             id_conc: this.idConcursoActual,
             selectedFile: null,
@@ -271,10 +261,6 @@
       },
 
       methods: {
-
-        triggerFileInput() {
-            this.$refs.fileInput.click();
-        },
 
         // handleFileChange(event, ganadorId) {
         //     this.selectedFile = event.target.files[0];
@@ -503,9 +489,10 @@
                             id:ganador.id,
                             nombre: ganador.id_emp,
                             curp: ganador.curp,
-                            // id_cargo: ganador.id_cargo,
-                            // documento: ganador.documento,
-                            // id_conc: ganador.id_conc
+                            id_cargo: ganador.id_cargo,
+                            documento: ganador.documento,
+                            id_conc: ganador.id_conc,
+                            estado: ganador.estado
                         }));
 
                         this.ganadores.push({
@@ -554,36 +541,6 @@
             }
         },
 
-        async handleFileUpload(ganador) {
-
-            console.log('Ganador ID 1:', ganador);
-            console.log('Ganador ID 2:', ganador.id);
-            console.log('Ganador ID (con corchetes):', ganador['id']);
-
-            const formData = new FormData();
-            formData.append('file', this.documento);
-            formData.append('ganador_id', ganador.id);
-
-            try {
-                const response = await axios.post('/uploadDocument', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                if (response.data.success) {
-                    return response.data.url;
-                } else {
-                    Swal.fire('Error', response.data.message, 'error');
-                    return null;
-                }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
-                return null;
-            }
-        },
-
         //Metodos de ganadores
         detalleGanadores(idGan) {
 
@@ -604,27 +561,27 @@
             });
         },
 
-        async editarGanador(ganador) {
+        async editarGanador() {
 
-            // Primero, sube el archivo y obtén la URL
+            const ganador = {
+                id: this.idGanador,
+                id_conc: this.id_conc,
+                id_emp: this.id_emp,
+                curp: this.curp,
+                id_grup: this.id_grup,
+                id_cargo: this.id_cargo, // Asegúrate de que el v-model del select esté actualizado correctamente
+                //documento: documentoUrl // Utiliza la URL del archivo subido
+            };
+
             const documentoUrl = await this.handleFileUpload(ganador);
             if (!documentoUrl) {
                 return;
             }
 
-            // Luego, actualiza el registro del ganador con la URL del archivo
-            const ganadorActualizado = {
-                id: ganador.id,
-                id_conc: ganador.id_conc,
-                id_emp: ganador.id_emp,
-                curp: ganador.curp,
-                id_grup: ganador.id_grup,
-                id_cargo: this.id_cargo, // Asegúrate de que el v-model del select esté actualizado correctamente
-                documento: documentoUrl // Utiliza la URL del archivo subido
-            };
+            ganador.documento = documentoUrl;
 
             try {
-                const response = await axios.post('/editarGanadores', ganadorActualizado);
+                const response = await axios.post('/editarGanadores', ganador);
 
                 if (response.data.success) {
                     this.obtenerGanadoresV();
@@ -638,7 +595,37 @@
             }
         },
 
-        handleFileChange(event, ganadorId) {
+        async handleFileUpload(ganador) {
+
+        console.log('Ganador:', ganador);
+        console.log('Ganador ID:', ganador.id);
+
+        const formData = new FormData();
+        formData.append('file', this.documento);
+        //formData.append('ganador_id', ganador.id);
+        formData.append('ganador_id', this.idGanador);
+
+        try {
+            const response = await axios.post('/uploadDocument', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (response.data.success) {
+                return response.data.url;
+            } else {
+                Swal.fire('Error', response.data.message, 'error');
+                return null;
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
+            return null;
+        }
+        },
+
+        handleFileChange(event) {
             const file = event.target.files[0];
             this.documento = file; // Guarda el archivo seleccionado en la propiedad documento
         },
@@ -651,6 +638,62 @@
 
         cerrarModalCargos() {
             $("#modalcargos").modal("hide");
+        },
+
+        //Metodos para publicar resultados
+
+        aprobarGanador(id) {
+            axios.post(`/actualizarEstadoGanador/${id}`, { estado: 1 })
+                .then(response => {
+                    if (response.data.success) {
+                            Swal.fire({
+                            icon: 'success',
+                            title: 'Aprobado',
+                            text: 'El ganador ha sido aprobado exitosamente.'
+                        });
+                        this.obtenerGanadoresV(); // Vuelve a cargar los ganadores
+                    } else {
+                        console.error('Error al aprobar ganador', error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al aprobar ganador', error);
+                    this.$swal("Error", "Hubo un problema al aprobar al ganador.", "error");
+                });
+        },
+
+        rechazarGanador(id) {
+            axios.post(`/actualizarEstadoGanador/${id}`, { estado: 2 })
+                .then(response => {
+                    if (response.data.success) {
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Rechazado',
+                            text: 'El ganador ha sido rechazado.'
+                        });
+                        this.obtenerGanadoresV(); // Vuelve a cargar los ganadores
+                    } else {
+                        this.$swal("Error", response.data.message, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al rechazar ganador', error);
+                    console.error('Error al rechazar ganador', error);
+                });
+        },
+
+        actualizarEstadoGanador(idGanador, estado) {
+            for (let grupo of this.ganadores) {
+                for (let ganador of grupo.ganadores) {
+                    if (ganador.id === idGanador) {
+                        ganador.estado = estado;
+                    }
+                }
+            }
+        },
+
+        isGanadorRechazado(estado) {
+            return estado === 2;
         },
 
         //metodos del modal agregar caso excepcional

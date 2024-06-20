@@ -66,6 +66,42 @@ class ResultadosController extends Controller
         return response()->json($ganador);
     }
 
+    public function editarGanadores(Request $request)
+    {
+        try {
+            $request->validate([
+                // 'id' => 'required',
+                // 'ganador_id' => 'required|integer|exists:ganadores,id'
+
+                'id' => 'required|integer|exists:ganadores,id',
+                'id_conc' => 'required|integer',
+                'id_emp' => 'required|string',
+                'curp' => 'required|string',
+                'id_grup' => 'required|integer',
+                'id_cargo' => 'required|integer',
+                'documento' => 'nullable|string',
+
+            ]);
+
+            $ganador = Ganadores::findOrFail($request->input('id'));
+
+            $ganador->id_conc = $request->input('id_conc');
+            $ganador->id_emp = $request->input('id_emp');
+            $ganador->curp = $request->input('curp');
+            $ganador->id_grup = $request->input('id_grup');
+            $ganador->id_cargo = $request->input('id_cargo');
+            $ganador->documento = $request->input('documento');
+
+            $ganador->save();
+
+            MyHelper::registrarAccion('Se editó al empleado: ' . $ganador -> id_emp);
+
+            return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
     public function obtenerResultados(Request $request)
     {
         $ronda = $request->get('ronda', 1);
@@ -183,7 +219,7 @@ class ResultadosController extends Controller
             }
 
             $ganadores = Ganadores::with('empleado')->where('id_conc', $ultimoConcurso->id)
-                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_conc')
+                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_conc', 'ganadores.estado')
 
                 // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id') // Unir con la tabla empleados
                 // ->select(
@@ -248,33 +284,6 @@ class ResultadosController extends Controller
         }
     }
 
-    public function editarGanadores(Request $request)
-    {
-        try {
-            $request->validate([
-                'id' => 'required',
-                'ganador_id' => 'required|integer|exists:ganadores,id'
-            ]);
-
-            $ganador = Ganadores::findOrFail($request->input('id'));
-
-            $ganador->id_conc = $request->input('id_conc');
-            $ganador->id_emp = $request->input('id_emp');
-            $ganador->curp = $request->input('curp');
-            $ganador->id_grup = $request->input('id_grup');
-            $ganador->id_cargo = $request->input('id_cargo');
-            $ganador->documento = $request->input('documento');
-
-            $ganador->save();
-
-            MyHelper::registrarAccion('Se editó al empleado: ' . $ganador -> id_emp);
-
-            return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    }
-
     public function showResultadosDependencia(Request $request)
     {
         $user = Auth::user();
@@ -302,5 +311,47 @@ class ResultadosController extends Controller
         return response()->json(['success' => true, 'cargos' => $cargos]);
     }
 
+    public function aprobarGanador($id)
+    {
+        $ganador = Ganadores::find($id);
+        if ($ganador) {
+            $ganador->estado = 1;
+            $ganador->save();
+            return response()->json(['message' => 'Ganador aprobado exitosamente.']);
+        } else {
+            return response()->json(['message' => 'Ganador no encontrado.'], 404);
+        }
+    }
 
+    public function rechazarGanador($id)
+    {
+        $ganador = Ganadores::find($id);
+        if ($ganador) {
+            $ganador->estado = 0;
+            $ganador->save();
+            return response()->json(['message' => 'Ganador rechazado exitosamente.']);
+        } else {
+            return response()->json(['message' => 'Ganador no encontrado.'], 404);
+        }
+    }
+
+    public function actualizarEstadoGanador(Request $request, $id)
+    {
+        try {
+            $ganador = Ganadores::findOrFail($id);
+            $estado = $request->input('estado');
+
+            // Solo permitimos estados 1 (aprobado) y 2 (rechazado)
+            if ($estado !== 1 && $estado !== 2) {
+                return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
+            }
+
+            $ganador->estado = $estado;
+            $ganador->save();
+
+            return response()->json(['success' => true, 'message' => 'Estado del ganador actualizado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }
