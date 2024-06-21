@@ -46,7 +46,7 @@
                                         <td>{{ ganador.nombre }}</td>
                                         <td>{{ ganador.curp }}</td>
                                         <td>{{ `Grupo ${grupo.grupo}` }}</td>
-                                        <td>{{ ganador.id_cargo }}</td>
+                                        <td>{{ descripcionCargo(ganador.id_cargo) }}</td>
                                         <td>{{ ganador.documento }}</td>
                                         <td>
                                             <button  class="btn btn-roles btn-sm"  title="Asignar cargo" @click="detalleGanadores(ganador.id)" :disabled="isGanadorRechazado(ganador.estado)">
@@ -148,7 +148,7 @@
                                             <div class="col-md-12 mb-3">
                                                 <label>Documento</label>
                                                 <div class="modal-body">
-                                                    <input type="file" @change="" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                                    <input type="file" @change="handleExcepcionFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                                                 </div>
                                             </div>
                                         </div>
@@ -245,6 +245,7 @@
             id_conc: this.idConcursoActual,
             selectedFile: null,
             selectedGanadorId: null,
+            excepcionFile: null,
             idGanador: "",
             idGan: ""
         };
@@ -258,38 +259,10 @@
           this.obtenerGrupos();
           this.obtenerPermisos();
           this.obtenerCargos();
+          this.calcularYGuardarGanadores();
       },
 
       methods: {
-
-        // handleFileChange(event, ganadorId) {
-        //     this.selectedFile = event.target.files[0];
-        //     this.selectedGanadorId = ganadorId;
-        // },
-
-        // async uploadDocument(ganadorId) {
-        //     if (!this.selectedFile || this.selectedGanadorId !== ganadorId) {
-        //         alert("Por favor seleccione un archivo.");
-        //         return;
-        //     }
-
-        //     let formData = new FormData();
-        //     formData.append("file", this.selectedFile);
-        //     formData.append("ganador_id", parseInt(ganadorId));
-
-        //     try {
-        //         let response = await axios.post('/upload-document', formData, {
-        //         headers: {
-        //             'Content-Type': 'multipart/form-data'
-        //         }
-        //         });
-
-        //         alert(response.data.message);
-        //     } catch (error) {
-        //         console.error(error);
-        //         alert("Hubo un error al subir el archivo.");
-        //     }
-        // },
 
         obtenerPermisos(){
             axios
@@ -329,6 +302,11 @@
              }
         },
 
+        descripcionCargo(idCargo) {
+            const cargo = this.cargos.find(cargo => cargo.id === idCargo);
+            return cargo ? cargo.descripcion : 'Sin descripción';
+        },
+
         cargarDependencias() {
             axios.get('/resultadosWithDependencia')
                 .then(response => {
@@ -358,6 +336,15 @@
         cambiarDependencia() {
               this.obtenerResultados(this.id_depen);
               this.obtenerGanadoresV(this.id_depen);
+        },
+
+        calcularYGuardarGanadores() {
+        axios
+            .get("/calcular-y-guardar-ganadores")
+            .then((response) => {
+            })
+            .catch((error) => {
+            });
         },
 
          //Metodos para efecto acordeón
@@ -507,6 +494,11 @@
                 });
         },
 
+        //Metodos agregar Ganador o excepción
+        handleExcepcionFileUpload(event) {
+            this.excepcionFile = event.target.files[0];
+        },
+
         async agregarExcepcion() {
             if (this.curp.length !== 18) {
                 Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
@@ -514,12 +506,12 @@
             }
 
             const formData = new FormData();
-            formData.append('id_conc', this.id_conc); // Incluir id_conc
+            //formData.append('id_conc', this.id_conc); // Incluir id_conc
             formData.append('id_emp', this.nombreCompleto);
             formData.append('curp', this.curp.toUpperCase().substring(0, 18));
             formData.append('id_grup', this.id_grup);
             formData.append('id_cargo', this.id_cargo);
-            formData.append('documento', this.documento);
+            formData.append('documento', this.excepcionFile);
 
             try {
                 const response = await axios.post('/agregarExcepcion', formData, {
@@ -541,7 +533,7 @@
             }
         },
 
-        //Metodos de ganadores
+        //Metodos para editar Ganadores
         detalleGanadores(idGan) {
 
         this.idGanador = idGan;
@@ -565,12 +557,12 @@
 
             const ganador = {
                 id: this.idGanador,
-                id_conc: this.id_conc,
-                id_emp: this.id_emp,
-                curp: this.curp,
-                id_grup: this.id_grup,
-                id_cargo: this.id_cargo, // Asegúrate de que el v-model del select esté actualizado correctamente
-                //documento: documentoUrl // Utiliza la URL del archivo subido
+                // id_conc: this.id_conc,
+                // id_emp: this.id_emp,
+                // curp: this.curp,
+                // id_grup: this.id_grup,
+                id_cargo: this.id_cargo,
+                //documento: documentoUrl
             };
 
             const documentoUrl = await this.handleFileUpload(ganador);
@@ -725,25 +717,25 @@
   <style scoped>
   .center-container {
     text-align: center;
-  }
+}
 
   .round-container {
     margin-bottom: 10px;
-  }
+}
 
   .announcement-box {
     background-color: #050505;
     padding: 20px;
     border-radius: 10px;
-  }
+}
 
   .bg-primeros{
     background-color: #ab0a3d;
-  }
+}
 
   .bg-segundos{
     background-color: #9c9312;
-  }
+}
   .bg-gray-100 {
   background-color: #f7f7f7;
 }

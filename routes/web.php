@@ -191,7 +191,7 @@ Route::middleware(['auth', 'can:Modulo_Resultados'])->group(function () {
     // Route::post('aprobarGanador/{id}', [ResultadosController::class, 'aprobarGanador'])->name('ganadores.aprobar');
     // Route::post('rechazarGanador/{id}', [ResultadosController::class, 'rechazarGanador'])->name('ganadores.rechazar');
     Route::post('/actualizarEstadoGanador/{id}', [ResultadosController::class, 'actualizarEstadoGanador']);
-
+    Route::get('/calcular-y-guardar-ganadores', [ResultadosController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
 
 });
 

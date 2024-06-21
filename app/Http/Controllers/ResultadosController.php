@@ -34,7 +34,7 @@ class ResultadosController extends Controller
         $request->merge(['ganador_id' => (int) $request->input('ganador_id')]);
 
         $request->validate([
-            'file' => 'required|mimes:pdf|max:2048',
+            'file' => 'required|mimes:pdf|max:8048',
             'ganador_id' => 'required|integer|exists:ganadores,id'
         ]);
 
@@ -42,16 +42,14 @@ class ResultadosController extends Controller
             $file = $request->file('file');
             $ganadorId = $request->input('ganador_id');
 
-            $fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('public/documentos', $fileName);
+            //$fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->storeAs('/documentos', $fileName);
 
-            // Elimina 'public/' del filePath para almacenar solo 'documentos/nombre_archivo.pdf' en la base de datos
-            $filePath = substr($filePath, 7);
+            //$filePath = substr($filePath, 7);
 
-            // Actualiza el registro del ganador con la ruta del archivo
             Ganadores::where('id', $ganadorId)->update(['documento' => $filePath]);
 
-            // Genera la URL completa del archivo
             $fileUrl = Storage::url($filePath);
 
             return response()->json(['success' => true, 'message' => 'Archivo subido exitosamente', 'url' => $fileUrl], 200);
@@ -70,14 +68,6 @@ class ResultadosController extends Controller
     {
         try {
             $request->validate([
-                // 'id' => 'required',
-                // 'ganador_id' => 'required|integer|exists:ganadores,id'
-
-                'id' => 'required|integer|exists:ganadores,id',
-                'id_conc' => 'required|integer',
-                'id_emp' => 'required|string',
-                'curp' => 'required|string',
-                'id_grup' => 'required|integer',
                 'id_cargo' => 'required|integer',
                 'documento' => 'nullable|string',
 
@@ -85,10 +75,6 @@ class ResultadosController extends Controller
 
             $ganador = Ganadores::findOrFail($request->input('id'));
 
-            $ganador->id_conc = $request->input('id_conc');
-            $ganador->id_emp = $request->input('id_emp');
-            $ganador->curp = $request->input('curp');
-            $ganador->id_grup = $request->input('id_grup');
             $ganador->id_cargo = $request->input('id_cargo');
             $ganador->documento = $request->input('documento');
 
@@ -102,6 +88,76 @@ class ResultadosController extends Controller
         }
     }
 
+    public function calcularYGuardarGanadores()
+    {
+        $dependenciasConConcursos = Concurso::distinct('id_depen')->pluck('id_depen');
+
+        $ganadoresCalculados = false;
+
+        foreach ($dependenciasConConcursos as $idDependencia) {
+            $ultimoConcurso = Concurso::where('id_depen', $idDependencia)->latest('id')->first();
+
+            if ($ultimoConcurso) {
+                $fechaFinConcurso = $ultimoConcurso->fechaFin;
+
+
+                if (now() > $fechaFinConcurso) {
+                    $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 1, 2);
+                    $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 2, 2);
+                    $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 3, 3);
+
+                    $this->copiarDatosAHistoricoVotos($idDependencia);
+
+                    $ganadoresCalculados = true;
+                }
+            }
+        }
+
+        if ($ganadoresCalculados) {
+            return response()->json(['message' => 'Ganadores calculados y guardados correctamente para todas las dependencias.']);
+        } else {
+            return response()->json(['message' => 'No hay concursos activos en ninguna dependencia.']);
+        }
+    }
+
+    public function calcularYGuardarGanadoresPorGrupo($idConcurso, $idGrupo, $numGanadores)
+    {
+        $resultadosGrupo = DB::table('registros')
+            ->select('id_nom', DB::raw('COUNT(id_nom) as votos'))
+            ->where('ronda', 2)
+            ->where('id_grup', $idGrupo)
+            ->where('id_conc', $idConcurso)
+            ->groupBy('id_nom')
+            ->orderByDesc(DB::raw('COUNT(id_nom)'))
+            ->take($numGanadores)
+            ->get();
+
+            foreach ($resultadosGrupo as $resultado) {
+                $idNom = $resultado->id_nom;
+                $votos = $resultado->votos;
+
+                $empleado = Empleado::find($idNom);
+
+                if ($empleado) {
+                    $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
+
+                    $existente = Ganadores::where('id_conc', $idConcurso)
+                        ->where('id_grup', $idGrupo)
+                        ->where('id_emp', $nombreCompleto)
+                        ->exists();
+
+                    if (!$existente) {
+                        Ganadores::create([
+                            'id_conc' => $idConcurso,
+                            'id_grup' => $idGrupo,
+                            'id_emp' => $nombreCompleto,
+                            'votos' => $votos,
+                        ]);
+                    }
+                }
+            }
+    }
+    
     public function obtenerResultados(Request $request)
     {
         $ronda = $request->get('ronda', 1);
@@ -219,7 +275,7 @@ class ResultadosController extends Controller
             }
 
             $ganadores = Ganadores::with('empleado')->where('id_conc', $ultimoConcurso->id)
-                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_conc', 'ganadores.estado')
+                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_cargo', 'ganadores.documento', 'ganadores.id_conc', 'ganadores.estado')
 
                 // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id') // Unir con la tabla empleados
                 // ->select(
@@ -248,31 +304,46 @@ class ResultadosController extends Controller
     public function agregarExcepcion(Request $request){
         try {
             $user = Auth::user();
-            //dd($request->all());
+            //dd();
             if (!$user) {
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
             $request->validate([
+                //'id_conc' => 'required',
                 'id_emp' => 'required',
                 'curp' => 'required',
                 'id_grup' => 'required',
                 'id_cargo' => 'required',
-                'id_conc' => 'required',
                 'documento' => 'required|file|mimes:pdf|max:8192',
             ]);
 
+            $ultimoConcurso = Concurso::where('id_depen', $user->id_depen)
+                                  ->orderBy('created_at', 'desc')
+                                  ->first();
+
+            if (!$ultimoConcurso) {
+                return response()->json(['success' => false, 'message' => 'No se encontró un concurso para la dependencia del usuario'], 400);
+            }
+
             $nuevoExcepcion = new Ganadores;
+            $nuevoExcepcion->id_conc =  $ultimoConcurso->id;
             $nuevoExcepcion->id_emp = $request->id_emp;
             $nuevoExcepcion->curp = strtoupper($request->curp);
             $nuevoExcepcion->id_grup = $request->id_grup;
-            $nuevoExcepcion->id_conc = $user->concurso_id;
             $nuevoExcepcion->id_cargo = $request->id_cargo;
+
+            // if ($request->hasFile('documento')) {
+            //     $file = $request->file('documento');
+            //     $path = $file->store('documentos');
+            //     $nuevoExcepcion->documento = $path;
+            // }
 
             if ($request->hasFile('documento')) {
                 $file = $request->file('documento');
-                $path = $file->store('documentos', 'public');
-                $nuevoExcepcion->documento = $path;
+                $originalName = $file->getClientOriginalName(); // Obtener el nombre original del archivo
+                $path = $file->storeAs('documentos', $originalName); // Guardar el archivo con su nombre original
+                $nuevoExcepcion->documento = $originalName; // Guardar solo el nombre del archivo en la base de datos
             }
 
             $nuevoExcepcion->save();
