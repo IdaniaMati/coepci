@@ -12,15 +12,61 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    @can('Modulo_Usuario')
+                    <x-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')">
+                        {{ __('Usuarios') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Dependencias')
+                    <x-nav-link :href="route('dependencias')" :active="request()->routeIs('dependencias')">
+                        {{ __('Dependencias') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Veda')
+                    <x-nav-link :href="route('veda')" :active="request()->routeIs('veda')">
+                        {{ __('Veda Electoral') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Roles')
+                    <x-nav-link :href="route('roles')" :active="request()->routeIs('roles')">
+                        {{ __('Roles') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Permisos')
+                    <x-nav-link :href="route('permisos')" :active="request()->routeIs('permisos')">
+                        {{ __('Permisos') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Bitacora')
+                    <x-nav-link :href="route('bitacora')" :active="request()->routeIs('bitacora')">
+                        {{ __('Bitacora') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Respaldo')
+                    <x-nav-link :href="route('respaldo')" :active="request()->routeIs('respaldo')">
+                        {{ __('Respaldo') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('Modulo_Dashboard')
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @endcan
+                    @can('Modulo_Ajustes')
                     <x-nav-link :href="route('datos')" :active="request()->routeIs('datos')">
-                        {{ __('Datos') }}
+                        {{ __('Ajustes') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('documentacion')" :active="request()->routeIs('dosumentacion')">
-                        {{ __('Documentación') }}
+                    @endcan
+                    @can('Modulo_Faq')
+                    <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')">
+                        {{ __('Faq') }}
                     </x-nav-link>
+                    @endcan
+                    @can('Modulo_Resultados')
+                    <x-nav-link :href="route('resultados')" :active="request()->routeIs('resultados')">
+                        {{ __('Votaciones') }}
+                    </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -53,6 +99,7 @@
                                                 this.closest('form').submit();">
                                 {{ __('Cerrar sesión') }}
                             </x-dropdown-link>
+
                         </form>
                     </x-slot>
                 </x-dropdown>
@@ -89,6 +136,11 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('profile.edit')">
+                    {{ __('Manuales') }}
+                </x-responsive-nav-link>
+
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

@@ -29,6 +29,11 @@ return [
     */
 
     'disks' => [
+        'backups' => [
+            'driver' => 'local',
+            'root' => storage_path('app/backups'),
+        ],
+
 
         'local' => [
             'driver' => 'local',

@@ -12,12 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('registros', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_vot')->constrained('empleados');
-            $table->foreignId('id_nom')->constrained('empleados');
-            $table->foreignId('id_grup')->constrained('grupos');
-            $table->date('fecha')->nullable();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('id_vot');
+            $table->unsignedBigInteger('id_nom');
+            $table->unsignedBigInteger('id_grup');
+            $table->unsignedBigInteger('id_conc');
+            $table->unsignedInteger('ronda')->default(0);
             $table->timestamps();
+
+            $table->foreign('id_vot')->references('id')->on('empleados');
+            $table->foreign('id_nom')->references('id')->on('empleados');
+            $table->foreign('id_grup')->references('id')->on('grupos');
+            $table->foreign('id_conc')->references('id')->on('concursos');
         });
     }
 

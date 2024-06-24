@@ -132,8 +132,8 @@ a.bg-primary:hover, a.bg-primary:focus {
 .pagination li.active > a:not(.page-link),
 .pagination li.active > a:not(.page-link):hover,
 .pagination li.active > a:not(.page-link):focus {
-  border-color: #696cff;
-  background-color: #696cff;
+  border-color: #B0ABA1;
+  background-color: #B0ABA1;
   color: #fff;
   box-shadow: 0 0.125rem 0.25rem rgba(105, 108, 255, 0.4);
 }
@@ -203,6 +203,81 @@ button.list-group-item-primary.active {
 }
 .table-primary .btn-icon {
   color: #435971;
+}
+
+.btn-delete {
+    background-color: #B68400;
+    color: white;
+}
+
+.btn-add {
+        background-color: #3D3935;
+        color: white;
+        width: 100px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        font-size: 16px;
+        text-align: center;
+}
+
+.btn-excepcion {
+    background-color: #3D3935;
+    color: white;
+    width: 110px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 15px;
+    text-align: center;
+}
+
+.btn-add:hover {
+    color: #fff;
+    background-color: #B0ABA1;
+    border-color:#B0ABA1;
+    transform: translateY(-1px);
+}
+
+.btn-edit {
+    background-color: #AB0A3D;
+    color: white;
+}
+
+.btn-roles {
+    background-color: #B0ABA1;
+    color: white;
+}
+
+.btn-refresh {
+    background-color: #B0ABA1;
+    color: white;
+}
+
+.btn-download {
+    background-color: #810010;
+    color: white;
+}
+
+.btn-upload {
+    background-color:  #B0ABA1;
+    color: white;
+}
+
+.btn-cerrar {
+    background-color:  #B68400;
+    color: white;
+}
+
+.btn-cerrar:hover {
+    color: #fff;
+    background-color: #91650e;
+    border-color:#91650e;
+    transform: translateY(-1px);
 }
 
 .btn-primary {

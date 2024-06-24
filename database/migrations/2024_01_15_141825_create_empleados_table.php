@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('empleados', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_grup')->constrained('grupos');
+            $table->foreignId('id_grup')->constrained('grupos');//grupos
             $table->string('curp', 18)->nullable();
             $table->string('nombre', 255)->nullable();
             $table->string('apellido_paterno', 255)->nullable();

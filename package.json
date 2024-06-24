@@ -6,19 +6,36 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@iconify/json": "^2.2.214",
+        "@iconify/tailwind": "^1.1.1",
         "@tailwindcss/forms": "^0.5.2",
-        "alpinejs": "^3.4.2",
+        "@vitejs/plugin-vue": "^5.0.3",
+        "alpinejs": "^3.14.0",
         "autoprefixer": "^10.4.17",
-        "axios": "^1.6.4",
+        "axios": "^1.6.7",
+        "depcheck": "^1.4.7",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.4.33",
         "tailwindcss": "^3.4.1",
-        "vite": "^5.0.0"
+        "vite": "^5.0.0",
+        "vue": "^3.4.15"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.5.2",
+        "@fortawesome/free-solid-svg-icons": "^6.5.2",
+        "@fortawesome/vue-fontawesome": "^3.0.8",
         "@oruga-ui/oruga-next": "^0.8.2",
-        "@vitejs/plugin-vue": "^5.0.3",
-        "vue": "^3.4.15",
-        "vue-loader": "^17.4.2"
+        "bootstrap": "^5.3.3",
+        "bootstrap-icons": "^1.11.3",
+        "bootstrap-vue": "^2.23.1",
+        "jquery": "^3.7.1",
+        "popper.js": "^1.16.1",
+        "sweetalert2": "^11.10.6",
+        "vue-loader": "^17.4.2",
+        "vue-paginate-al": "^1.1.6",
+        "vue-pagination-2": "^3.1.0",
+        "vue-router": "^4.0.13",
+        "vue3-pagination": "^1.0.16",
+        "xlsx": "^0.18.5"
     }
 }

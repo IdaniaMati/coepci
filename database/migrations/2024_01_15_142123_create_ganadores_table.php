@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('ganadores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_conc')->constrained('concursos');
-            $table->foreignId('id_grup')->constrained('grupos');
-            $table->foreignId('id_emp')->constrained('empleados');
+            $table->foreignId('id_conc')->constrained('concursos')->index('ganadores_id_conc_foreign');
+            $table->foreignId('id_grup')->constrained('grupos')->index('ganadores_id_grup_foreign');
+            $table->foreignId('id_emp')->constrained('empleados')->index('ganadores_id_emp_foreign');
             $table->timestamps();
         });
     }

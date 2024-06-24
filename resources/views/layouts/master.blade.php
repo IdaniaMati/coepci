@@ -70,7 +70,7 @@
     <!-- Layout wrapper -->
         <div class="layout-wrapper layout-content-navbar">
             <div class="layout-container">
-            
+
                 <!-- Menu -->
                 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                     <div class="app-brand demo">
@@ -78,7 +78,7 @@
                             <span class="app-brand-logo demo">
                             <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                 <defs>
-                                    
+
                                 </defs>
                                 <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                     <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
@@ -134,9 +134,9 @@
                             </li>
 
                             <!-- Components -->
-                            
+
                             <!-- Cards -->
-                            
+
                             <!-- User interface -->
 
                             <!-- Extended components -->
@@ -144,7 +144,7 @@
                             <!-- Forms & Tables -->
                             <li class="menu-header small text-uppercase"><span class="menu-header-text">Lista de Datos</span></li>
                             <!-- Forms -->
-                            
+
                             <!-- Tables -->
                             <li class="menu-item">
                                 <a href="tables-basic.html" class="menu-link">
@@ -166,7 +166,7 @@
 
                 <!-- Layout container -->
                 <div class="layout-page">
-            
+
                     <!-- Navbar -->
                     <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
                         <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
@@ -206,13 +206,10 @@
                         @yield('content')
                     </div>
                 <!-- Content wrapper -->
-            
+
                 </div>
             <!-- / Layout page -->
             </div>
-
-            <!-- Overlay -->
-            <div class="layout-overlay layout-menu-toggle"></div>
         </div>
         <!-- / Layout wrapper -->
 
