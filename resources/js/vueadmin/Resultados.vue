@@ -338,15 +338,6 @@
               this.obtenerGanadoresV(this.id_depen);
         },
 
-        calcularYGuardarGanadores() {
-        axios
-            .get("/calcular-y-guardar-ganadores")
-            .then((response) => {
-            })
-            .catch((error) => {
-            });
-        },
-
          //Metodos para efecto acordeón
         toggleCollapse(id) {
             if (this.expandedId === id) {
@@ -386,6 +377,17 @@
         //           }
         //       });
         //   },
+
+        //Metodos para generar Resultados
+
+        calcularYGuardarGanadores() {
+        axios
+            .get("/calcular-y-guardar-ganadores")
+            .then((response) => {
+            })
+            .catch((error) => {
+            });
+        },
 
         obtenerResultados(idDependencia = null) {
             if (!idDependencia) {
@@ -437,29 +439,6 @@
                   return numeradosResultados;
         },
 
-        //   obtenerGanadoresV(idDependencia) {
-        //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
-        //           .then(response => {
-        //           this.ganadores = [];
-
-        //           for (let grupo in response.data.ganadores) {
-        //               let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-        //               numero: index + 1,
-        //               nombre: ganador.id_emp
-        //               }));
-
-        //               this.ganadores.push({
-        //               grupo: grupo,
-        //               ganadores: ganadoresGrupo
-        //               });
-        //           }
-
-        //           })
-        //           .catch(error => {
-        //           console.error('Error al obtener ganadores', error);
-        //           });
-        //   },
-
         obtenerGanadoresV(idDependencia = null) {
             if (!idDependencia) {
                 idDependencia = this.id_depen;
@@ -493,6 +472,30 @@
                     console.error('Error al obtener ganadores', error);
                 });
         },
+
+        //   obtenerGanadoresV(idDependencia) {
+        //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+        //           .then(response => {
+        //           this.ganadores = [];
+
+        //           for (let grupo in response.data.ganadores) {
+        //               let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+        //               numero: index + 1,
+        //               nombre: ganador.id_emp
+        //               }));
+
+        //               this.ganadores.push({
+        //               grupo: grupo,
+        //               ganadores: ganadoresGrupo
+        //               });
+        //           }
+
+        //           })
+        //           .catch(error => {
+        //           console.error('Error al obtener ganadores', error);
+        //           });
+        //   },
+
 
         //Metodos agregar Ganador o excepción
         handleExcepcionFileUpload(event) {
@@ -688,7 +691,7 @@
             return estado === 2;
         },
 
-        //metodos del modal agregar caso excepcional
+        //Metodos del modal agregar caso excepcional
         nuevo() {
             this.limpiarvar();
             this.bandera = 0;
