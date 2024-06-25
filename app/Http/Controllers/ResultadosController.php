@@ -67,14 +67,43 @@ class ResultadosController extends Controller
     public function editarGanadores(Request $request)
     {
         try {
-            $request->validate([
-                'id_cargo' => 'required|integer',
-                'documento' => 'nullable|string',
+            //$request->validate([
+                // 'id_cargo' => 'required|integer',
+                // 'documento' => 'nullable|string',
 
+             //PRUEBAS
+            //     'id' => 'required|exists:ganadores,id',,
+            //     'id_emp' => 'required',
+            //     'curp' => 'required',
+            //     'id_grup' => 'required',
+            //     'id_cargo' => 'required',
+            //     'documento' => 'nullable',
+
+            // ]);
+
+            $request->validate([
+                'id' => 'required|exists:ganadores,id',
+                'id_emp' => 'required',
+                'id_grup' => 'required|exists:grupos,id',
+                'curp' => 'required|string',
+                'id_cargo' => 'required|exists:cargos,id',
+                'documento' => 'nullable|string',
             ]);
+
+            $ganadorExistente = DB::table("ganadores")
+                ->where("curp", $request['curp'])
+                ->where("id", '!=', $request['id'])
+                ->first();
+
+            if ($ganadorExistente) {
+                return response()->json(['success' => false, 'message' => 'Ya existe una empleado con esa CURP.']);
+            }
 
             $ganador = Ganadores::findOrFail($request->input('id'));
 
+            $ganador->id_emp = $request->input('id_emp');
+            $ganador->curp = $request->input('curp');
+            $ganador->id_grup = $request->input('id_grup');
             $ganador->id_cargo = $request->input('id_cargo');
             $ganador->documento = $request->input('documento');
 
@@ -131,6 +160,8 @@ class ResultadosController extends Controller
             ->orderByDesc(DB::raw('COUNT(id_nom)'))
             ->take($numGanadores)
             ->get();
+
+            //dd($resultadosGrupo);
 
             foreach ($resultadosGrupo as $resultado) {
                 $idNom = $resultado->id_nom;
@@ -235,7 +266,7 @@ class ResultadosController extends Controller
                 //     'ganadores.documento',
                 //     'ganadores.id_conc',
                 //     'ganadores.estado'
-                // )
+                //  )
                 ->get();
 
                 //dd($ganadores);
