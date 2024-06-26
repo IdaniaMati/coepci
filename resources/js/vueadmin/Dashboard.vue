@@ -482,9 +482,9 @@ export default {
                 }
 
                 let formData = new FormData();
-                formData.append('id', this.id);
+                formData.append('id', this.idEmpleado);
                 formData.append('id_grup', this.id_grup);
-                formData.append('curp', this.curp);
+                formData.append('curp', curp);
                 formData.append('nombre', this.nombre);
                 formData.append('apellido_paterno', this.apellido_paterno);
                 formData.append('apellido_materno', this.apellido_materno);
@@ -500,12 +500,15 @@ export default {
                 });
 
                 if (response.data.success) {
-                    // Código para manejar el éxito
+                    this.cerrarModal();
+                    this.obtenerEmpleados();
+                    Swal.fire('Éxito', response.data.message, 'success');
                 } else {
-                    // Código para manejar el error
+                    Swal.fire('Error', response.data.error, 'error');
                 }
             } catch (error) {
                 console.error(error);
+                Swal.fire('Error', 'Hubo un error al editar el empleado.', 'error');
             }
         },
 

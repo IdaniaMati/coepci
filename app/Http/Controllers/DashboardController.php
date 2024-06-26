@@ -58,12 +58,16 @@ class DashboardController extends Controller
     public function agregarEmpleado(Request $request)
     {
         try {
+            Log::info('Iniciando el proceso de agregarEmpleado');
 
             $user = Auth::user();
 
             if (!$user) {
+                Log::warning('Usuario no autenticado');
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
+
+            Log::info('Usuario autenticado: ' . $user->id);
 
             $request->validate([
                 'id_grup' => 'required',
@@ -81,9 +85,11 @@ class DashboardController extends Controller
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
+            Log::info('Validación de datos completada');
+
             $nuevoEmpleado = new Empleado;
             $nuevoEmpleado->id_grup = $request->id_grup;
-            $nuevoEmpleado->curp = strtoupper ($request->curp);
+            $nuevoEmpleado->curp = strtoupper($request->curp);
             $nuevoEmpleado->nombre = $request->nombre;
             $nuevoEmpleado->apellido_paterno = $request->apellido_paterno;
             $nuevoEmpleado->apellido_materno = $request->apellido_materno;
@@ -96,11 +102,14 @@ class DashboardController extends Controller
             }
             $nuevoEmpleado->id_depen = $user->id_depen;
 
-            $nuevoEmpleado->save();
-            MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado ->nombre);
+            Log::info('Datos del empleado establecidos, guardando en la base de datos');
 
-            return response()->json(['success' => true, 'message' => ' Empleado guardado exitosamente']);
+            $nuevoEmpleado->save();
+            MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado->nombre);
+
+            return response()->json(['success' => true, 'message' => 'Empleado guardado exitosamente']);
         } catch (\Exception $e) {
+            Log::error('Error al agregar empleado: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
@@ -114,32 +123,30 @@ class DashboardController extends Controller
     public function editarEmpleado(Request $request)
     {
         try {
-           $request->validate([
+            $request->validate([
                 'id' => 'required|exists:empleados,id',
                 'id_grup' => 'required|exists:grupos,id',
+                'curp' => [
+                    'required',
+                    'max:18',
+                    Rule::unique('empleados')->ignore($request->id),
+                ],
+                'nombre' => 'required',
+                'apellido_paterno' => 'required',
+                'apellido_materno' => 'required',
+                'cargo' => 'required',
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-
             ]);
 
-            $empleadoExistente = DB::table("empleados")
-                ->where("curp", $request['curp'])
-                ->where("id", '!=', $request['id'])
-                ->first();
+            $empleado = Empleado::findOrFail($request->id);
 
-            if ($empleadoExistente) {
-                return response()->json(['success' => false, 'message' => 'Ya existe una empleado con esa CURP.']);
-            }
-
-            $empleado = Empleado::findOrFail($request->input('id'));
-
-            $empleado->nombre = $request->input('nombre');
-            $empleado->apellido_paterno = $request->input('apellido_paterno');
-            $empleado->apellido_materno = $request->input('apellido_materno');
-            $empleado->curp = $request->input('curp');
-            $empleado->cargo = $request->input('cargo');
-            $empleado->id_grup = $request->input('id_grup');
+            $empleado->nombre = $request->nombre;
+            $empleado->apellido_paterno = $request->apellido_paterno;
+            $empleado->apellido_materno = $request->apellido_materno;
+            $empleado->curp = strtoupper($request->curp);
+            $empleado->cargo = $request->cargo;
+            $empleado->id_grup = $request->id_grup;
             if ($request->hasFile('foto')) {
-                // Delete the old photo if exists
                 if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
                     Storage::disk('public')->delete($empleado->foto);
                 }
@@ -151,7 +158,7 @@ class DashboardController extends Controller
             }
             $empleado->save();
 
-            MyHelper::registrarAccion('Se editó al empleado: ' . $empleado -> curp);
+            MyHelper::registrarAccion('Se editó al empleado: ' . $empleado->curp);
 
             return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
         } catch (\Exception $e) {
