@@ -67,6 +67,7 @@
                         <thead>
                         <tr>
                             <th style="width: 1%;">ID</th>
+                            <th style="width: 10%;">Foto</th>
                             <th style="width: 15%;">Nombre</th>
                             <th style="width: 15%;">Curp</th>
                             <th style="width: 20%;">Puesto</th>
@@ -80,6 +81,9 @@
                         <tbody v-if="paginatedEmpleados.length > 0">
                             <tr v-for="empleado in paginatedEmpleados" :key="empleado.id">
                                 <td>{{ empleado.id }}</td>
+                                <td>
+                                    <img :src="'/storage/' + empleado.foto" alt="Foto" style="width: 50px; height: 50px;" v-if="empleado.foto">
+                                </td>
                                 <td>{{ empleado.nombre + ' ' + empleado.apellido_paterno + ' ' + empleado.apellido_materno }}</td>
                                 <td>{{ empleado.curp }}</td>
                                 <td>{{ empleado.cargo }}</td>
@@ -165,6 +169,12 @@
                                                 <label>Cargo</label>
                                                 <input v-model="cargo" class="form-control" placeholder="Cargo" required/>
                                                 <div v-if="!cargo" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Foto</label>
+                                                <input type="file" @change="handleFileUpload" class="form-control"/>
                                             </div>
                                         </div>
                                     </form>
@@ -332,6 +342,10 @@ export default {
      },
 
     methods: {
+        handleFileUpload(event) {
+            const file = event.target.files[0];
+            this.foto = file;
+        },
 
         cargarDependencias() {
             axios.get('/dashboardWithDependencia')
@@ -418,72 +432,81 @@ export default {
         },
 
         async agregarEmpleado() {
-
-        const curp = this.curp.toUpperCase().substring(0, 18);
-
-            if (curp.length !== 18) {
-                Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
-                return;
-            }
-
-            const nuevoEmpleado = {
-                id_grup: this.id_grup,
-                curp: this.curp,
-                nombre: this.nombre,
-                apellido_paterno: this.apellido_paterno,
-                apellido_materno: this.apellido_materno,
-                cargo: this.cargo,
-            };
-                try {
-                        const response = await axios.post('/agregarEmpleado', nuevoEmpleado);
-
-                        if (response.data.success) {
-                            this.cerrarModal();
-                            this.obtenerEmpleados();
-
-                            Swal.fire('Éxito', response.data.message, 'success');
-                        } else {
-                            Swal.fire('Error', response.data.error, 'error');
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        Swal.fire('Error', 'La CURP ya se encuentra registrada.', 'error');
-                    }
-        },
-
-        async editarEmpleado() {
-
-            const curp = this.curp.toUpperCase().substring(0, 18);
+            try {
+                const curp = this.curp.toUpperCase().substring(0, 18);
 
                 if (curp.length !== 18) {
                     Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
                     return;
                 }
 
-                const empleadoActualizado = {
-                id: this.idEmpleado,
-                nombre: this.nombre,
-                apellido_paterno: this.apellido_paterno,
-                apellido_materno: this.apellido_materno,
-                curp: this.curp,
-                cargo: this.cargo,
-                id_grup: this.id_grup
-                };
+                let formData = new FormData();
 
-                try {
-                const response = await axios.post('/editarEmpleado', empleadoActualizado);
+                formData.append('id_grup', this.id_grup);
+                formData.append('curp', curp);
+                formData.append('nombre', this.nombre);
+                formData.append('apellido_paterno', this.apellido_paterno);
+                formData.append('apellido_materno', this.apellido_materno);
+                formData.append('cargo', this.cargo);
+                if (this.foto) {
+                    formData.append('foto', this.foto);
+                }
 
-                    if (response.data.success) {
-                        this.cerrarModal();
-                        this.obtenerEmpleados();
-                        Swal.fire('Éxito', response.data.message, 'success');
-                    } else {
-                        Swal.fire('Error', response.data.message, 'error');
+                let response = await axios.post('/agregarEmpleado', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
-                    } catch (error) {
-                    console.error(error);
-                    Swal.fire('Error', 'Hubo un error al actualizar el empleado.', 'error');
+                });
+
+                if (response.data.success) {
+                    this.cerrarModal();
+                    this.obtenerEmpleados();
+
+                    Swal.fire('Éxito', response.data.message, 'success');
+                } else {
+                    Swal.fire('Error', response.data.error, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un error al agregar el empleado.', 'error');
+            }
+        },
+
+        async editarEmpleado() {
+            try {
+                const curp = this.curp.toUpperCase().substring(0, 18);
+
+                if (curp.length !== 18) {
+                    Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append('id', this.id);
+                formData.append('id_grup', this.id_grup);
+                formData.append('curp', this.curp);
+                formData.append('nombre', this.nombre);
+                formData.append('apellido_paterno', this.apellido_paterno);
+                formData.append('apellido_materno', this.apellido_materno);
+                formData.append('cargo', this.cargo);
+                if (this.foto) {
+                    formData.append('foto', this.foto);
+                }
+
+                let response = await axios.post('/editarEmpleado', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
+                });
+
+                if (response.data.success) {
+                    // Código para manejar el éxito
+                } else {
+                    // Código para manejar el error
+                }
+            } catch (error) {
+                console.error(error);
+            }
         },
 
         detalleEmpleado(idEmp) {

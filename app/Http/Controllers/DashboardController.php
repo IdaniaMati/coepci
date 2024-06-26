@@ -8,6 +8,7 @@ use App\Models\Concurso;
 use App\Models\Registro;
 use App\Models\Grupo;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 use App\Helpers\MyHelper;
 use Illuminate\Support\Facades\DB;
 
@@ -77,6 +78,7 @@ class DashboardController extends Controller
                 'apellido_paterno' => 'required',
                 'apellido_materno' => 'required',
                 'cargo' => 'required',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
             $nuevoEmpleado = new Empleado;
@@ -86,7 +88,12 @@ class DashboardController extends Controller
             $nuevoEmpleado->apellido_paterno = $request->apellido_paterno;
             $nuevoEmpleado->apellido_materno = $request->apellido_materno;
             $nuevoEmpleado->cargo = $request->cargo;
-
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('fotos', $filename, 'public');
+                $nuevoEmpleado->foto = $path;
+            }
             $nuevoEmpleado->id_depen = $user->id_depen;
 
             $nuevoEmpleado->save();
@@ -110,6 +117,7 @@ class DashboardController extends Controller
            $request->validate([
                 'id' => 'required|exists:empleados,id',
                 'id_grup' => 'required|exists:grupos,id',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
 
             ]);
 
@@ -130,7 +138,17 @@ class DashboardController extends Controller
             $empleado->curp = $request->input('curp');
             $empleado->cargo = $request->input('cargo');
             $empleado->id_grup = $request->input('id_grup');
+            if ($request->hasFile('foto')) {
+                // Delete the old photo if exists
+                if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                    Storage::disk('public')->delete($empleado->foto);
+                }
 
+                $file = $request->file('foto');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('fotos', $filename, 'public');
+                $empleado->foto = $path;
+            }
             $empleado->save();
 
             MyHelper::registrarAccion('Se editó al empleado: ' . $empleado -> curp);
@@ -147,6 +165,9 @@ class DashboardController extends Controller
 
             $empleado = Empleado::findOrFail($id);
             $nombre = $empleado->nombre;
+            if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                Storage::disk('public')->delete($empleado->foto);
+            }
             $empleado->delete();
 
             MyHelper::registrarAccion('Se eliminó al empleado: ' . $nombre);

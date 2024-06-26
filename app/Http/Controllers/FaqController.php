@@ -17,7 +17,6 @@ class FaqController extends Controller
         return view('admin.faq');
     }
 
-    //Start sección de manuales
     public function importarManual(Request $request)
     {
         $request->validate([

@@ -19,6 +19,7 @@ class Empleado extends Authenticatable
         'cargo',
         'id_grup',
         'id_depen',
+        'foto',
     ];
 
         public function empleados()
