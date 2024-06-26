@@ -12,8 +12,8 @@ class Ganadores extends Model
     protected $fillable = [
         'id_conc',
         'id_emp',
-        'curp',
         'id_grup',
+        'curp',
         'id_cargo',
         'documento',
         'estado'

@@ -441,75 +441,75 @@ class EmpleadoLoginController extends Controller
     //     }
     // }
 
-    public function calcularYGuardarGanadores()
-    {
-        $dependenciasConConcursos = Concurso::distinct('id_depen')->pluck('id_depen');
+    // public function calcularYGuardarGanadores()
+    // {
+    //     $dependenciasConConcursos = Concurso::distinct('id_depen')->pluck('id_depen');
 
-        $ganadoresCalculados = false;
+    //     $ganadoresCalculados = false;
 
-        foreach ($dependenciasConConcursos as $idDependencia) {
-            $ultimoConcurso = Concurso::where('id_depen', $idDependencia)->latest('id')->first();
+    //     foreach ($dependenciasConConcursos as $idDependencia) {
+    //         $ultimoConcurso = Concurso::where('id_depen', $idDependencia)->latest('id')->first();
 
-            if ($ultimoConcurso) {
-                $fechaFinConcurso = $ultimoConcurso->fechaFin;
+    //         if ($ultimoConcurso) {
+    //             $fechaFinConcurso = $ultimoConcurso->fechaFin;
 
 
-                if (now() > $fechaFinConcurso) {
-                    $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 1, 2);
-                    $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 2, 2);
-                    $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 3, 3);
+    //             if (now() > $fechaFinConcurso) {
+    //                 $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 1, 2);
+    //                 $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 2, 2);
+    //                 $this->calcularYGuardarGanadoresPorGrupo($ultimoConcurso->id, 3, 3);
 
-                    $this->copiarDatosAHistoricoVotos($idDependencia);
+    //                 $this->copiarDatosAHistoricoVotos($idDependencia);
 
-                    $ganadoresCalculados = true;
-                }
-            }
-        }
+    //                 $ganadoresCalculados = true;
+    //             }
+    //         }
+    //     }
 
-        if ($ganadoresCalculados) {
-            return response()->json(['message' => 'Ganadores calculados y guardados correctamente para todas las dependencias.']);
-        } else {
-            return response()->json(['message' => 'No hay concursos activos en ninguna dependencia.']);
-        }
-    }
+    //     if ($ganadoresCalculados) {
+    //         return response()->json(['message' => 'Ganadores calculados y guardados correctamente para todas las dependencias.']);
+    //     } else {
+    //         return response()->json(['message' => 'No hay concursos activos en ninguna dependencia.']);
+    //     }
+    // }
 
-    public function calcularYGuardarGanadoresPorGrupo($idConcurso, $idGrupo, $numGanadores)
-    {
-        $resultadosGrupo = DB::table('registros')
-            ->select('id_nom', DB::raw('COUNT(id_nom) as votos'))
-            ->where('ronda', 2)
-            ->where('id_grup', $idGrupo)
-            ->where('id_conc', $idConcurso)
-            ->groupBy('id_nom')
-            ->orderByDesc(DB::raw('COUNT(id_nom)'))
-            ->take($numGanadores)
-            ->get();
+    // public function calcularYGuardarGanadoresPorGrupo($idConcurso, $idGrupo, $numGanadores)
+    // {
+    //     $resultadosGrupo = DB::table('registros')
+    //         ->select('id_nom', DB::raw('COUNT(id_nom) as votos'))
+    //         ->where('ronda', 2)
+    //         ->where('id_grup', $idGrupo)
+    //         ->where('id_conc', $idConcurso)
+    //         ->groupBy('id_nom')
+    //         ->orderByDesc(DB::raw('COUNT(id_nom)'))
+    //         ->take($numGanadores)
+    //         ->get();
 
-            foreach ($resultadosGrupo as $resultado) {
-                $idNom = $resultado->id_nom;
-                $votos = $resultado->votos;
+    //         foreach ($resultadosGrupo as $resultado) {
+    //             $idNom = $resultado->id_nom;
+    //             $votos = $resultado->votos;
 
-                $empleado = Empleado::find($idNom);
+    //             $empleado = Empleado::find($idNom);
 
-                if ($empleado) {
-                    $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
+    //             if ($empleado) {
+    //                 $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
 
-                    $existente = Ganadores::where('id_conc', $idConcurso)
-                        ->where('id_grup', $idGrupo)
-                        ->where('id_emp', $nombreCompleto)
-                        ->exists();
+    //                 $existente = Ganadores::where('id_conc', $idConcurso)
+    //                     ->where('id_grup', $idGrupo)
+    //                     ->where('id_emp', $nombreCompleto)
+    //                     ->exists();
 
-                    if (!$existente) {
-                        Ganadores::create([
-                            'id_conc' => $idConcurso,
-                            'id_grup' => $idGrupo,
-                            'id_emp' => $nombreCompleto,
-                            'votos' => $votos,
-                        ]);
-                    }
-                }
-            }
-    }
+    //                 if (!$existente) {
+    //                     Ganadores::create([
+    //                         'id_conc' => $idConcurso,
+    //                         'id_grup' => $idGrupo,
+    //                         'id_emp' => $nombreCompleto,
+    //                         'votos' => $votos,
+    //                     ]);
+    //                 }
+    //             }
+    //         }
+    // }
 
     public function copiarDatosAHistoricoVotos()
     {

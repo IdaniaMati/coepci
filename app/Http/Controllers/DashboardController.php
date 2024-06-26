@@ -107,7 +107,7 @@ class DashboardController extends Controller
     public function editarEmpleado(Request $request)
     {
         try {
-            $request->validate([
+           $request->validate([
                 'id' => 'required|exists:empleados,id',
                 'id_grup' => 'required|exists:grupos,id',
 

@@ -171,14 +171,29 @@
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title"><strong>Cargos</strong></h5>
+                                    <h5 class="modal-title"><strong>Asignación de cargo</strong></h5>
                                     <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalCargos" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Nombre Completo</label>
-                                                <input v-model="id_emp" class="form-control" placeholder="Nombre Completo" disabled/>
+                                                <input v-model="id_emp" class="form-control" placeholder="Nombre Completo"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>CURP</label>
+                                                    <input v-model="curp" class="form-control" placeholder="Curp" required/>
+                                                <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label>Grupo</label>
+                                                    <select v-model="id_grup" class="form-control" id="grupo" required>
+                                                        <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
+                                                    </select>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -187,13 +202,16 @@
                                                 <select v-model="id_cargo" class="form-control" id="cargo" required>
                                                     <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
                                                 </select>
+                                                <div v-if="!id_cargo" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Documento comprobatorio:</label>&nbsp;
                                                     <input type="file" @change="handleFileChange" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                             </div>
+                                                    &nbsp;
+                                                    <div v-if="!id_grup" class="text-danger">Este campo es obligatorio.</div>
+                                                </div>
                                         </div>
                                 </div>
 
@@ -338,15 +356,6 @@
               this.obtenerGanadoresV(this.id_depen);
         },
 
-        calcularYGuardarGanadores() {
-        axios
-            .get("/calcular-y-guardar-ganadores")
-            .then((response) => {
-            })
-            .catch((error) => {
-            });
-        },
-
          //Metodos para efecto acordeón
         toggleCollapse(id) {
             if (this.expandedId === id) {
@@ -386,6 +395,17 @@
         //           }
         //       });
         //   },
+
+        //Metodos para generar Resultados
+
+        calcularYGuardarGanadores() {
+        axios
+            .get("/calcular-y-guardar-ganadores")
+            .then((response) => {
+            })
+            .catch((error) => {
+            });
+        },
 
         obtenerResultados(idDependencia = null) {
             if (!idDependencia) {
@@ -437,29 +457,6 @@
                   return numeradosResultados;
         },
 
-        //   obtenerGanadoresV(idDependencia) {
-        //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
-        //           .then(response => {
-        //           this.ganadores = [];
-
-        //           for (let grupo in response.data.ganadores) {
-        //               let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-        //               numero: index + 1,
-        //               nombre: ganador.id_emp
-        //               }));
-
-        //               this.ganadores.push({
-        //               grupo: grupo,
-        //               ganadores: ganadoresGrupo
-        //               });
-        //           }
-
-        //           })
-        //           .catch(error => {
-        //           console.error('Error al obtener ganadores', error);
-        //           });
-        //   },
-
         obtenerGanadoresV(idDependencia = null) {
             if (!idDependencia) {
                 idDependencia = this.id_depen;
@@ -493,6 +490,30 @@
                     console.error('Error al obtener ganadores', error);
                 });
         },
+
+        //   obtenerGanadoresV(idDependencia) {
+        //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
+        //           .then(response => {
+        //           this.ganadores = [];
+
+        //           for (let grupo in response.data.ganadores) {
+        //               let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
+        //               numero: index + 1,
+        //               nombre: ganador.id_emp
+        //               }));
+
+        //               this.ganadores.push({
+        //               grupo: grupo,
+        //               ganadores: ganadoresGrupo
+        //               });
+        //           }
+
+        //           })
+        //           .catch(error => {
+        //           console.error('Error al obtener ganadores', error);
+        //           });
+        //   },
+
 
         //Metodos agregar Ganador o excepción
         handleExcepcionFileUpload(event) {
@@ -545,6 +566,8 @@
             .then((response) => {
                 const ganador = response.data[0];
                 this.id_emp = ganador.id_emp;
+                this.curp = ganador.curp;
+                this.id_grup = ganador.id_grup;
                 this.id_cargo = ganador.id_cargo;
                 this.documento = ganador.documento;
             })
@@ -557,10 +580,10 @@
 
             const ganador = {
                 id: this.idGanador,
-                // id_conc: this.id_conc,
-                // id_emp: this.id_emp,
-                // curp: this.curp,
-                // id_grup: this.id_grup,
+                //id_conc: this.id_conc,
+                id_emp: this.id_emp,
+                curp: this.curp,
+                id_grup: this.id_grup,
                 id_cargo: this.id_cargo,
                 //documento: documentoUrl
             };
@@ -576,6 +599,8 @@
                 const response = await axios.post('/editarGanadores', ganador);
 
                 if (response.data.success) {
+                    this.limpiarvar();
+                    this.cerrarModalCargos();
                     this.obtenerGanadoresV();
                     Swal.fire('Éxito', response.data.message, 'success');
                 } else {
@@ -688,7 +713,7 @@
             return estado === 2;
         },
 
-        //metodos del modal agregar caso excepcional
+        //Metodos del modal agregar caso excepcional
         nuevo() {
             this.limpiarvar();
             this.bandera = 0;
@@ -709,6 +734,7 @@
             this.curp = null;
             this.id_cargo = null;
             this.id_grup = null;
+            this.documento = null;
         },
       },
     };
