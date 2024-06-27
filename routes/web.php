@@ -13,7 +13,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ResultadosController;
-
 use App\Models\Bitacora;
 use App\Models\Faq;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +34,7 @@ Route::get('/obtenerVotosTodosEmpleados/{idConcurso}', [EmpleadoLoginController:
 Route::get('/', [EmpleadoLoginController::class, 'showLoginForm'])->name('empleado.login');
 Route::post('/EmpleadoLogin', [EmpleadoLoginController::class, 'login'])->name('Empleadologin');
 Route::get('/obtenerFechaInicioConcurso', [EmpleadoLoginController::class, 'obtenerFechaInicioConcurso'])->name('obtenerFechaInicioConcurso');
-Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
+//Route::get('/calcular-y-guardar-ganadores', [EmpleadoLoginController::class, 'calcularYGuardarGanadores'])->name('calcularYGuardarGanadores');
 //Route::get('/obtenerGanadoresV', [EmpleadoLoginController::class, 'obtenerGanadoresV'])->name('obtenerGanadoresV');
 Route::get('/obtenerGanadores', [EmpleadoLoginController::class, 'obtenerGanadores'])->name('obtenerGanadores');
 
@@ -46,6 +45,7 @@ Route::middleware(['auth:empleado'])->group(function () {
     Route::get('/verificarVotoUsuarioActual/{ronda}', [EmpleadoLoginController::class, 'verificarVotoUsuarioActual'])->name('verificarVotoUsuarioActual');
     Route::get('/Votacion', [EmpleadoLoginController::class, 'VotacionEmpleado'])->name('VotacionEmpleado');
     Route::get('/obtenerOpcionesVotacion/{ronda}', [EmpleadoLoginController::class, 'obtenerOpcionesVotacion'])->name('obtenerOpcionesVotacion');
+    Route::get('/obtenerFotoCandidato/{id}', [EmpleadoLoginController::class, 'obtenerFotoCandidato']);
     Route::get('/obtenerIdUsuarioAutenticado', [EmpleadoLoginController::class, 'obtenerIdUsuarioAutenticado'])->name('obtenerIdUsuarioAutenticado');
     Route::get('/obtenerConcursoId', [EmpleadoLoginController::class, 'obtenerConcursoId'])->name('obtenerConcursoId');
     Route::post('/enviarVotacion', [EmpleadoLoginController::class, 'enviarVotacion'])->name('enviarVotacion');

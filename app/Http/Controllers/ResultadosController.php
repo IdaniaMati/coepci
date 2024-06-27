@@ -67,20 +67,6 @@ class ResultadosController extends Controller
     public function editarGanadores(Request $request)
     {
         try {
-            //$request->validate([
-                // 'id_cargo' => 'required|integer',
-                // 'documento' => 'nullable|string',
-
-             //PRUEBAS
-            //     'id' => 'required|exists:ganadores,id',,
-            //     'id_emp' => 'required',
-            //     'curp' => 'required',
-            //     'id_grup' => 'required',
-            //     'id_cargo' => 'required',
-            //     'documento' => 'nullable',
-
-            // ]);
-
             $request->validate([
                 'id' => 'required|exists:ganadores,id',
                 'id_emp' => 'required',
@@ -253,20 +239,6 @@ class ResultadosController extends Controller
 
             $ganadores = Ganadores::with('empleado')->where('id_conc', $ultimoConcurso->id)
                 ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_cargo', 'ganadores.documento', 'ganadores.id_conc', 'ganadores.estado')
-
-                // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id') // Unir con la tabla empleados
-                // ->select(
-                //     'ganadores.id',
-                //     'ganadores.id_emp',
-                //     'ganadores.id_grup',
-                //     'empleados.curp',
-                //     'empleados.nombre',
-                //     'empleados.apellido_paterno',
-                //     'empleados.apellido_materno',
-                //     'ganadores.documento',
-                //     'ganadores.id_conc',
-                //     'ganadores.estado'
-                //  )
                 ->get();
 
                 //dd($ganadores);
@@ -278,62 +250,6 @@ class ResultadosController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-        // public function obtenerGanadoresV(Request $request)
-    // {
-    //     try {
-    //         $idDependenciaSeleccionada = $request->get('idDependencia');
-
-    //         $ultimoConcurso = Concurso::where('id_depen', $idDependenciaSeleccionada)->latest()->first();
-
-    //         if (!$ultimoConcurso) {
-    //             return response()->json(['ganadores' => [], 'message' => 'Aún no hay votaciones para el concurso.']);
-    //         }
-
-    //         $ganadores = Ganadores::where('id_conc', $ultimoConcurso->id)
-    //             ->select('ganadores.id_emp', 'ganadores.id_grup')
-    //             ->get();
-
-    //         $ganadoresAgrupados = $ganadores->groupBy('id_grup');
-
-            //NO DESCOMENTAR
-
-            //Agrupamos los ganadores por grupo y limitamos los resultados
-            // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo, $idGrupo) {
-            //     if ($idGrupo == 1 || $idGrupo == 2) {
-            //         return $grupo->take(2);
-            //     } elseif ($idGrupo == 3) {
-            //         return $grupo->take(3);
-            //     }
-            //     return $grupo;
-            // });
-
-            //Agrupamos los ganadores por grupo y limitamos los resultados
-            // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo, $idGrupo) {
-            //     $maxGanadores = ($idGrupo == 1 || $idGrupo == 2) ? 2 : ($idGrupo == 3 ? 3 : 0);
-            //     return $grupo->take($maxGanadores);
-            // });
-
-            // Convirtiendo la colección a array para asegurarnos que se retornan los resultados correctos
-            //$ganadoresAgrupadosArray = $ganadoresAgrupados->toArray();
-
-            // $ganadoresAgrupados = $ganadores->groupBy('id_grup')->map(function ($grupo) {
-            //     $maxGanadores = [
-            //         1 => 2, // Máximo 2 ganadores para el grupo 1
-            //         2 => 2, // Máximo 2 ganadores para el grupo 2
-            //         3 => 3, // Máximo 3 ganadores para el grupo 3
-            //     ];
-
-            //     return $grupo->take($maxGanadores[$grupo->first()->id_grup] ?? 0);
-            // });
-
-            //AQUI DESCOMENTAR
-
-    //         return response()->json(['ganadores' => $ganadoresAgrupados]);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
-    // }
 
     public function agregarExcepcion(Request $request){
         try {
@@ -367,17 +283,11 @@ class ResultadosController extends Controller
             $nuevoExcepcion->id_grup = $request->id_grup;
             $nuevoExcepcion->id_cargo = $request->id_cargo;
 
-            // if ($request->hasFile('documento')) {
-            //     $file = $request->file('documento');
-            //     $path = $file->store('documentos');
-            //     $nuevoExcepcion->documento = $path;
-            // }
-
             if ($request->hasFile('documento')) {
                 $file = $request->file('documento');
-                $originalName = $file->getClientOriginalName(); // Obtener el nombre original del archivo
-                $path = $file->storeAs('documentos', $originalName); // Guardar el archivo con su nombre original
-                $nuevoExcepcion->documento = $originalName; // Guardar solo el nombre del archivo en la base de datos
+                $originalName = $file->getClientOriginalName();
+                $path = $file->storeAs('documentos', $originalName);
+                $nuevoExcepcion->documento = $originalName;
             }
 
             $nuevoExcepcion->save();
