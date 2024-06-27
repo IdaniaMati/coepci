@@ -82,7 +82,7 @@
                             <tr v-for="empleado in paginatedEmpleados" :key="empleado.id">
                                 <td>{{ empleado.id }}</td>
                                 <td>
-                                    <img :src="'/storage/' + empleado.foto" alt="Foto" style="width: 50px; height: 50px;" v-if="empleado.foto">
+                                    <img :src="'/storage/' + empleado.foto" style="width: 50px; height: 50px;" v-if="empleado.foto">
                                 </td>
                                 <td>{{ empleado.nombre + ' ' + empleado.apellido_paterno + ' ' + empleado.apellido_materno }}</td>
                                 <td>{{ empleado.curp }}</td>

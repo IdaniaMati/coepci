@@ -58,16 +58,13 @@ class DashboardController extends Controller
     public function agregarEmpleado(Request $request)
     {
         try {
-            Log::info('Iniciando el proceso de agregarEmpleado');
 
             $user = Auth::user();
 
             if (!$user) {
-                Log::warning('Usuario no autenticado');
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
 
-            Log::info('Usuario autenticado: ' . $user->id);
 
             $request->validate([
                 'id_grup' => 'required',
@@ -85,8 +82,6 @@ class DashboardController extends Controller
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
-            Log::info('Validación de datos completada');
-
             $nuevoEmpleado = new Empleado;
             $nuevoEmpleado->id_grup = $request->id_grup;
             $nuevoEmpleado->curp = strtoupper($request->curp);
@@ -102,14 +97,12 @@ class DashboardController extends Controller
             }
             $nuevoEmpleado->id_depen = $user->id_depen;
 
-            Log::info('Datos del empleado establecidos, guardando en la base de datos');
 
             $nuevoEmpleado->save();
             MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado->nombre);
 
             return response()->json(['success' => true, 'message' => 'Empleado guardado exitosamente']);
         } catch (\Exception $e) {
-            Log::error('Error al agregar empleado: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
