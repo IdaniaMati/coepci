@@ -7,6 +7,7 @@
         </div>
       </div>
 
+      <!-- Filtrado de resultados por dependencia -->
       <div class="mb-3" v-if="showDependenciaSelect === true">
           <label for="defaultSelect" class="form-label">Seleccione una Institución</label>
           <select id="showDependenciaSelect" v-model="id_depen" @change="cambiarDependencia" class="form-select">
@@ -15,8 +16,7 @@
           </select>
       </div>
 
-            <div>
-
+        <div>
             <br>
             <div v-if="mensajeNoVotaciones">{{ mensajeNoVotaciones }}</div>
                 <div v-if="ganadores.length > 0" class="card mb-4">
@@ -66,7 +66,6 @@
                     </div>
                 </div>
 
-
             <!-- Resultados de rondas (1 y 2) del concurso -->
             <br>
             <div v-for="(resultadosRonda, ronda) in resultadosPorRonda" :key="ronda" class="card mb-4">
@@ -101,13 +100,13 @@
                     </div>
             </div>
 
-             <!-- Inicio Modal Agregar Caso excepcional -->
+             <!-- Inicio Modal Caso Excepcional y Asignación de Cargos -->
              <div class="container">
                     <div class="modal fade" id="largeModal" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title"><strong>Empleado</strong></h5>
+                                    <h5 class="modal-title"><strong>Ganadores</strong></h5>
                                     <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -115,8 +114,8 @@
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <label>Nombre completo</label>
-                                                <input v-model="nombreCompleto" class="form-control" placeholder="Nombre Completo" required/>
-                                                <div v-if="!nombreCompleto" class="text-danger">Este campo es obligatorio.</div>
+                                                <input v-model="id_emp" class="form-control" placeholder="Nombre Completo" required/>
+                                                <div v-if="!id_emp" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -146,9 +145,9 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
-                                                <label>Documento</label>
+                                                <label>Documento comprobatorio:</label>
                                                 <div class="modal-body">
-                                                    <input type="file" @change="handleExcepcionFileUpload" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
+                                                    <input type="file" ref="documento" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
                                                 </div>
                                             </div>
                                         </div>
@@ -157,73 +156,14 @@
 
                                 <div class="modal-footer">
                                     <button v-if="bandera === 0" class="btn btn-primary" @click="agregarExcepcion">Guardar</button>
+                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarGanador">Guardar Cambios</button>
                                     <button class="btn btn-cerrar" @click="cerrarModal" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Final Modal Agregar Caso excepcional -->
-
-                <!-- Modal asignar cargos -->
-                <div class="container">
-                    <div class="modal fade" id="modalcargos" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title"><strong>Asignación de cargo</strong></h5>
-                                    <button class="btn-close" data-bs-dismiss="modal" @click="cerrarModalCargos" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>Nombre Completo</label>
-                                                <input v-model="id_emp" class="form-control" placeholder="Nombre Completo"/>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>CURP</label>
-                                                    <input v-model="curp" class="form-control" placeholder="Curp" required/>
-                                                <div v-if="!curp" class="text-danger">Este campo es obligatorio.</div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>Grupo</label>
-                                                    <select v-model="id_grup" class="form-control" id="grupo" required>
-                                                        <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.grupo }}</option>
-                                                    </select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>Selecciona el cargo a asignar:</label>
-                                                <select v-model="id_cargo" class="form-control" id="cargo" required>
-                                                    <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.descripcion }}</option>
-                                                </select>
-                                                <div v-if="!id_cargo" class="text-danger">Este campo es obligatorio.</div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>Documento comprobatorio:</label>&nbsp;
-                                                    <input type="file" @change="handleFileChange" ref="fileInput" accept=".pdf" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                                    &nbsp;
-                                                    <div v-if="!id_grup" class="text-danger">Este campo es obligatorio.</div>
-                                                </div>
-                                        </div>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button v-if="bandera === 1" class="btn btn-primary" @click="editarGanador">Guardar Cambios</button>
-                                    <button class="btn btn-cerrar" @click="cerrarModalCargos" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Fin Modal asignar cargos -->
+                <!-- Final Modal Modal Caso Excepcional y Asignación de Cargos -->
         </div>
         <div class="d-grid gap-2">
             <button  class="btn btn-edit btn-sm"  style="height: 40px;" title="Publicar Resultados" @click="publicarResultados">
@@ -254,16 +194,14 @@
             showDependenciaSelect: false,
             bandera: "",
             lista_permisos:[],
-            nombreCompleto: "",
             curp: "",
             id_cargo: "",
             id_grup: "",
             id_emp:"",
             documento: null,
+            nuevoDocumento: null,
             id_conc: this.idConcursoActual,
-            selectedFile: null,
             selectedGanadorId: null,
-            excepcionFile: null,
             idGanador: "",
             idGan: ""
         };
@@ -516,9 +454,9 @@
 
 
         //Metodos agregar Ganador o excepción
-        handleExcepcionFileUpload(event) {
-            this.excepcionFile = event.target.files[0];
-        },
+        // handleExcepcionFileUpload(event) {
+        //     this.documento = event.target.files[0];
+        // },
 
         async agregarExcepcion() {
             if (this.curp.length !== 18) {
@@ -527,12 +465,17 @@
             }
 
             const formData = new FormData();
-            //formData.append('id_conc', this.id_conc); // Incluir id_conc
-            formData.append('id_emp', this.nombreCompleto);
+            formData.append('id_emp', this.id_emp);
             formData.append('curp', this.curp.toUpperCase().substring(0, 18));
             formData.append('id_grup', this.id_grup);
             formData.append('id_cargo', this.id_cargo);
-            formData.append('documento', this.excepcionFile);
+
+            const documentoFile = this.$refs.documento.files[0];
+            if (!documentoFile) {
+                Swal.fire('Error', 'Debe seleccionar un documento.', 'error');
+                return;
+            }
+            formData.append('documento', documentoFile);
 
             try {
                 const response = await axios.post('/agregarExcepcion', formData, {
@@ -559,7 +502,7 @@
 
         this.idGanador = idGan;
         this.bandera = 1;
-        this.abrirModalCargos();
+        this.abrirModal();
 
         axios
             .get("/detalleGanadores/" + idGan)
@@ -576,31 +519,64 @@
             });
         },
 
+        async handleFileUpload() {
+
+            const documentoFile = this.$refs.documento.files[0];
+            if (!documentoFile) {
+                return null;
+            }
+
+            const formData = new FormData();
+            formData.append('file', this.documentoFile);
+            formData.append('ganador_id', this.idGanador);
+
+            try {
+                const response = await axios.post('/uploadDocument', formData, {
+                    headers: {
+                         'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (response.data.success) {
+                    return response.data.url;
+                } else {
+                    Swal.fire('Error', response.data.message, 'error');
+                    return null;
+                }
+            } catch (error) {
+                    console.error(error);
+                    Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
+                    return null;
+            }
+        },
+
         async editarGanador() {
 
             const ganador = {
                 id: this.idGanador,
-                //id_conc: this.id_conc,
                 id_emp: this.id_emp,
                 curp: this.curp,
                 id_grup: this.id_grup,
                 id_cargo: this.id_cargo,
-                //documento: documentoUrl
             };
 
-            const documentoUrl = await this.handleFileUpload(ganador);
-            if (!documentoUrl) {
+            const documentoFile = this.$refs.documento.files[0];
+            if (documentoFile) {
+                const documentoUrl = await this.handleFileUpload();
+                if (!documentoUrl) {
                 return;
+                }
+                ganador.documento = documentoUrl;
+            } else {
+                ganador.documento = this.documento;
             }
-
-            ganador.documento = documentoUrl;
 
             try {
                 const response = await axios.post('/editarGanadores', ganador);
 
                 if (response.data.success) {
                     this.limpiarvar();
-                    this.cerrarModalCargos();
+                    this.cerrarModal();
                     this.obtenerGanadoresV();
                     Swal.fire('Éxito', response.data.message, 'success');
                 } else {
@@ -610,51 +586,6 @@
                 console.error(error);
                 Swal.fire('Error', 'Hubo un error al actualizar el ganador.', 'error');
             }
-        },
-
-        async handleFileUpload(ganador) {
-
-        console.log('Ganador:', ganador);
-        console.log('Ganador ID:', ganador.id);
-
-        const formData = new FormData();
-        formData.append('file', this.documento);
-        //formData.append('ganador_id', ganador.id);
-        formData.append('ganador_id', this.idGanador);
-
-        try {
-            const response = await axios.post('/uploadDocument', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-
-            if (response.data.success) {
-                return response.data.url;
-            } else {
-                Swal.fire('Error', response.data.message, 'error');
-                return null;
-            }
-        } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
-            return null;
-        }
-        },
-
-        handleFileChange(event) {
-            const file = event.target.files[0];
-            this.documento = file; // Guarda el archivo seleccionado en la propiedad documento
-        },
-
-        //metodos modal asginar cargos
-        abrirModalCargos() {
-            $("#modalcargos").modal({ backdrop: "static", keyboard: false });
-            $("#modalcargos").modal("toggle");
-        },
-
-        cerrarModalCargos() {
-            $("#modalcargos").modal("hide");
         },
 
         //Metodos para publicar resultados
@@ -730,11 +661,12 @@
         },
 
         limpiarvar() {
-            this.nombreCompleto = null;
             this.curp = null;
             this.id_cargo = null;
             this.id_grup = null;
             this.documento = null;
+            this.nuevoDocumento = null;
+            this.$refs.documento.value = '';
         },
       },
     };

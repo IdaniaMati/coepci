@@ -67,6 +67,7 @@ class ResultadosController extends Controller
     public function editarGanadores(Request $request)
     {
         try {
+
             $request->validate([
                 'id' => 'required|exists:ganadores,id',
                 'id_emp' => 'required',
@@ -93,11 +94,62 @@ class ResultadosController extends Controller
             $ganador->id_cargo = $request->input('id_cargo');
             $ganador->documento = $request->input('documento');
 
+            if ($request->hasFile('file')) {
+                $path = $request->file('file')->store('documentos', 'public');
+                $ganador->documento = $path;
+            }
+
             $ganador->save();
 
             MyHelper::registrarAccion('Se editó al empleado: ' . $ganador -> id_emp);
 
             return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function agregarExcepcion(Request $request){
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+
+            $request->validate([
+                'id_emp' => 'required',
+                'curp' => 'required',
+                'id_grup' => 'required',
+                'id_cargo' => 'required',
+                'documento' => 'required|file|mimes:pdf|max:8192',
+            ]);
+
+            $ultimoConcurso = Concurso::where('id_depen', $user->id_depen)
+                                  ->orderBy('created_at', 'desc')
+                                  ->first();
+
+            if (!$ultimoConcurso) {
+                return response()->json(['success' => false, 'message' => 'No se encontró un concurso para la dependencia del usuario'], 400);
+            }
+
+            $nuevoExcepcion = new Ganadores;
+            $nuevoExcepcion->id_conc =  $ultimoConcurso->id;
+            $nuevoExcepcion->id_emp = $request->id_emp;
+            $nuevoExcepcion->curp = strtoupper($request->curp);
+            $nuevoExcepcion->id_grup = $request->id_grup;
+            $nuevoExcepcion->id_cargo = $request->id_cargo;
+
+            if ($request->hasFile('documento')) {
+                $file = $request->file('documento');
+                $originalName = $file->getClientOriginalName();
+                $path = $file->storeAs('documentos', $originalName);
+                $nuevoExcepcion->documento = $originalName;
+            }
+
+            $nuevoExcepcion->save();
+            //MyHelper::registrarAccion('Se agrego el Caso excepcional: ' . $nuevoExcepcion->nombreCompleto);
+
+            return response()->json(['success' => true, 'message' => 'Ganador guardado exitosamente']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -248,54 +300,6 @@ class ResultadosController extends Controller
             return response()->json(['ganadores' => $ganadoresAgrupados, 'id_conc' => $ultimoConcurso->id]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function agregarExcepcion(Request $request){
-        try {
-            $user = Auth::user();
-            //dd();
-            if (!$user) {
-                return response()->json(['message' => 'Usuario no autenticado'], 401);
-            }
-
-            $request->validate([
-                //'id_conc' => 'required',
-                'id_emp' => 'required',
-                'curp' => 'required',
-                'id_grup' => 'required',
-                'id_cargo' => 'required',
-                'documento' => 'required|file|mimes:pdf|max:8192',
-            ]);
-
-            $ultimoConcurso = Concurso::where('id_depen', $user->id_depen)
-                                  ->orderBy('created_at', 'desc')
-                                  ->first();
-
-            if (!$ultimoConcurso) {
-                return response()->json(['success' => false, 'message' => 'No se encontró un concurso para la dependencia del usuario'], 400);
-            }
-
-            $nuevoExcepcion = new Ganadores;
-            $nuevoExcepcion->id_conc =  $ultimoConcurso->id;
-            $nuevoExcepcion->id_emp = $request->id_emp;
-            $nuevoExcepcion->curp = strtoupper($request->curp);
-            $nuevoExcepcion->id_grup = $request->id_grup;
-            $nuevoExcepcion->id_cargo = $request->id_cargo;
-
-            if ($request->hasFile('documento')) {
-                $file = $request->file('documento');
-                $originalName = $file->getClientOriginalName();
-                $path = $file->storeAs('documentos', $originalName);
-                $nuevoExcepcion->documento = $originalName;
-            }
-
-            $nuevoExcepcion->save();
-            //MyHelper::registrarAccion('Se agrego el Caso excepcional: ' . $nuevoExcepcion->nombreCompleto);
-
-            return response()->json(['success' => true, 'message' => 'Ganador guardado exitosamente']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 

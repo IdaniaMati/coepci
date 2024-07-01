@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false, gestionOpen: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -11,42 +11,54 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @can('Modulo_Usuario')
-                    <x-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')">
-                        {{ __('Usuarios') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Dependencias')
-                    <x-nav-link :href="route('dependencias')" :active="request()->routeIs('dependencias')">
-                        {{ __('Dependencias') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Veda')
-                    <x-nav-link :href="route('veda')" :active="request()->routeIs('veda')">
-                        {{ __('Veda Electoral') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Roles')
-                    <x-nav-link :href="route('roles')" :active="request()->routeIs('roles')">
-                        {{ __('Roles') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Permisos')
-                    <x-nav-link :href="route('permisos')" :active="request()->routeIs('permisos')">
-                        {{ __('Permisos') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Bitacora')
-                    <x-nav-link :href="route('bitacora')" :active="request()->routeIs('bitacora')">
-                        {{ __('Bitacora') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('Modulo_Respaldo')
-                    <x-nav-link :href="route('respaldo')" :active="request()->routeIs('respaldo')">
-                        {{ __('Respaldo') }}
-                    </x-nav-link>
-                    @endcan
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
+                    <!-- Grupo de Gestión -->
+                    <div @click.away="gestionOpen = false" class="relative" @click="gestionOpen = ! gestionOpen">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                            <span>Gestión</span>
+                            <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div x-show="gestionOpen" class="origin-top-left absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50" style="display: none;" @click="gestionOpen = false">
+                            @can('Modulo_Usuario')
+                            <x-dropdown-link :href="route('usuarios')">
+                                {{ __('Usuarios') }}
+                            </x-dropdown-link>
+                            @endcan
+                            @can('Modulo_Dependencias')
+                            <x-dropdown-link :href="route('dependencias')">
+                                {{ __('Dependencias') }}
+                            </x-dropdown-link>
+                            @endcan
+                            @can('Modulo_Veda')
+                            <x-dropdown-link :href="route('veda')">
+                                {{ __('Veda Electoral') }}
+                            </x-dropdown-link>
+                            @endcan
+                            @can('Modulo_Roles')
+                            <x-dropdown-link :href="route('roles')">
+                                {{ __('Roles') }}
+                            </x-dropdown-link>
+                            @endcan
+                            @can('Modulo_Permisos')
+                            <x-dropdown-link :href="route('permisos')">
+                                {{ __('Permisos') }}
+                            </x-dropdown-link>
+                            @endcan
+                            @can('Modulo_Bitacora')
+                            <x-dropdown-link :href="route('bitacora')">
+                                {{ __('Bitacora') }}
+                            </x-dropdown-link>
+                            @endcan
+                            @can('Modulo_Respaldo')
+                            <x-dropdown-link :href="route('respaldo')">
+                                {{ __('Respaldo') }}
+                            </x-dropdown-link>
+                            @endcan
+                        </div>
+                    </div>
                     @can('Modulo_Dashboard')
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
@@ -134,13 +146,12 @@
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Perfil') }}
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Manuales') }}
                 </x-responsive-nav-link>
-
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
@@ -149,7 +160,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Cerrar sesión') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
