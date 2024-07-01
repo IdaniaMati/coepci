@@ -83,7 +83,7 @@
         votos: [],
         idUsuarioAutenticado: null,
         yaVoto: false,
-        fotosCandidatos: {}, // Para almacenar las rutas de las fotos
+        fotosCandidatos: {},
       };
     },
 
@@ -185,7 +185,7 @@
         this.votos = this.grupos.map((grupo) =>
           Array.from({ length: grupo.numCandidatos }, () => null)
         );
-        this.fotosCandidatos = {}; // Limpiar las fotos también
+        this.fotosCandidatos = {};
       },
 
       obtenerOpcionesVotacion() {
