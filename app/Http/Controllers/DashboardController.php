@@ -58,13 +58,11 @@ class DashboardController extends Controller
     public function agregarEmpleado(Request $request)
     {
         try {
-
             $user = Auth::user();
 
             if (!$user) {
                 return response()->json(['message' => 'Usuario no autenticado'], 401);
             }
-
 
             $request->validate([
                 'id_grup' => 'required',
@@ -91,12 +89,11 @@ class DashboardController extends Controller
             $nuevoEmpleado->cargo = $request->cargo;
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
-                $filename = time() . '_' . $file->getClientOriginalName();
+                $filename = date('YmdHis') . '_' . $request->curp . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('fotos', $filename, 'public');
                 $nuevoEmpleado->foto = $path;
             }
             $nuevoEmpleado->id_depen = $user->id_depen;
-
 
             $nuevoEmpleado->save();
             MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado->nombre);
@@ -145,7 +142,7 @@ class DashboardController extends Controller
                 }
 
                 $file = $request->file('foto');
-                $filename = time() . '_' . $file->getClientOriginalName();
+                $filename = date('YmdHis') . '_' . $request->curp . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('fotos', $filename, 'public');
                 $empleado->foto = $path;
             }

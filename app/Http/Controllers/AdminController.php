@@ -15,6 +15,7 @@ use Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use App\Helpers\MyHelper;
 
@@ -63,7 +64,7 @@ class AdminController extends Controller
             }
 
             $archivo = $request->file('archivo');
-            
+
             Excel::import(new EmpleadosImport($user->id_depen), $archivo);
 
             MyHelper::registrarAccion('Importo un excel con empleados a Dashboard');
@@ -105,21 +106,28 @@ class AdminController extends Controller
                 }
             }
 
-            if (Empleado::where('id_depen', $user->id_depen)->count() > 0) {
-                Empleado::where('id_depen', $user->id_depen)->delete();
+            $empleados = Empleado::where('id_depen', $user->id_depen)->get();
+            if ($empleados->isNotEmpty()) {
+                foreach ($empleados as $empleado) {
+                    if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                        Storage::disk('public')->delete($empleado->foto);
+                    }
+                    $empleado->delete();
+                }
             } else {
                 DB::statement('SET FOREIGN_KEY_CHECKS=1');
                 return response()->json(['success' => false, 'message' => 'La base de datos ya está vacía']);
             }
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
-            MyHelper::registrarAccion('Elimino todos los empleados de Dashboard ');
+            MyHelper::registrarAccion('Elimino todos los empleados de Dashboard');
 
             return response()->json(['success' => true, 'message' => 'Empleados y registros eliminados']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+
 
     public function agregarEvento(Request $request)
     {

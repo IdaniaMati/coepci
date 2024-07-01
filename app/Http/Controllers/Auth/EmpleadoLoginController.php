@@ -10,6 +10,7 @@ use App\Models\HistoricoVotos;
 use App\Models\Dependencias;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -192,7 +193,6 @@ class EmpleadoLoginController extends Controller
         }
     }
 
-
     public function obtenerOpcionesVotacion($ronda)
     {
         try {
@@ -262,7 +262,6 @@ class EmpleadoLoginController extends Controller
 
     public function obtenerConcursoId()
     {
-
         $user = Auth::user();
 
             if (!$user) {
@@ -371,12 +370,11 @@ class EmpleadoLoginController extends Controller
                     $nombreCompleto = $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno;
 
                     $numVotos = DB::table('registros')
-                    ->where('id_nom', $idNom)
-                    ->where('ronda', $ronda)
-                    ->count();
+                        ->where('id_nom', $idNom)
+                        ->where('ronda', $ronda)
+                        ->count();
 
-                    $existente = HistoricoVotos::
-                        where('nombre', $nombreCompleto)
+                    $existente = HistoricoVotos::where('nombre', $nombreCompleto)
                         ->where('id_grup', $grupo)
                         ->where('id_conc', $concurso)
                         ->where('ronda', $ronda)
@@ -384,7 +382,6 @@ class EmpleadoLoginController extends Controller
                         ->exists();
 
                     if (!$existente) {
-
                         HistoricoVotos::create([
                             'nombre' => $nombreCompleto,
                             'id_grup' => $grupo,
@@ -392,6 +389,19 @@ class EmpleadoLoginController extends Controller
                             'ronda' => $ronda,
                             'novotos' => $numVotos,
                         ]);
+                    }
+
+                    // Copiar la foto a la nueva carpeta y actualizar la ruta
+                    $rutaDestino = 'historico_empleados/' . $idNom;
+                    if (!Storage::disk('public')->exists($rutaDestino)) {
+                        Storage::disk('public')->makeDirectory($rutaDestino);
+                    }
+
+                    if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                        $nuevaRutaFoto = $rutaDestino . '/' . basename($empleado->foto);
+                        Storage::disk('public')->copy($empleado->foto, $nuevaRutaFoto);
+                        $empleado->foto = $nuevaRutaFoto;
+                        $empleado->save();
                     }
                 }
             }
