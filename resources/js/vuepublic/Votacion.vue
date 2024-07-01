@@ -20,13 +20,21 @@
                                     <div class="row mb-3">
                                         <label class="col-sm-2 col-form-label" :for="`candidato-${grupo.numero}-${i}`">Candidato {{ i }}</label>
                                         <div class="col-sm-10">
-                                            <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]">
+                                            <select :id="`candidato-${grupo.numero}-${i}`" class="form-select" aria-label="Default select example" v-model="votos[grupo.numero - 1][i - 1]"  @change="mostrarFotoSeleccionada(grupo.numero, i)">
                                                 <option disabled selected>Seleccionar</option>
                                                 <option v-for="opcion in grupo.opciones" :value="opcion.id">
                                                     {{ opcion.nombre+' '+opcion.apellido_paterno+' '+opcion.apellido_materno }}
                                                 </option>
                                             </select>
                                             <div v-if="!votos[grupo.numero - 1][i - 1]" class="text-danger">Este campo es obligatorio.</div>
+                                            <div v-if="fotosCandidatos[grupo.numero] && fotosCandidatos[grupo.numero][i]">
+                                                <img
+                                                :src="`/storage/${fotosCandidatos[grupo.numero][i]}`"
+                                                alt="Foto del candidato seleccionado"
+                                                class="img-thumbnail mt-2"
+                                                style="max-width: 150px;"
+                                                />
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -63,6 +71,7 @@
                 votos: [],
                 idUsuarioAutenticado: null,
                 yaVoto: false,
+                fotosCandidatos: {},
             };
         },
 
@@ -163,6 +172,7 @@
 
             limpiarCampos() {
                 this.votos = this.grupos.map((grupo) => Array.from({ length: grupo.numCandidatos }, () => null));
+                this.fotosCandidatos = {}; // Limpiar las fotos también
             },
 
             obtenerOpcionesVotacion() {
@@ -227,6 +237,31 @@
                     .catch((error) => {
                     console.error('Error al obtener el ID del usuario autenticado', error);
                     });
+            },
+
+            mostrarFotoSeleccionada(grupoNumero, candidatoIndex) {
+                const candidatoId = this.votos[grupoNumero - 1][candidatoIndex - 1];
+                if (candidatoId) {
+                axios
+                    .get(`/obtenerFotoCandidato/${candidatoId}`)
+                    .then((response) => {
+                    if (!this.fotosCandidatos[grupoNumero]) {
+                        this.fotosCandidatos[grupoNumero] = {};
+                    }
+                    this.fotosCandidatos[grupoNumero][candidatoIndex] = response.data.foto || null;
+                    })
+                    .catch((error) => {
+                    console.warn(`Error al obtener la foto del candidato `, error);
+                    if (!this.fotosCandidatos[grupoNumero]) {
+                        this.fotosCandidatos[grupoNumero] = {};
+                    }
+                    this.fotosCandidatos[grupoNumero][candidatoIndex] = null;
+                    });
+                } else {
+                if (this.fotosCandidatos[grupoNumero]) {
+                    this.fotosCandidatos[grupoNumero][candidatoIndex] = null;
+                }
+                }
             },
 
             enviarVotacion() {
