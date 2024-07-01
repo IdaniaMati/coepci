@@ -29,34 +29,34 @@ class ResultadosController extends Controller
         return view('admin.resultados');
     }
 
-    public function uploadDocument(Request $request)
-    {
-        $request->merge(['ganador_id' => (int) $request->input('ganador_id')]);
+    // public function uploadDocument(Request $request)
+    // {
+    //     $request->merge(['ganador_id' => (int) $request->input('ganador_id')]);
 
-        $request->validate([
-            'file' => 'required|mimes:pdf|max:8048',
-            'ganador_id' => 'required|integer|exists:ganadores,id'
-        ]);
+    //     $request->validate([
+    //         'file' => 'required|mimes:pdf|max:8048',
+    //         'ganador_id' => 'required|integer|exists:ganadores,id'
+    //     ]);
 
-        try {
-            $file = $request->file('file');
-            $ganadorId = $request->input('ganador_id');
+    //     try {
+    //         $file = $request->file('file');
+    //         $ganadorId = $request->input('ganador_id');
 
-            //$fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
-            $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('/documentos', $fileName);
+    //         //$fileName = 'documento_' . $ganadorId . '.' . $file->getClientOriginalExtension();
+    //         $fileName = $file->getClientOriginalName();
+    //         $filePath = $file->storeAs('/documentos', $fileName);
 
-            //$filePath = substr($filePath, 7);
+    //         //$filePath = substr($filePath, 7);
 
-            Ganadores::where('id', $ganadorId)->update(['documento' => $filePath]);
+    //         Ganadores::where('id', $ganadorId)->update(['documento' => $filePath]);
 
-            $fileUrl = Storage::url($filePath);
+    //         $fileUrl = Storage::url($filePath);
 
-            return response()->json(['success' => true, 'message' => 'Archivo subido exitosamente', 'url' => $fileUrl], 200);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    }
+    //         return response()->json(['success' => true, 'message' => 'Archivo subido exitosamente', 'url' => $fileUrl], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    //     }
+    // }
 
     public function detalleGanadores($id)
     {
@@ -74,7 +74,6 @@ class ResultadosController extends Controller
                 'id_grup' => 'required|exists:grupos,id',
                 'curp' => 'required|string',
                 'id_cargo' => 'required|exists:cargos,id',
-                'documento' => 'nullable|string',
             ]);
 
             $ganadorExistente = DB::table("ganadores")
@@ -92,12 +91,6 @@ class ResultadosController extends Controller
             $ganador->curp = $request->input('curp');
             $ganador->id_grup = $request->input('id_grup');
             $ganador->id_cargo = $request->input('id_cargo');
-            $ganador->documento = $request->input('documento');
-
-            if ($request->hasFile('file')) {
-                $path = $request->file('file')->store('documentos', 'public');
-                $ganador->documento = $path;
-            }
 
             $ganador->save();
 
@@ -121,7 +114,6 @@ class ResultadosController extends Controller
                 'curp' => 'required',
                 'id_grup' => 'required',
                 'id_cargo' => 'required',
-                'documento' => 'required|file|mimes:pdf|max:8192',
             ]);
 
             $ultimoConcurso = Concurso::where('id_depen', $user->id_depen)
@@ -138,13 +130,6 @@ class ResultadosController extends Controller
             $nuevoExcepcion->curp = strtoupper($request->curp);
             $nuevoExcepcion->id_grup = $request->id_grup;
             $nuevoExcepcion->id_cargo = $request->id_cargo;
-
-            if ($request->hasFile('documento')) {
-                $file = $request->file('documento');
-                $originalName = $file->getClientOriginalName();
-                $path = $file->storeAs('documentos', $originalName);
-                $nuevoExcepcion->documento = $originalName;
-            }
 
             $nuevoExcepcion->save();
             //MyHelper::registrarAccion('Se agrego el Caso excepcional: ' . $nuevoExcepcion->nombreCompleto);
@@ -290,21 +275,7 @@ class ResultadosController extends Controller
             }
 
             $ganadores = Ganadores::with('empleado')->where('id_conc', $ultimoConcurso->id)
-                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_cargo', 'ganadores.documento', 'ganadores.id_conc', 'ganadores.estado')
-
-                // ->join('empleados', 'ganadores.id_emp', '=', 'empleados.id') // Unir con la tabla empleados
-                // ->select(
-                //     'ganadores.id',
-                //     'ganadores.id_emp',
-                //     'ganadores.id_grup',
-                //     'empleados.curp',
-                //     'empleados.nombre',
-                //     'empleados.apellido_paterno',
-                //     'empleados.apellido_materno',
-                //     'ganadores.documento',
-                //     'ganadores.id_conc',
-                //     'ganadores.estado'
-                //  )
+                ->select('ganadores.id','ganadores.id_emp', 'ganadores.id_grup', 'ganadores.curp', 'ganadores.id_cargo', 'ganadores.id_conc', 'ganadores.estado')
                 ->get();
 
                 //dd($ganadores);

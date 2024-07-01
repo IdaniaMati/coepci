@@ -30,24 +30,20 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Nombre</th>
                                     <th>CURP</th>
                                     <th>Grupo</th>
                                     <th>Cargo</th>
-                                    <th>Documento</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template v-for="(grupo, index) in ganadores" :key="index">
                                     <tr v-for="(ganador, ganadorIndex) in grupo.ganadores" :key="ganadorIndex">
-                                        <td>{{ ganador.id }}</td>
                                         <td>{{ ganador.nombre }}</td>
                                         <td>{{ ganador.curp }}</td>
                                         <td>{{ `Grupo ${grupo.grupo}` }}</td>
                                         <td>{{ descripcionCargo(ganador.id_cargo) }}</td>
-                                        <td>{{ ganador.documento }}</td>
                                         <td>
                                             <button  class="btn btn-roles btn-sm"  title="Asignar cargo" @click="detalleGanadores(ganador.id)" :disabled="isGanadorRechazado(ganador.estado)">
                                                 <i class="bi bi-person-rolodex" style="font-size: 15px;"></i>
@@ -143,14 +139,6 @@
                                                 <div v-if="!cargo" class="text-danger">Este campo es obligatorio.</div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label>Documento comprobatorio:</label>
-                                                <div class="modal-body">
-                                                    <input type="file" ref="documento" accept=".pdf" class="form-control" id="inputGroupFile03" aria-describedby="inputGroupFileAddon03" aria-label="Upload">
-                                                </div>
-                                            </div>
-                                        </div>
                                     </form>
                                 </div>
 
@@ -198,8 +186,6 @@
             id_cargo: "",
             id_grup: "",
             id_emp:"",
-            documento: null,
-            nuevoDocumento: null,
             id_conc: this.idConcursoActual,
             selectedGanadorId: null,
             idGanador: "",
@@ -412,7 +398,6 @@
                             nombre: ganador.id_emp,
                             curp: ganador.curp,
                             id_cargo: ganador.id_cargo,
-                            documento: ganador.documento,
                             id_conc: ganador.id_conc,
                             estado: ganador.estado
                         }));
@@ -429,72 +414,34 @@
                 });
         },
 
-        //   obtenerGanadoresV(idDependencia) {
-        //       axios.get(`/obtenerGanadoresV?idDependencia=${idDependencia}`)
-        //           .then(response => {
-        //           this.ganadores = [];
-
-        //           for (let grupo in response.data.ganadores) {
-        //               let ganadoresGrupo = response.data.ganadores[grupo].map((ganador, index) => ({
-        //               numero: index + 1,
-        //               nombre: ganador.id_emp
-        //               }));
-
-        //               this.ganadores.push({
-        //               grupo: grupo,
-        //               ganadores: ganadoresGrupo
-        //               });
-        //           }
-
-        //           })
-        //           .catch(error => {
-        //           console.error('Error al obtener ganadores', error);
-        //           });
-        //   },
-
-
-        //Metodos agregar Ganador o excepción
-        // handleExcepcionFileUpload(event) {
-        //     this.documento = event.target.files[0];
-        // },
-
         async agregarExcepcion() {
             if (this.curp.length !== 18) {
                 Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres', 'error');
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('id_emp', this.id_emp);
-            formData.append('curp', this.curp.toUpperCase().substring(0, 18));
-            formData.append('id_grup', this.id_grup);
-            formData.append('id_cargo', this.id_cargo);
+            const data = {
+                id_emp: this.id_emp,
+                curp: this.curp.toUpperCase().substring(0, 18),
+                id_grup: this.id_grup,
+                id_cargo: this.id_cargo
+            };
 
-            const documentoFile = this.$refs.documento.files[0];
-            if (!documentoFile) {
-                Swal.fire('Error', 'Debe seleccionar un documento.', 'error');
-                return;
-            }
-            formData.append('documento', documentoFile);
-
-            try {
-                const response = await axios.post('/agregarExcepcion', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
+            axios.post('/agregarExcepcion', data)
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire('Éxito', 'Ganador agregado exitosamente.', 'success');
+                        this.cerrarModal();
+                        this.obtenerGanadoresV();
+                    } else {
+                        Swal.fire('Error', response.data.message, 'error');
                     }
-                });
-
-                if (response.data.success) {
+                })
+                .catch(error => {
+                    console.error(error);
                     this.cerrarModal();
-                    this.obtenerGanadoresV();
-                    Swal.fire('Éxito', response.data.message, 'success');
-                } else {
-                    Swal.fire('Error', response.data.error, 'error');
-                }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'No se pudo guardar al ganador.', 'error');
-            }
+                    Swal.fire('Error', 'Se produjo un error al agregar el ganador.', 'error');
+                });
         },
 
         //Metodos para editar Ganadores
@@ -512,43 +459,42 @@
                 this.curp = ganador.curp;
                 this.id_grup = ganador.id_grup;
                 this.id_cargo = ganador.id_cargo;
-                this.documento = ganador.documento;
             })
             .catch((error) => {
                 console.error(error);
             });
         },
 
-        async handleFileUpload() {
+        // async handleFileUpload() {
 
-            const documentoFile = this.$refs.documento.files[0];
-            if (!documentoFile) {
-                return null;
-            }
+        //     const documentoFile = this.$refs.documento.files[0];
+        //     if (!documentoFile) {
+        //         return null;
+        //     }
 
-            const formData = new FormData();
-            formData.append('file', this.documentoFile);
-            formData.append('ganador_id', this.idGanador);
+        //     const formData = new FormData();
+        //     formData.append('file', this.documentoFile);
+        //     formData.append('ganador_id', this.idGanador);
 
-            try {
-                const response = await axios.post('/uploadDocument', formData, {
-                    headers: {
-                         'Content-Type': 'multipart/form-data'
-                    }
-                });
+        //     try {
+        //         const response = await axios.post('/uploadDocument', formData, {
+        //             headers: {
+        //                  'Content-Type': 'multipart/form-data'
+        //             }
+        //         });
 
-                if (response.data.success) {
-                    return response.data.url;
-                } else {
-                    Swal.fire('Error', response.data.message, 'error');
-                    return null;
-                }
-            } catch (error) {
-                    console.error(error);
-                    Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
-                    return null;
-            }
-        },
+        //         if (response.data.success) {
+        //             return response.data.url;
+        //         } else {
+        //             Swal.fire('Error', response.data.message, 'error');
+        //             return null;
+        //         }
+        //     } catch (error) {
+        //             console.error(error);
+        //             Swal.fire('Error', 'Hubo un error al subir el documento.', 'error');
+        //             return null;
+        //     }
+        // },
 
         async editarGanador() {
 
@@ -559,17 +505,6 @@
                 id_grup: this.id_grup,
                 id_cargo: this.id_cargo,
             };
-
-            const documentoFile = this.$refs.documento.files[0];
-            if (documentoFile) {
-                const documentoUrl = await this.handleFileUpload();
-                if (!documentoUrl) {
-                return;
-                }
-                ganador.documento = documentoUrl;
-            } else {
-                ganador.documento = this.documento;
-            }
 
             try {
                 const response = await axios.post('/editarGanadores', ganador);
@@ -661,12 +596,10 @@
         },
 
         limpiarvar() {
+            this.id_emp = null;
             this.curp = null;
             this.id_cargo = null;
             this.id_grup = null;
-            this.documento = null;
-            this.nuevoDocumento = null;
-            this.$refs.documento.value = '';
         },
       },
     };

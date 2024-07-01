@@ -8,6 +8,7 @@ use App\Models\Concurso;
 use App\Models\Registro;
 use App\Models\Grupo;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 use App\Helpers\MyHelper;
 use Illuminate\Support\Facades\DB;
 
@@ -57,7 +58,6 @@ class DashboardController extends Controller
     public function agregarEmpleado(Request $request)
     {
         try {
-
             $user = Auth::user();
 
             if (!$user) {
@@ -77,22 +77,28 @@ class DashboardController extends Controller
                 'apellido_paterno' => 'required',
                 'apellido_materno' => 'required',
                 'cargo' => 'required',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
             $nuevoEmpleado = new Empleado;
             $nuevoEmpleado->id_grup = $request->id_grup;
-            $nuevoEmpleado->curp = strtoupper ($request->curp);
+            $nuevoEmpleado->curp = strtoupper($request->curp);
             $nuevoEmpleado->nombre = $request->nombre;
             $nuevoEmpleado->apellido_paterno = $request->apellido_paterno;
             $nuevoEmpleado->apellido_materno = $request->apellido_materno;
             $nuevoEmpleado->cargo = $request->cargo;
-
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+                $filename = date('YmdHis') . '_' . $request->curp . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('fotos', $filename, 'public');
+                $nuevoEmpleado->foto = $path;
+            }
             $nuevoEmpleado->id_depen = $user->id_depen;
 
             $nuevoEmpleado->save();
-            MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado ->nombre);
+            MyHelper::registrarAccion('Se agrego al empleado: ' . $nuevoEmpleado->nombre);
 
-            return response()->json(['success' => true, 'message' => ' Empleado guardado exitosamente']);
+            return response()->json(['success' => true, 'message' => 'Empleado guardado exitosamente']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -107,33 +113,42 @@ class DashboardController extends Controller
     public function editarEmpleado(Request $request)
     {
         try {
-           $request->validate([
+            $request->validate([
                 'id' => 'required|exists:empleados,id',
                 'id_grup' => 'required|exists:grupos,id',
-
+                'curp' => [
+                    'required',
+                    'max:18',
+                    Rule::unique('empleados')->ignore($request->id),
+                ],
+                'nombre' => 'required',
+                'apellido_paterno' => 'required',
+                'apellido_materno' => 'required',
+                'cargo' => 'required',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
-            $empleadoExistente = DB::table("empleados")
-                ->where("curp", $request['curp'])
-                ->where("id", '!=', $request['id'])
-                ->first();
+            $empleado = Empleado::findOrFail($request->id);
 
-            if ($empleadoExistente) {
-                return response()->json(['success' => false, 'message' => 'Ya existe una empleado con esa CURP.']);
+            $empleado->nombre = $request->nombre;
+            $empleado->apellido_paterno = $request->apellido_paterno;
+            $empleado->apellido_materno = $request->apellido_materno;
+            $empleado->curp = strtoupper($request->curp);
+            $empleado->cargo = $request->cargo;
+            $empleado->id_grup = $request->id_grup;
+            if ($request->hasFile('foto')) {
+                if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                    Storage::disk('public')->delete($empleado->foto);
+                }
+
+                $file = $request->file('foto');
+                $filename = date('YmdHis') . '_' . $request->curp . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('fotos', $filename, 'public');
+                $empleado->foto = $path;
             }
-
-            $empleado = Empleado::findOrFail($request->input('id'));
-
-            $empleado->nombre = $request->input('nombre');
-            $empleado->apellido_paterno = $request->input('apellido_paterno');
-            $empleado->apellido_materno = $request->input('apellido_materno');
-            $empleado->curp = $request->input('curp');
-            $empleado->cargo = $request->input('cargo');
-            $empleado->id_grup = $request->input('id_grup');
-
             $empleado->save();
 
-            MyHelper::registrarAccion('Se editó al empleado: ' . $empleado -> curp);
+            MyHelper::registrarAccion('Se editó al empleado: ' . $empleado->curp);
 
             return response()->json(['success' => true, 'message' => 'Empleado actualizado exitosamente']);
         } catch (\Exception $e) {
@@ -147,6 +162,9 @@ class DashboardController extends Controller
 
             $empleado = Empleado::findOrFail($id);
             $nombre = $empleado->nombre;
+            if ($empleado->foto && Storage::disk('public')->exists($empleado->foto)) {
+                Storage::disk('public')->delete($empleado->foto);
+            }
             $empleado->delete();
 
             MyHelper::registrarAccion('Se eliminó al empleado: ' . $nombre);
@@ -242,3 +260,4 @@ class DashboardController extends Controller
             'showDependenciaSelect' => $showDependenciaSelect]);
     }
 }
+

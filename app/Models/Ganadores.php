@@ -15,7 +15,6 @@ class Ganadores extends Model
         'id_grup',
         'curp',
         'id_cargo',
-        'documento',
         'estado'
     ];
 
